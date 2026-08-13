@@ -7,9 +7,11 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import BottomNav from '@/components/BottomNav';
 import TopNav from '@/components/TopNav';
+import { useBakery } from '@/context/BakeryContext';
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
+  const { currencySymbol } = useBakery();
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function DashboardPage() {
               <span className="text-emerald-500">↑</span>
               <h3 className="text-sm font-medium">To Collect</h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900">₹0.00</p>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}0.00</p>
             <Link href="/parties?type=customer" className="text-xs text-emerald-600 font-medium mt-2 inline-block">View Details →</Link>
           </div>
           
@@ -54,7 +56,7 @@ export default function DashboardPage() {
               <span className="text-rose-500">↓</span>
               <h3 className="text-sm font-medium">To Pay</h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900">₹0.00</p>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}0.00</p>
             <Link href="/parties?type=supplier" className="text-xs text-rose-600 font-medium mt-2 inline-block">View Details →</Link>
           </div>
         </section>
@@ -106,11 +108,11 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 divide-x divide-gray-100">
             <div className="p-4 text-center">
               <p className="text-xs text-gray-500 mb-1">Sales</p>
-              <p className="text-lg font-bold text-gray-900">₹0.00</p>
+              <p className="text-lg font-bold text-gray-900">{currencySymbol}0.00</p>
             </div>
             <div className="p-4 text-center">
               <p className="text-xs text-gray-500 mb-1">Purchases</p>
-              <p className="text-lg font-bold text-gray-900">₹0.00</p>
+              <p className="text-lg font-bold text-gray-900">{currencySymbol}0.00</p>
             </div>
           </div>
         </section>

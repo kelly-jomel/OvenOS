@@ -6,6 +6,7 @@ import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import api from '@/lib/api';
 import TopNav from '@/components/TopNav';
+import { useBakery } from '@/context/BakeryContext';
 
 type InventoryItem = {
   id: number;
@@ -19,6 +20,7 @@ type InventoryItem = {
 
 export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
+  const { currencySymbol } = useBakery();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,8 +137,9 @@ export default function InventoryPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ingredient Name</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Level</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Price</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Allergens</th>
                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -150,9 +153,8 @@ export default function InventoryPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{item.quantity} {item.unit}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">${item.purchase_price.toFixed(2)}</div>
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{currencySymbol}{item.purchase_price.toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{currencySymbol}{(item.quantity * item.purchase_price).toFixed(2)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.contains_allergens ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                           {item.contains_allergens || 'None'}
@@ -221,7 +223,7 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Total Purchase Price ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Total Purchase Price ({currencySymbol})</label>
                 <input
                   required
                   type="number"

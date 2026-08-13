@@ -18,13 +18,19 @@ export const metadata: Metadata = {
   keywords: "billing software for home bakers, invoice template for bakers, home bakery management software, OvenOS, cake order tracking app, collect bakery deposits online, how to invoice for custom cakes, small bakery software"
 };
 
+import { BakeryProvider } from "@/context/BakeryContext";
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <BakeryProvider>
+          {children}
+        </BakeryProvider>
+      </body>
     </html>
   );
 }

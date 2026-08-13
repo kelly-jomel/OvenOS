@@ -6,6 +6,8 @@ import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
 import Link from 'next/link';
 import TopNav from '@/components/TopNav';
+import BottomNav from '@/components/BottomNav';
+import { useBakery } from '@/context/BakeryContext';
 
 interface InventoryItem {
   id: number;
@@ -29,6 +31,7 @@ interface CartItem extends InventoryItem {
 
 export default function PurchasesPage() {
   const [loading, setLoading] = useState(true);
+  const { currencySymbol } = useBakery();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [suppliers, setSuppliers] = useState<Party[]>([]);
   
@@ -160,10 +163,9 @@ export default function PurchasesPage() {
                   onClick={() => addToCart(item)}
                   className="p-4 rounded-xl border border-gray-200 text-left flex flex-col hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer"
                 >
-                  <span className="font-semibold text-gray-800 line-clamp-1">{item.name}</span>
-                  <div className="mt-2 flex justify-between items-end w-full">
-                    <span className="text-xs font-medium text-gray-500">Stock: {item.quantity} {item.unit}</span>
-                    <span className="text-sm font-bold text-emerald-600">₹{item.purchase_price.toFixed(2)}</span>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-gray-900">{item.name}</h3>
+                    <span className="text-sm font-bold text-emerald-600">{currencySymbol}{item.purchase_price.toFixed(2)}</span>
                   </div>
                 </button>
               ))}
@@ -184,9 +186,9 @@ export default function PurchasesPage() {
               <ul className="space-y-4">
                 {cart.map((item) => (
                   <li key={item.id} className="flex justify-between items-start">
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900">{item.name}</h4>
-                      <p className="text-xs text-gray-500">₹{item.purchase_price.toFixed(2)} / {item.unit}</p>
+                    <div className="ml-3 flex-1">
+                      <p className="text-sm font-bold text-gray-900">{item.name}</p>
+                      <p className="text-xs text-gray-500">{currencySymbol}{item.purchase_price.toFixed(2)} / {item.unit}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="flex items-center border rounded-md">
@@ -194,9 +196,11 @@ export default function PurchasesPage() {
                         <span className="px-2 text-sm">{item.cartQuantity}</span>
                         <button onClick={() => updateCartQty(item.id, item.cartQuantity + 1)} className="px-2 py-1 text-gray-600 hover:bg-gray-100">+</button>
                       </div>
-                      <span className="text-sm font-bold text-gray-900 w-16 text-right">
-                        ₹{(item.cartQuantity * item.purchase_price).toFixed(2)}
-                      </span>
+                      <div className="text-right ml-4">
+                        <p className="text-sm font-bold text-gray-900">
+                          {currencySymbol}{(item.cartQuantity * item.purchase_price).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   </li>
                 ))}
@@ -205,13 +209,15 @@ export default function PurchasesPage() {
           </div>
 
           <div className="border-t pt-4 space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Subtotal</span>
-              <span>₹{subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t mt-2">
-              <span>Total Amount</span>
-              <span>₹{total.toFixed(2)}</span>
+            <div className="space-y-2 mb-4 text-sm">
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span>{currencySymbol}{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-bold text-gray-900 pt-2 border-t border-gray-100">
+                <span>Total Amount</span>
+                <span>{currencySymbol}{total.toFixed(2)}</span>
+              </div>
             </div>
             <button
               onClick={handleCheckout}

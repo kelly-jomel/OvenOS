@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
-import BottomNav from '@/components/BottomNav';
 import TopNav from '@/components/TopNav';
+import BottomNav from '@/components/BottomNav';
+import { useBakery } from '@/context/BakeryContext';
 
 interface Party {
   id: number;
@@ -21,6 +22,7 @@ interface Party {
 
 export default function PartiesPage() {
   const [loading, setLoading] = useState(true);
+  const { currencySymbol } = useBakery();
   const [parties, setParties] = useState<Party[]>([]);
   const [activeTab, setActiveTab] = useState<'customer' | 'supplier'>('customer');
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -119,7 +121,7 @@ export default function PartiesPage() {
                   </div>
                   <div className="text-right">
                     <p className={`text-sm font-bold ${party.balance > 0 ? 'text-rose-600' : 'text-gray-900'}`}>
-                      ₹{party.balance.toFixed(2)}
+                      {currencySymbol}{party.balance.toFixed(2)}
                     </p>
                     <p className="text-xs text-gray-500">Balance</p>
                   </div>
