@@ -44,10 +44,11 @@ class WasteLog(Base):
     reason = Column(String, nullable=True) # e.g. "Expired batter", "Dropped"
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-class Customer(Base):
-    __tablename__ = "customers"
+class Party(Base):
+    __tablename__ = "parties"
 
     id = Column(Integer, primary_key=True, index=True)
+    party_type = Column(String, default="customer") # "customer" or "supplier"
     name = Column(String, nullable=False, index=True)
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True)
@@ -62,9 +63,9 @@ class Invoice(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     invoice_number = Column(String, nullable=False, index=True)
-    customer_id = Column(Integer, nullable=True) # Nullable for walk-in
-    customer_name = Column(String, nullable=False) # Snapshot for walk-in
-    customer_phone = Column(String, nullable=True)
+    party_id = Column(Integer, nullable=True) # Nullable for walk-in
+    party_name = Column(String, nullable=False) # Snapshot for walk-in
+    party_phone = Column(String, nullable=True)
     subtotal = Column(Float, nullable=False, default=0.0)
     tax_amount = Column(Float, nullable=False, default=0.0)
     discount_amount = Column(Float, nullable=False, default=0.0)
@@ -83,7 +84,34 @@ class InvoiceItem(Base):
     item_name = Column(String, nullable=False)
     quantity = Column(Float, nullable=False)
     unit_price = Column(Float, nullable=False)
-    tax_rate = Column(Float, nullable=False, default=0.0) # e.g. 5.0, 12.0
+    tax_rate = Column(Float, nullable=False, default=0.0)
+    total_price = Column(Float, nullable=False)
+
+class Purchase(Base):
+    __tablename__ = "purchases"
+
+    id = Column(Integer, primary_key=True, index=True)
+    bill_number = Column(String, nullable=True)
+    party_id = Column(Integer, nullable=True)
+    party_name = Column(String, nullable=False)
+    subtotal = Column(Float, nullable=False, default=0.0)
+    tax_amount = Column(Float, nullable=False, default=0.0)
+    total_amount = Column(Float, nullable=False, default=0.0)
+    status = Column(String, default="paid") # unpaid, paid
+    payment_mode = Column(String, nullable=True)
+    bakery_id = Column(Integer, nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class PurchaseItem(Base):
+    __tablename__ = "purchase_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    purchase_id = Column(Integer, nullable=False, index=True)
+    inventory_item_id = Column(Integer, nullable=False)
+    item_name = Column(String, nullable=False)
+    quantity = Column(Float, nullable=False)
+    unit_price = Column(Float, nullable=False)
+    tax_rate = Column(Float, nullable=False, default=0.0)
     total_price = Column(Float, nullable=False)
 
 class Quotation(Base):

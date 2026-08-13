@@ -1,0 +1,38 @@
+{
+  "android_play_store_link": "",
+  "sticker_packs": [
+    {
+      "identifier": "1",
+      "name": "myBillBook",
+      "publisher": "Valorem Stack Pvt Ltd",
+      "tray_image_file": "tray_icon_mybillbook.png",
+      "image_data_version":"8",
+      "avoid_cache":false,
+      "publisher_email":"",
+      "publisher_website": "",
+      "privacy_policy_website": "",
+      "license_agreement_website": "",
+      "animated_sticker_pack": true,
+      "stickers": [
+        {
+          "image_file": "01_animated_sticker.webp"
+        },
+        {
+          "image_file": "02_animated_sticker.webp"
+        },
+        {
+          "image_file": "03_animated_sticker.webp"
+        },
+        {
+          "image_file": "04_animated_sticker.webp"
+        },
+        {
+          "image_file": "05_animated_sticker.webp"
+        },
+        {
+          "image_file": "06_animated_sticker.webp"
+        }
+      ]
+    }
+  ]
+}

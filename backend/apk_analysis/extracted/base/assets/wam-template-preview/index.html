@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"
+          type="text/css">
+
+    <style>
+        body {
+            padding-top: 20px;
+            padding-right: 50px;
+            font-family: "Roboto", sans-serif;
+            background-color: #e6ddd5;
+        }
+
+        .message {
+            background: #e1ffc7;
+            border-radius: 10px 0px 10px 10px;
+            float: right;
+            color: #353452;
+            clear: both;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 36px;
+            line-height: 45px;
+            padding: 22px;
+            position: relative;
+            margin: 8px 0;
+            max-width: 75%;
+            word-wrap: break-word;
+            z-index: -1;
+            box-shadow: 0px 2.4px 9px rgba(0, 0, 0, 0.08);
+
+        }
+
+        .message:first-child {
+            margin: 16px 0 8px;
+        }
+
+        .message:after {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0px 0 20px 20px;
+            border-color: transparent transparent transparent #e1ffc7;
+            top: 0;
+            right: -20px;
+        }
+
+        .message>img {
+            width: 100%;
+            margin-bottom: 22px;
+            border-radius: 10px;
+        }
+
+        #template-msg {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<script>
+
+    function setTemplateMessage(template) {
+        document.getElementById("template-msg").innerHTML = template;
+    }
+
+    function setTemplateImage(uri) {
+        if (uri && uri != "")
+            document.getElementById("template-img").src = uri;
+        else
+            document.getElementById("template-img").style.display="none";
+    }
+
+    /**
+     * ========================
+     *       SAMPLE USAGE
+     * ========================
+     * /
+     * window.onload = function () {
+        let template = `Hi there\n\nThank you for your purchase of ₹ %{invoice_total_amount}.\n\nYou can view your invoice and make the payment using bank/UPI by visiting this link: %{invoice_link}\n\nNote: Now, you can pay using above details to win ₹100 instant cashback !\n\nThank you,\n%{company_name} `;
+        const templateParams = { contact_name: "Contact Name", invoice_total_amount: "Invoice Total Amount", invoice_link: "Invoice Link", company_name: "HarishJi Enterprises" };
+        const imageUri = "https://static.toiimg.com/photo/msid-71690091/71690091.jpg?596581"
+
+        Object.keys(templateParams).forEach(param => {
+            template = template.replaceAll(`%{${param}}`, `<b>${templateParams[param]}</b>`);
+        });
+
+        setTemplateMessage(template);
+        setTemplateImage(imageUri);
+     };
+    */
+</script>
+
+<body background="https://content.flobiz.in/flobooks/wam_img_whatsapp_bg.png">
+<div class="message">
+    <img id="template-img" />
+    <span id="template-msg"> </span>
+</div>
+</body>
+
+</html>

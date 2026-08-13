@@ -26,19 +26,20 @@ class InventoryItemResponse(InventoryItemBase):
     class Config:
         from_attributes = True
 
-# Customer Schemas
-class CustomerBase(BaseModel):
+# Party Schemas
+class PartyBase(BaseModel):
     name: str
+    party_type: str = "customer" # "customer" or "supplier"
     phone: Optional[str] = None
     email: Optional[str] = None
     address: Optional[str] = None
     gstin_or_tax_id: Optional[str] = None
     is_b2b: bool = False
 
-class CustomerCreate(CustomerBase):
+class PartyCreate(PartyBase):
     pass
 
-class CustomerResponse(CustomerBase):
+class PartyResponse(PartyBase):
     id: int
     bakery_id: int
     created_at: datetime
@@ -68,9 +69,9 @@ class InvoiceItemResponse(InvoiceItemBase):
 # Invoice Schemas
 class InvoiceBase(BaseModel):
     invoice_number: str
-    customer_id: Optional[int] = None
-    customer_name: str
-    customer_phone: Optional[str] = None
+    party_id: Optional[int] = None
+    party_name: str
+    party_phone: Optional[str] = None
     subtotal: float
     tax_amount: float = 0.0
     discount_amount: float = 0.0
@@ -86,6 +87,48 @@ class InvoiceResponse(InvoiceBase):
     bakery_id: int
     created_at: datetime
     items: list[InvoiceItemResponse] = []
+
+    class Config:
+        from_attributes = True
+
+# Purchase Item Schemas
+class PurchaseItemBase(BaseModel):
+    inventory_item_id: int
+    item_name: str
+    quantity: float
+    unit_price: float
+    tax_rate: float = 0.0
+    total_price: float
+
+class PurchaseItemCreate(PurchaseItemBase):
+    pass
+
+class PurchaseItemResponse(PurchaseItemBase):
+    id: int
+    purchase_id: int
+
+    class Config:
+        from_attributes = True
+
+# Purchase Schemas
+class PurchaseBase(BaseModel):
+    bill_number: Optional[str] = None
+    party_id: Optional[int] = None
+    party_name: str
+    subtotal: float
+    tax_amount: float = 0.0
+    total_amount: float
+    status: str = "paid"
+    payment_mode: Optional[str] = None
+
+class PurchaseCreate(PurchaseBase):
+    items: list[PurchaseItemCreate]
+
+class PurchaseResponse(PurchaseBase):
+    id: int
+    bakery_id: int
+    created_at: datetime
+    items: list[PurchaseItemResponse] = []
 
     class Config:
         from_attributes = True
