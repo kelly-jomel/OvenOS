@@ -38,6 +38,14 @@ export default function PurchasesPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<Party | null>(null);
   
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
+  const [newSupplier, setNewSupplier] = useState({ name: '', phone: '', email: '', address: '', gstin_or_tax_id: '', is_b2b: false });
+  const [isSubmittingSupplier, setIsSubmittingSupplier] = useState(false);
+
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [newItem, setNewItem] = useState({ name: '', quantity: 0, unit: 'pcs', purchase_price: 0, selling_price: 0, min_stock: 0, tax_rate: 0 });
+  const [isSubmittingItem, setIsSubmittingItem] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -63,6 +71,40 @@ export default function PurchasesPage() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddSupplier = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingSupplier(true);
+    try {
+      const res = await api.post('/parties/', { ...newSupplier, party_type: 'supplier' });
+      setIsSupplierModalOpen(false);
+      setNewSupplier({ name: '', phone: '', email: '', address: '', gstin_or_tax_id: '', is_b2b: false });
+      setSelectedSupplier(res.data); // Auto-select the newly created supplier
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Error adding supplier');
+    } finally {
+      setIsSubmittingSupplier(false);
+    }
+  };
+
+  const handleAddItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingItem(true);
+    try {
+      const res = await api.post('/inventory/', newItem);
+      setIsItemModalOpen(false);
+      setNewItem({ name: '', quantity: 0, unit: 'pcs', purchase_price: 0, selling_price: 0, min_stock: 0, tax_rate: 0 });
+      addToCart(res.data); // Auto-add to cart
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Error adding item');
+    } finally {
+      setIsSubmittingItem(false);
     }
   };
 
@@ -130,7 +172,7 @@ export default function PurchasesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+    <div className="min-h-screen bg-gray-50 font-sans flex flex-col relative pb-20 md:pb-0">
       <TopNav title="Add Purchase Bill" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
@@ -148,28 +190,53 @@ export default function PurchasesPage() {
                   <span className="text-xs text-gray-500">{c.phone || 'No phone'}</span>
                 </button>
               ))}
-              <button className="px-4 py-2 rounded-lg border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-gray-700 flex items-center justify-center min-w-[150px]">
+              <button 
+                onClick={() => setIsSupplierModalOpen(true)}
+                className="px-4 py-2 rounded-lg border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-gray-700 flex items-center justify-center min-w-[150px] transition-colors"
+              >
                 + New Supplier
               </button>
             </div>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex-1">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Items to Receive</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {inventory.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => addToCart(item)}
-                  className="p-4 rounded-xl border border-gray-200 text-left flex flex-col hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-gray-900">{item.name}</h3>
-                    <span className="text-sm font-bold text-emerald-600">{currencySymbol}{item.purchase_price.toFixed(2)}</span>
-                  </div>
-                </button>
-              ))}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-900">Items to Receive</h2>
+              <button 
+                onClick={() => setIsItemModalOpen(true)}
+                className="text-sm bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg font-semibold hover:bg-emerald-200 transition-colors"
+              >
+                + Add Item
+              </button>
             </div>
+            
+            {inventory.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-xl">
+                <span className="text-4xl block mb-2">📦</span>
+                <p className="text-gray-500 mb-4 text-sm">No items in your inventory.</p>
+                <button 
+                  onClick={() => setIsItemModalOpen(true)}
+                  className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                >
+                  Add Your First Item
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {inventory.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => addToCart(item)}
+                    className="p-4 rounded-xl border border-gray-200 text-left flex flex-col hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-bold text-gray-900">{item.name}</h3>
+                      <span className="text-sm font-bold text-emerald-600">{currencySymbol}{item.purchase_price.toFixed(2)}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -229,6 +296,71 @@ export default function PurchasesPage() {
           </div>
         </div>
       </main>
+
+      {/* Modals */}
+      
+      {/* Supplier Modal */}
+      {isSupplierModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900">Add New Supplier</h2>
+              <button onClick={() => setIsSupplierModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <form onSubmit={handleAddSupplier} className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input required type="text" value={newSupplier.name} onChange={e => setNewSupplier({...newSupplier, name: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input type="tel" value={newSupplier.phone} onChange={e => setNewSupplier({...newSupplier, phone: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsSupplierModalOpen(false)} className="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+                <button type="submit" disabled={isSubmittingSupplier} className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700">{isSubmittingSupplier ? 'Saving...' : 'Save Supplier'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Item Modal */}
+      {isItemModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900">Add New Item</h2>
+              <button onClick={() => setIsItemModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <form onSubmit={handleAddItem} className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+                <input required type="text" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2 text-gray-500">{currencySymbol}</span>
+                    <input required type="number" step="0.01" value={newItem.purchase_price || ''} onChange={e => setNewItem({...newItem, purchase_price: parseFloat(e.target.value) || 0})} className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                  <input required type="text" value={newItem.unit} onChange={e => setNewItem({...newItem, unit: e.target.value})} placeholder="kg, pcs, liters" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsItemModalOpen(false)} className="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+                <button type="submit" disabled={isSubmittingItem} className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700">{isSubmittingItem ? 'Saving...' : 'Save Item'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      <BottomNav />
     </div>
   );
 }
