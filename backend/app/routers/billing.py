@@ -30,6 +30,43 @@ def create_invoice(invoice: schemas.InvoiceCreate, db: Session = Depends(get_db)
     db.commit()
     db.refresh(db_invoice)
 
+    # 1.5 Generate Razorpay Payment Link if configured
+    if db_invoice.payment_mode == 'razorpay':
+        bakery = db.query(models.BakeryProfile).filter(models.BakeryProfile.id == current_user.bakery_id).first()
+        if bakery and bakery.razorpay_key_id and bakery.razorpay_key_secret:
+            try:
+                import razorpay
+                client = razorpay.Client(auth=(bakery.razorpay_key_id, bakery.razorpay_key_secret))
+                
+                # Convert INR to paisa (multiply by 100)
+                amount_in_paisa = int(db_invoice.total_amount * 100)
+                
+                payment_link_data = {
+                    "amount": amount_in_paisa,
+                    "currency": "INR",
+                    "accept_partial": False,
+                    "description": f"Invoice {db_invoice.invoice_number}",
+                    "customer": {
+                        "name": db_invoice.party_name,
+                        "contact": db_invoice.party_phone or ""
+                    },
+                    "notify": {
+                        "sms": True,
+                        "email": False
+                    },
+                    "reminder_enable": True,
+                    "notes": {
+                        "invoice_id": str(db_invoice.id)
+                    }
+                }
+                
+                payment_link = client.payment_link.create(payment_link_data)
+                db_invoice.payment_link_url = payment_link.get('short_url')
+                db.commit()
+                db.refresh(db_invoice)
+            except Exception as e:
+                print(f"Failed to generate Razorpay link: {e}")
+
     # 2. Add Items & Deduct Inventory
     for item in invoice.items:
         db_item = models.InvoiceItem(

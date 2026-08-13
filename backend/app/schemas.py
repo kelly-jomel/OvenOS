@@ -80,6 +80,7 @@ class InvoiceBase(BaseModel):
     total_amount: float
     status: str = "paid"
     payment_mode: Optional[str] = None
+    payment_link_url: Optional[str] = None
 
 class InvoiceCreate(InvoiceBase):
     items: list[InvoiceItemCreate]
@@ -221,6 +222,8 @@ class BakeryBase(BaseModel):
     primary_upi_id: Optional[str] = None
     payment_links: Optional[str] = None
     bank_account_details: Optional[str] = None
+    razorpay_key_id: Optional[str] = None
+    razorpay_key_secret: Optional[str] = None
     fiscal_year_start: Optional[str] = "04-01"
     primary_tax_scheme: Optional[str] = "composition"
     inventory_valuation_method: Optional[str] = "FIFO"
@@ -268,6 +271,8 @@ class BakeryUpdate(BaseModel):
     primary_upi_id: Optional[str] = None
     payment_links: Optional[str] = None
     bank_account_details: Optional[str] = None
+    razorpay_key_id: Optional[str] = None
+    razorpay_key_secret: Optional[str] = None
     fiscal_year_start: Optional[str] = None
     primary_tax_scheme: Optional[str] = None
     inventory_valuation_method: Optional[str] = None

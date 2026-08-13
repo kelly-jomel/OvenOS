@@ -71,9 +71,10 @@ class Invoice(Base):
     tax_amount = Column(Float, nullable=False, default=0.0)
     discount_amount = Column(Float, nullable=False, default=0.0)
     total_amount = Column(Float, nullable=False, default=0.0)
-    status = Column(String, default="paid") # pending, paid, cancelled
-    payment_mode = Column(String, nullable=True) # cash, upi, card
-    bakery_id = Column(Integer, nullable=False, index=True)
+    status = Column(String, default="paid") # paid, unpaid, partial
+    payment_mode = Column(String, nullable=True) # cash, upi, card, razorpay
+    payment_link_url = Column(String, nullable=True) # Razorpay link
+    bakery_id = Column(Integer, ForeignKey("bakeries.id"), index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class InvoiceItem(Base):
@@ -161,6 +162,8 @@ class Bakery(Base):
     primary_upi_id = Column(String, nullable=True)
     payment_links = Column(String, nullable=True) # Stored as JSON string
     bank_account_details = Column(String, nullable=True) # Stored as JSON string
+    razorpay_key_id = Column(String, nullable=True)
+    razorpay_key_secret = Column(String, nullable=True)
     fiscal_year_start = Column(String, default='04-01')
     primary_tax_scheme = Column(String, default='composition')
     inventory_valuation_method = Column(String, default='FIFO')

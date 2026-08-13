@@ -36,6 +36,7 @@ export default function BillingPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [paymentMode, setPaymentMode] = useState<string>('cash');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   
   const router = useRouter();
@@ -102,8 +103,8 @@ export default function BillingPage() {
         tax_amount: totalTax,
         discount_amount: 0,
         total_amount: total,
-        status: 'paid',
-        payment_mode: 'cash',
+        status: paymentMode === 'razorpay' ? 'unpaid' : 'paid',
+        payment_mode: paymentMode,
         items: cart.map(c => ({
           inventory_item_id: c.id,
           item_name: c.name,
@@ -226,6 +227,21 @@ export default function BillingPage() {
               <span>Total</span>
               <span>{currencySymbol}{total.toFixed(2)}</span>
             </div>
+            
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+              <select 
+                value={paymentMode} 
+                onChange={(e) => setPaymentMode(e.target.value)}
+                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+              >
+                <option value="cash">Cash</option>
+                <option value="upi">UPI / Bank Transfer</option>
+                <option value="card">Credit / Debit Card</option>
+                <option value="razorpay">Send Razorpay Payment Link</option>
+              </select>
+            </div>
+            
             <button
               onClick={handleCheckout}
               disabled={cart.length === 0 || !selectedCustomer}

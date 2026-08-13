@@ -35,6 +35,8 @@ type BakeryProfile = {
   primary_upi_id: string | null;
   payment_links: string | null;
   bank_account_details: string | null;
+  razorpay_key_id: string | null;
+  razorpay_key_secret: string | null;
   fiscal_year_start: string | null;
   primary_tax_scheme: string | null;
   inventory_valuation_method: string | null;
@@ -321,6 +323,18 @@ export default function ProfilePage() {
                     <div className="sm:col-span-6">
                       <label className="block text-sm font-medium text-gray-700">Payment Links (Static QR / URLs)</label>
                       <input type="text" value={profile?.payment_links || ''} onChange={e => updateField('payment_links', e.target.value)} placeholder="e.g. Stripe, Razorpay, or Venmo link" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                    </div>
+                    <div className="sm:col-span-6">
+                      <h4 className="text-md font-medium text-gray-900 mt-4 border-b pb-2">Razorpay Integration (Optional)</h4>
+                      <p className="text-xs text-gray-500 mt-1 mb-4">Enter your Razorpay API keys to automatically generate payment links for your invoices. You can leave this blank to skip.</p>
+                    </div>
+                    <div className="sm:col-span-3">
+                      <label className="block text-sm font-medium text-gray-700">Razorpay Key ID</label>
+                      <input type="text" value={profile?.razorpay_key_id || ''} onChange={e => updateField('razorpay_key_id', e.target.value)} placeholder="rzp_live_..." className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <label className="block text-sm font-medium text-gray-700">Razorpay Key Secret</label>
+                      <input type="password" value={profile?.razorpay_key_secret || ''} onChange={e => updateField('razorpay_key_secret', e.target.value)} placeholder="••••••••••••••••" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
                     </div>
                   </div>
                 </div>

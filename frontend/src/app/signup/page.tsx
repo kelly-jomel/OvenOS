@@ -33,8 +33,8 @@ export default function SignupPage() {
         firebase_uid: userCredential.user.uid
       });
       
-      // 4. Redirect to the internal dashboard
-      router.push('/dashboard');
+      // 4. Redirect to the internal dashboard/profile
+      router.push('/profile');
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.detail || err.message || 'An error occurred during signup.');

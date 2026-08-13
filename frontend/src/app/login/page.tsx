@@ -20,7 +20,7 @@ export default function LoginPage() {
     
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
+      router.push('/profile');
     } catch (err: any) {
       console.error(err);
       setError('Invalid email or password.');
@@ -48,7 +48,7 @@ export default function LoginPage() {
         console.log('User might already exist in backend, continuing...');
       }
       
-      router.push('/dashboard');
+      router.push('/profile');
     } catch (err: any) {
       console.error(err);
       setError('Failed to sign in with Google.');
