@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
 import Link from 'next/link';
+import TopNav from '@/components/TopNav';
 
 interface InventoryItem {
   id: number;
@@ -51,7 +52,7 @@ export default function BillingPage() {
     try {
       const [invRes, custRes] = await Promise.all([
         api.get('/inventory'),
-        api.get('/billing/customers')
+        api.get('/parties/?party_type=customer')
       ]);
       setInventory(invRes.data);
       setCustomers(custRes.data);
@@ -91,9 +92,9 @@ export default function BillingPage() {
     try {
       const invoiceData = {
         invoice_number: `INV-${Date.now()}`,
-        customer_id: selectedCustomer.id,
-        customer_name: selectedCustomer.name,
-        customer_phone: selectedCustomer.phone,
+        party_id: selectedCustomer.id,
+        party_name: selectedCustomer.name,
+        party_phone: selectedCustomer.phone,
         subtotal: subtotal,
         tax_amount: totalTax,
         discount_amount: 0,
@@ -129,27 +130,7 @@ export default function BillingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      {/* Top Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center space-x-3">
-                <img src="/logo.png" alt="OvenOS Logo" className="h-8 w-auto object-contain" />
-                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-rose-500">
-                  OvenOS
-                </span>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link href="/dashboard" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Dashboard</Link>
-                <Link href="/inventory" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Inventory</Link>
-                <Link href="/billing" className="border-orange-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Billing POS</Link>
-                <Link href="/profile" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Profile</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <TopNav title="Billing POS" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex gap-6">
         {/* Left Side: Items & Customers */}

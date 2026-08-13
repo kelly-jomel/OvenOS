@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
 import BottomNav from '@/components/BottomNav';
+import TopNav from '@/components/TopNav';
 
 interface Party {
   id: number;
@@ -54,15 +55,15 @@ export default function PartiesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <h1 className="text-lg font-bold text-gray-900">Parties</h1>
+      <TopNav title="Parties" />
+      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-[64px] z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-end">
           <button className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
             <span>+</span> Add Party
           </button>
         </div>
         {/* Tabs */}
-        <div className="flex border-t border-gray-100">
+        <div className="flex border-t border-gray-100 max-w-7xl mx-auto">
           <button 
             onClick={() => setActiveTab('customer')}
             className={`flex-1 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'customer' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
@@ -76,7 +77,7 @@ export default function PartiesPage() {
             Suppliers
           </button>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
         <div className="relative">

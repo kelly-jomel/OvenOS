@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
 import Link from 'next/link';
+import TopNav from '@/components/TopNav';
 
 interface InventoryItem {
   id: number;
@@ -127,12 +128,7 @@ export default function PurchasesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-900 text-xl">←</Link>
-          <h1 className="text-lg font-bold text-gray-900">Add Purchase Bill</h1>
-        </div>
-      </nav>
+      <TopNav title="Add Purchase Bill" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
         <div className="flex-1 flex flex-col gap-6">

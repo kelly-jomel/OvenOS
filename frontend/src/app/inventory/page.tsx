@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import api from '@/lib/api';
+import TopNav from '@/components/TopNav';
 
 type InventoryItem = {
   id: number;
@@ -101,44 +102,7 @@ export default function InventoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Top Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center space-x-3">
-                <img src="/logo.png" alt="OvenOS Logo" className="h-8 w-auto object-contain" />
-                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-rose-500">
-                  OvenOS
-                </span>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link href="/dashboard" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Dashboard
-                </Link>
-                <Link href="/inventory" className="border-orange-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Inventory
-                </Link>
-                <Link href="/billing" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Billing
-                </Link>
-                <Link href="/recipes" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Recipes
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="ml-3 relative flex-shrink-0">
-                <Link href="/profile">
-                  <button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                    <img className="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin" />
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <TopNav title="Inventory" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
