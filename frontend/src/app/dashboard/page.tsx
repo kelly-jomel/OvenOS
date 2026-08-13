@@ -70,14 +70,14 @@ export default function DashboardPage() {
               <span className="text-xs font-medium text-gray-700 text-center">Add Sale</span>
             </Link>
             
-            <Link href="/purchases/new" className="flex flex-col items-center gap-2">
+            <Link href="/purchases" className="flex flex-col items-center gap-2">
               <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl text-emerald-600 shadow-sm border border-emerald-100 hover:bg-emerald-100 transition-colors">
                 🛒
               </div>
               <span className="text-xs font-medium text-gray-700 text-center">Add Purchase</span>
             </Link>
 
-            <Link href="/parties/new" className="flex flex-col items-center gap-2">
+            <Link href="/parties" className="flex flex-col items-center gap-2">
               <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-2xl text-amber-600 shadow-sm border border-amber-100 hover:bg-amber-100 transition-colors">
                 👥
               </div>
