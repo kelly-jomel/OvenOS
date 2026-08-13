@@ -7,6 +7,7 @@ class InventoryItemBase(BaseModel):
     quantity: float
     unit: str
     purchase_price: float
+    contains_allergens: Optional[str] = None
 
 class InventoryItemCreate(InventoryItemBase):
     pass
@@ -85,5 +86,38 @@ class OrderResponse(BaseModel):
     source: str
     created_at: datetime
     
+    class Config:
+        from_attributes = True
+
+# Recipe Schemas
+class RecipeIngredientBase(BaseModel):
+    inventory_item_id: int
+    quantity_required: float
+
+class RecipeIngredientCreate(RecipeIngredientBase):
+    pass
+
+class RecipeIngredientResponse(RecipeIngredientBase):
+    id: int
+    recipe_id: int
+
+    class Config:
+        from_attributes = True
+
+class RecipeBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    yield_amount: Optional[str] = None
+
+class RecipeCreate(RecipeBase):
+    ingredients: list[RecipeIngredientCreate] = []
+
+class RecipeResponse(RecipeBase):
+    id: int
+    bakery_id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    ingredients: list[RecipeIngredientResponse] = []
+
     class Config:
         from_attributes = True

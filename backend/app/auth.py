@@ -3,6 +3,9 @@ from firebase_admin import credentials, auth
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
+from sqlalchemy.orm import Session
+from .database import get_db
+from . import models
 
 # Initialize Firebase Admin
 # It expects the GOOGLE_APPLICATION_CREDENTIALS environment variable
@@ -35,3 +38,14 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+def get_current_user(decoded_token: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    firebase_uid = decoded_token.get("uid")
+    if not firebase_uid:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    
+    user = db.query(models.User).filter(models.User.firebase_uid == firebase_uid).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in database")
+    
+    return user

@@ -11,8 +11,28 @@ class InventoryItem(Base):
     unit = Column(String, nullable=False)
     purchase_price = Column(Float, nullable=False)
     contains_allergens = Column(String, nullable=True) # e.g. "Nuts, Dairy"
+    bakery_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class Recipe(Base):
+    __tablename__ = "recipes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+    description = Column(String, nullable=True)
+    yield_amount = Column(String, nullable=True) # e.g. "12 cupcakes"
+    bakery_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class RecipeIngredient(Base):
+    __tablename__ = "recipe_ingredients"
+
+    id = Column(Integer, primary_key=True, index=True)
+    recipe_id = Column(Integer, nullable=False)
+    inventory_item_id = Column(Integer, nullable=False)
+    quantity_required = Column(Float, nullable=False)
 
 class WasteLog(Base):
     __tablename__ = "waste_logs"
