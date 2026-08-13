@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import Link from 'next/link';
 
 interface InventoryItem {
