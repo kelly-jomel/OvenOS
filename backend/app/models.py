@@ -44,18 +44,47 @@ class WasteLog(Base):
     reason = Column(String, nullable=True) # e.g. "Expired batter", "Dropped"
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+class Customer(Base):
+    __tablename__ = "customers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, index=True)
+    phone = Column(String, nullable=True)
+    email = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    gstin_or_tax_id = Column(String, nullable=True)
+    is_b2b = Column(Boolean, default=False)
+    bakery_id = Column(Integer, nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
 class Invoice(Base):
     __tablename__ = "invoices"
 
     id = Column(Integer, primary_key=True, index=True)
-    customer_name = Column(String, nullable=False)
+    invoice_number = Column(String, nullable=False, index=True)
+    customer_id = Column(Integer, nullable=True) # Nullable for walk-in
+    customer_name = Column(String, nullable=False) # Snapshot for walk-in
     customer_phone = Column(String, nullable=True)
-    total_amount = Column(Float, nullable=False)
+    subtotal = Column(Float, nullable=False, default=0.0)
     tax_amount = Column(Float, nullable=False, default=0.0)
-    status = Column(String, default="pending") # pending, paid, cancelled
-    is_b2b = Column(Boolean, default=False)
-    gstin = Column(String, nullable=True)
+    discount_amount = Column(Float, nullable=False, default=0.0)
+    total_amount = Column(Float, nullable=False, default=0.0)
+    status = Column(String, default="paid") # pending, paid, cancelled
+    payment_mode = Column(String, nullable=True) # cash, upi, card
+    bakery_id = Column(Integer, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class InvoiceItem(Base):
+    __tablename__ = "invoice_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    invoice_id = Column(Integer, nullable=False, index=True)
+    inventory_item_id = Column(Integer, nullable=True) # Nullable if custom item
+    item_name = Column(String, nullable=False)
+    quantity = Column(Float, nullable=False)
+    unit_price = Column(Float, nullable=False)
+    tax_rate = Column(Float, nullable=False, default=0.0) # e.g. 5.0, 12.0
+    total_price = Column(Float, nullable=False)
 
 class Quotation(Base):
     __tablename__ = "quotations"
@@ -64,6 +93,7 @@ class Quotation(Base):
     customer_name = Column(String, nullable=False)
     estimated_amount = Column(Float, nullable=False)
     status = Column(String, default="draft") # draft, sent, accepted, rejected
+    bakery_id = Column(Integer, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Bakery(Base):

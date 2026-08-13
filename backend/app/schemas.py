@@ -26,18 +26,66 @@ class InventoryItemResponse(InventoryItemBase):
     class Config:
         from_attributes = True
 
-class InvoiceCreate(BaseModel):
+# Customer Schemas
+class CustomerBase(BaseModel):
+    name: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    address: Optional[str] = None
+    gstin_or_tax_id: Optional[str] = None
+    is_b2b: bool = False
+
+class CustomerCreate(CustomerBase):
+    pass
+
+class CustomerResponse(CustomerBase):
+    id: int
+    bakery_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# Invoice Item Schemas
+class InvoiceItemBase(BaseModel):
+    inventory_item_id: Optional[int] = None
+    item_name: str
+    quantity: float
+    unit_price: float
+    tax_rate: float = 0.0
+    total_price: float
+
+class InvoiceItemCreate(InvoiceItemBase):
+    pass
+
+class InvoiceItemResponse(InvoiceItemBase):
+    id: int
+    invoice_id: int
+
+    class Config:
+        from_attributes = True
+
+# Invoice Schemas
+class InvoiceBase(BaseModel):
+    invoice_number: str
+    customer_id: Optional[int] = None
     customer_name: str
     customer_phone: Optional[str] = None
+    subtotal: float
+    tax_amount: float = 0.0
+    discount_amount: float = 0.0
     total_amount: float
-    is_b2b: bool = False
-    gstin: Optional[str] = None
+    status: str = "paid"
+    payment_mode: Optional[str] = None
 
-class InvoiceResponse(InvoiceCreate):
+class InvoiceCreate(InvoiceBase):
+    items: list[InvoiceItemCreate]
+
+class InvoiceResponse(InvoiceBase):
     id: int
-    tax_amount: float
-    status: str
+    bakery_id: int
     created_at: datetime
+    items: list[InvoiceItemResponse] = []
 
     class Config:
         from_attributes = True
@@ -49,6 +97,7 @@ class QuotationCreate(BaseModel):
 class QuotationResponse(QuotationCreate):
     id: int
     status: str
+    bakery_id: int
     created_at: datetime
 
     class Config:
