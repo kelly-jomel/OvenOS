@@ -9,10 +9,25 @@ import api from '@/lib/api';
 type BakeryProfile = {
   name: string;
   trading_name: string | null;
+  country: string;
+  
+  // IN
   gstin: string | null;
   fssai_license_number: string | null;
   msme_udyam_number: string | null;
   pan_number: string | null;
+  
+  // US
+  ein_number: string | null;
+  state_tax_id: string | null;
+  food_handler_license: string | null;
+  
+  // UK
+  company_registration_number: string | null;
+  vat_number: string | null;
+  utr_number: string | null;
+  local_authority_registration: string | null;
+  
   address: string | null;
   pin_code: string | null;
   godown_locations: string | null;
@@ -174,10 +189,19 @@ export default function ProfilePage() {
               {activeTab === 'identity' && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div className="sm:col-span-6">
+                      <label className="block text-sm font-medium text-gray-700">Country of Operation</label>
+                      <select value={profile?.country || 'IN'} onChange={e => updateField('country', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                        <option value="IN">India</option>
+                        <option value="US">United States</option>
+                        <option value="GB">United Kingdom</option>
+                      </select>
+                      <p className="mt-1 text-xs text-gray-500">Determines regulatory and tax requirements.</p>
+                    </div>
                     <div className="sm:col-span-3">
                       <label className="block text-sm font-medium text-gray-700">Legal Business Name</label>
                       <input type="text" value={profile?.name || ''} onChange={e => updateField('name', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
-                      <p className="mt-1 text-xs text-gray-500">Must match PAN/GST records.</p>
+                      <p className="mt-1 text-xs text-gray-500">Must match tax records.</p>
                     </div>
                     <div className="sm:col-span-3">
                       <label className="block text-sm font-medium text-gray-700">Trading Name (Store Name)</label>
@@ -203,31 +227,72 @@ export default function ProfilePage() {
               {activeTab === 'regulatory' && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                    <div className="sm:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700">GSTIN</label>
-                      <input type="text" value={profile?.gstin || ''} onChange={e => updateField('gstin', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
-                    </div>
-                    <div className="sm:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700">Primary Tax Scheme</label>
-                      <select value={profile?.primary_tax_scheme || 'composition'} onChange={e => updateField('primary_tax_scheme', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
-                        <option value="composition">Composition Scheme</option>
-                        <option value="regular">Regular Scheme</option>
-                        <option value="non_gst">Non-GST</option>
-                      </select>
-                    </div>
-                    <div className="sm:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700">FSSAI License Number</label>
-                      <input type="text" value={profile?.fssai_license_number || ''} onChange={e => updateField('fssai_license_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
-                      <p className="mt-1 text-xs text-gray-500">Mandatory in India. Prints on invoices.</p>
-                    </div>
-                    <div className="sm:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700">PAN Number</label>
-                      <input type="text" value={profile?.pan_number || ''} onChange={e => updateField('pan_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
-                    </div>
-                    <div className="sm:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700">MSME Udyam Number</label>
-                      <input type="text" value={profile?.msme_udyam_number || ''} onChange={e => updateField('msme_udyam_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
-                    </div>
+                    {profile?.country === 'IN' && (
+                      <>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">GSTIN</label>
+                          <input type="text" value={profile?.gstin || ''} onChange={e => updateField('gstin', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">Primary Tax Scheme</label>
+                          <select value={profile?.primary_tax_scheme || 'composition'} onChange={e => updateField('primary_tax_scheme', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                            <option value="composition">Composition Scheme</option>
+                            <option value="regular">Regular Scheme</option>
+                            <option value="non_gst">Non-GST</option>
+                          </select>
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">FSSAI License Number</label>
+                          <input type="text" value={profile?.fssai_license_number || ''} onChange={e => updateField('fssai_license_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">PAN Number</label>
+                          <input type="text" value={profile?.pan_number || ''} onChange={e => updateField('pan_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">MSME Udyam Number</label>
+                          <input type="text" value={profile?.msme_udyam_number || ''} onChange={e => updateField('msme_udyam_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
+                        </div>
+                      </>
+                    )}
+                    
+                    {profile?.country === 'US' && (
+                      <>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">EIN (Employer Identification Number)</label>
+                          <input type="text" value={profile?.ein_number || ''} onChange={e => updateField('ein_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">State Tax ID</label>
+                          <input type="text" value={profile?.state_tax_id || ''} onChange={e => updateField('state_tax_id', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">Food Handler License</label>
+                          <input type="text" value={profile?.food_handler_license || ''} onChange={e => updateField('food_handler_license', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        </div>
+                      </>
+                    )}
+
+                    {profile?.country === 'GB' && (
+                      <>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">VAT Registration Number</label>
+                          <input type="text" value={profile?.vat_number || ''} onChange={e => updateField('vat_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm uppercase" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">Company Registration Number</label>
+                          <input type="text" value={profile?.company_registration_number || ''} onChange={e => updateField('company_registration_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">Unique Taxpayer Reference (UTR)</label>
+                          <input type="text" value={profile?.utr_number || ''} onChange={e => updateField('utr_number', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="block text-sm font-medium text-gray-700">FSA Local Authority Registration</label>
+                          <input type="text" value={profile?.local_authority_registration || ''} onChange={e => updateField('local_authority_registration', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -235,11 +300,13 @@ export default function ProfilePage() {
               {activeTab === 'financial' && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                    <div className="sm:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700">Primary UPI ID</label>
-                      <input type="text" value={profile?.primary_upi_id || ''} onChange={e => updateField('primary_upi_id', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
-                      <p className="mt-1 text-xs text-gray-500">Embedded in WhatsApp pay links.</p>
-                    </div>
+                    {profile?.country === 'IN' && (
+                      <div className="sm:col-span-3">
+                        <label className="block text-sm font-medium text-gray-700">Primary UPI ID</label>
+                        <input type="text" value={profile?.primary_upi_id || ''} onChange={e => updateField('primary_upi_id', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                        <p className="mt-1 text-xs text-gray-500">Embedded in WhatsApp pay links.</p>
+                      </div>
+                    )}
                     <div className="sm:col-span-3">
                       <label className="block text-sm font-medium text-gray-700">Fiscal Year Start</label>
                       <select value={profile?.fiscal_year_start || '04-01'} onChange={e => updateField('fiscal_year_start', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
@@ -248,12 +315,22 @@ export default function ProfilePage() {
                       </select>
                     </div>
                     <div className="sm:col-span-6">
-                      <label className="block text-sm font-medium text-gray-700">Bank Account Details (NEFT/RTGS)</label>
-                      <textarea rows={3} value={profile?.bank_account_details || ''} onChange={e => updateField('bank_account_details', e.target.value)} placeholder="Beneficiary Name:&#10;Account No:&#10;IFSC Code:" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                      <label className="block text-sm font-medium text-gray-700">
+                        {profile?.country === 'IN' ? 'Bank Account Details (NEFT/RTGS)' : 
+                         profile?.country === 'US' ? 'Bank Account Details (Routing / Account)' : 
+                         'Bank Account Details (Sort Code / Account)'}
+                      </label>
+                      <textarea rows={3} value={profile?.bank_account_details || ''} onChange={e => updateField('bank_account_details', e.target.value)} 
+                        placeholder={
+                          profile?.country === 'IN' ? "Beneficiary Name:\nAccount No:\nIFSC Code:" :
+                          profile?.country === 'US' ? "Beneficiary Name:\nAccount No:\nRouting No:" :
+                          "Beneficiary Name:\nAccount No:\nSort Code:"
+                        }
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
                     </div>
                     <div className="sm:col-span-6">
                       <label className="block text-sm font-medium text-gray-700">Payment Links (Static QR / URLs)</label>
-                      <input type="text" value={profile?.payment_links || ''} onChange={e => updateField('payment_links', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                      <input type="text" value={profile?.payment_links || ''} onChange={e => updateField('payment_links', e.target.value)} placeholder="e.g. Stripe, Razorpay, or Venmo link" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
                     </div>
                   </div>
                 </div>

@@ -98,11 +98,27 @@ class BakeryBase(BaseModel):
     name: str
     
     # 1. Core Business Identity
+    country: Optional[str] = "IN"
     trading_name: Optional[str] = None
+    
+    # IN
     gstin: Optional[str] = None
     fssai_license_number: Optional[str] = None
     msme_udyam_number: Optional[str] = None
     pan_number: Optional[str] = None
+    
+    # US
+    ein_number: Optional[str] = None
+    state_tax_id: Optional[str] = None
+    food_handler_license: Optional[str] = None
+    
+    # UK
+    company_registration_number: Optional[str] = None
+    vat_number: Optional[str] = None
+    utr_number: Optional[str] = None
+    local_authority_registration: Optional[str] = None
+    
+    # Common Address
     address: Optional[str] = None
     pin_code: Optional[str] = None
     godown_locations: Optional[str] = None
@@ -133,10 +149,25 @@ class BakeryCreate(BakeryBase):
 
 class BakeryUpdate(BaseModel):
     trading_name: Optional[str] = None
+    country: Optional[str] = None
+    
+    # IN
     gstin: Optional[str] = None
     fssai_license_number: Optional[str] = None
     msme_udyam_number: Optional[str] = None
     pan_number: Optional[str] = None
+    
+    # US
+    ein_number: Optional[str] = None
+    state_tax_id: Optional[str] = None
+    food_handler_license: Optional[str] = None
+    
+    # UK
+    company_registration_number: Optional[str] = None
+    vat_number: Optional[str] = None
+    utr_number: Optional[str] = None
+    local_authority_registration: Optional[str] = None
+    
     address: Optional[str] = None
     pin_code: Optional[str] = None
     godown_locations: Optional[str] = None

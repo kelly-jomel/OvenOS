@@ -73,11 +73,27 @@ class Bakery(Base):
     name = Column(String, nullable=False)
     
     # 1. Core Business Identity & Regulatory Compliance
+    country = Column(String, default='IN') # 'IN', 'US', 'GB'
     trading_name = Column(String, nullable=True)
+    
+    # India Specific
     gstin = Column(String, nullable=True)
     fssai_license_number = Column(String, nullable=True)
     msme_udyam_number = Column(String, nullable=True)
     pan_number = Column(String, nullable=True)
+    
+    # US Specific
+    ein_number = Column(String, nullable=True)
+    state_tax_id = Column(String, nullable=True)
+    food_handler_license = Column(String, nullable=True)
+    
+    # UK Specific
+    company_registration_number = Column(String, nullable=True)
+    vat_number = Column(String, nullable=True)
+    utr_number = Column(String, nullable=True)
+    local_authority_registration = Column(String, nullable=True)
+    
+    # Common Address
     address = Column(String, nullable=True)
     pin_code = Column(String, nullable=True)
     godown_locations = Column(String, nullable=True) # Stored as JSON string or comma-separated
