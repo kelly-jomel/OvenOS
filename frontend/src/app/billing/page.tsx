@@ -53,8 +53,8 @@ export default function BillingPage() {
         api.get('/inventory'),
         api.get('/billing/customers')
       ]);
-      setInventory(invRes);
-      setCustomers(custRes);
+      setInventory(invRes.data);
+      setCustomers(custRes.data);
     } catch (err) {
       console.error(err);
     } finally {
