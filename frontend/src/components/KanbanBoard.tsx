@@ -11,12 +11,6 @@ type Order = {
   source: 'website' | 'whatsapp' | 'instagram';
 };
 
-const initialOrders: Order[] = [
-  { id: 'ORD-001', customerName: 'Alice Smith', items: 'Chocolate Truffle Cake (1kg)', status: 'new', source: 'website' },
-  { id: 'ORD-002', customerName: 'Rahul Verma', items: 'Red Velvet Cupcakes x6', status: 'preparing', source: 'whatsapp' },
-  { id: 'ORD-003', customerName: 'Priya Sharma', items: 'Sourdough Loaf', status: 'baking', source: 'instagram' },
-  { id: 'ORD-004', customerName: 'John Doe', items: 'Vanilla Buttercream Cake', status: 'ready', source: 'website' },
-];
 
 const COLUMNS = [
   { id: 'new', title: 'New Orders' },
