@@ -98,7 +98,12 @@ export default function ProfilePage() {
   };
 
   const updateField = (field: keyof BakeryProfile, value: any) => {
-    setProfile(prev => prev ? { ...prev, [field]: value } : null);
+    setProfile(prev => {
+      if (prev) {
+        return { ...prev, [field]: value };
+      }
+      return { country: 'IN', [field]: value } as BakeryProfile;
+    });
   };
 
   if (loading) {
@@ -227,7 +232,7 @@ export default function ProfilePage() {
               {activeTab === 'regulatory' && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                    {profile?.country === 'IN' && (
+                    {(profile?.country === 'IN' || !profile?.country) && (
                       <>
                         <div className="sm:col-span-3">
                           <label className="block text-sm font-medium text-gray-700">GSTIN</label>
@@ -300,7 +305,7 @@ export default function ProfilePage() {
               {activeTab === 'financial' && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                    {profile?.country === 'IN' && (
+                    {(profile?.country === 'IN' || !profile?.country) && (
                       <div className="sm:col-span-3">
                         <label className="block text-sm font-medium text-gray-700">Primary UPI ID</label>
                         <input type="text" value={profile?.primary_upi_id || ''} onChange={e => updateField('primary_upi_id', e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
