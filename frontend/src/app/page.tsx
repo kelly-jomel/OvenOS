@@ -1,20 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 export default function LandingPage() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
-  const [currency, setCurrency] = useState<'INR' | 'USD' | 'GBP'>('INR');
-
-  const pricing = {
-    INR: { monthly: 499, annual: 399, symbol: '₹' },
-    USD: { monthly: 15, annual: 12, symbol: '$' },
-    GBP: { monthly: 15, annual: 12, symbol: '£' },
-  };
-
-  const currentPrice = pricing[currency][billingCycle];
-
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Navigation */}
@@ -39,109 +28,92 @@ export default function LandingPage() {
       <div className="relative overflow-hidden bg-orange-50/50 py-24 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-            The Operating System for <span className="text-orange-600">Modern Home Bakeries</span>
+            Stop Chasing Payments. <span className="text-orange-600">Start Baking More.</span>
           </h1>
           <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto mb-10">
-            Automate costing, manage omnichannel orders from WhatsApp and Instagram, and scale your baking business effortlessly.
+            Meet <strong>OvenOS</strong>—the only billing and order management platform built exclusively for home bakers. Send beautiful invoices, secure advance deposits, and organize your custom orders in one place.
           </p>
           <div className="flex justify-center space-x-4">
             <Link href="/signup" className="bg-orange-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-700 shadow-lg transition">
-              Start your 7-Day Free Trial
+              Start Your Free 14-Day Trial
             </Link>
             <Link href="#features" className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-50 transition">
-              See Features
+              See How OvenOS Works
             </Link>
           </div>
-          <p className="mt-4 text-sm text-gray-500">No credit card required to start.</p>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div id="features" className="py-24 bg-white">
+      {/* The Problem (Agitation) */}
+      <div className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Ditch the Messy DMs and Sticky Notes</h2>
+          <p className="text-xl text-gray-600 leading-relaxed mb-4">
+            You started your business to bake, not to spend hours scrolling through Instagram messages trying to remember if a client paid their deposit for Saturday's tiered fondant cake.
+          </p>
+          <p className="text-xl text-gray-600 leading-relaxed font-medium">
+            Running a home bakery is hard enough. Your billing shouldn't be a recipe for disaster.
+          </p>
+        </div>
+      </div>
+
+      {/* Core Features */}
+      <div id="features" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">Everything you need to bake for profit</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">The Perfect Recipe for Your Business</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              We didn't just build a billing tool; we built a bakery assistant. OvenOS gives you everything you need to look professional and get paid faster.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="bg-gray-50 p-8 rounded-2xl">
-              <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <span className="text-orange-600 text-xl font-bold">₹</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Smart Recipe Costing</h3>
-              <p className="text-gray-600">Automatically calculate true ingredient costs factoring in shrinkage, waste, and real-time prices to guarantee your margins.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              <div className="text-4xl mb-4">🍰</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Bake-Specific Invoicing</h3>
+              <p className="text-gray-600">Easily add custom fields for flavors, tiers, allergies, and delivery dates right on the invoice.</p>
             </div>
-            <div className="bg-gray-50 p-8 rounded-2xl">
-              <div className="bg-rose-100 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <span className="text-rose-600 text-xl font-bold">📱</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Omnichannel Unified Inbox</h3>
-              <p className="text-gray-600">Manage orders from Instagram DMs, WhatsApp, and your website in one single, draggable Kanban dashboard.</p>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              <div className="text-4xl mb-4">💳</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Automated Deposits</h3>
+              <p className="text-gray-600">Never bake out of pocket again. Automatically require a 50% (or custom) deposit before an order is confirmed.</p>
             </div>
-            <div className="bg-gray-50 p-8 rounded-2xl">
-              <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <span className="text-green-600 text-xl font-bold">⚙️</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Auto Production Planning</h3>
-              <p className="text-gray-600">Let OvenOS automatically group daily bake orders by oven temperature to save energy and optimize your prep time.</p>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              <div className="text-4xl mb-4">🗓️</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Delivery & Pickup Calendar</h3>
+              <p className="text-gray-600">Your paid invoices automatically sync to a visual calendar, so you know exactly what needs to go in the oven and when.</p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              <div className="text-4xl mb-4">📱</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Professional Checkout</h3>
+              <p className="text-gray-600">Give your clients a seamless, mobile-friendly payment experience that makes your home business look like a premium boutique.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Pricing Section */}
-      <div id="pricing" className="py-24 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Simple, Transparent Pricing</h2>
-          <p className="text-xl text-gray-400 mb-10">Start with a 7-day free trial. Then, one flat rate to run your entire bakery.</p>
-          
-          <div className="flex flex-col items-center justify-center space-y-6 mb-12">
-            {/* Currency Selector */}
-            <div className="flex space-x-2 bg-gray-800 p-1 rounded-full">
-              {['INR', 'USD', 'GBP'].map(curr => (
-                <button 
-                  key={curr}
-                  onClick={() => setCurrency(curr as any)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition ${currency === curr ? 'bg-orange-600 text-white' : 'text-gray-400 hover:text-white'}`}
-                >
-                  {curr}
-                </button>
-              ))}
-            </div>
+      {/* Social Proof */}
+      <div className="py-24 bg-orange-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold mb-12">Loved by Home Bakers Everywhere</h2>
+          <blockquote className="text-2xl font-medium italic leading-relaxed mb-8">
+            "Before OvenOS, I was tracking orders in a notebook and constantly feeling awkward asking for deposits. Now, I send a link, my clients pay immediately, and my baking schedule is automatically updated. It changed my business overnight!"
+          </blockquote>
+          <p className="text-lg font-bold opacity-90">— Sarah J., Owner of Sweet Eats Custom Cakes</p>
+        </div>
+      </div>
 
-            {/* Toggle */}
-            <div className="flex items-center space-x-4">
-              <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>Monthly</span>
-              <button 
-                onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'annual' : 'monthly')}
-                className="relative inline-flex h-6 w-11 items-center rounded-full bg-orange-600 transition-colors focus:outline-none"
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${billingCycle === 'annual' ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-              <span className={`text-sm font-medium flex items-center ${billingCycle === 'annual' ? 'text-white' : 'text-gray-400'}`}>
-                Annually <span className="ml-2 bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded-full">Save 20%</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Pricing Card */}
-          <div className="max-w-lg mx-auto bg-gray-800 rounded-3xl p-8 border border-gray-700">
-            <h3 className="text-2xl font-bold mb-2">OvenOS Pro</h3>
-            <p className="text-gray-400 mb-6">Everything you need to grow.</p>
-            <div className="text-5xl font-extrabold mb-6 flex items-baseline justify-center">
-              <span>{pricing[currency].symbol}{currentPrice}</span>
-              <span className="text-xl font-normal text-gray-500 ml-2">/mo</span>
-            </div>
-            <Link href="/signup" className="block w-full bg-orange-600 text-white px-6 py-4 rounded-xl text-lg font-bold hover:bg-orange-700 transition mb-6">
-              Start 7-Day Free Trial
-            </Link>
-            <ul className="text-left space-y-4 text-gray-300">
-              <li className="flex items-center">✅ Smart Recipe Costing</li>
-              <li className="flex items-center">✅ WhatsApp & IG Integration</li>
-              <li className="flex items-center">✅ Custom Cake Builder Module</li>
-              <li className="flex items-center">✅ Automated Production Scheduling</li>
-              <li className="flex items-center">✅ Tally & ClearTax Exports</li>
-            </ul>
-          </div>
+      {/* Final Call-to-Action */}
+      <div className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">Ready to Whisk Away Your Billing Stress?</h2>
+          <p className="text-xl text-gray-600 mb-10">
+            Join thousands of home bakers who are saving time, looking professional, and focusing on what they love: baking. Let OvenOS handle the math.
+          </p>
+          <Link href="/signup" className="inline-block bg-orange-600 text-white px-10 py-5 rounded-full text-xl font-bold hover:bg-orange-700 shadow-lg transition mb-4">
+            Get Started for Free
+          </Link>
+          <p className="text-sm text-gray-500 italic">No credit card required. Setup takes less than 2 minutes.</p>
         </div>
       </div>
       
