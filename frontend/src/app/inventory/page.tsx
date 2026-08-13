@@ -7,7 +7,7 @@ import Link from 'next/link';
 import api from '@/lib/api';
 
 type InventoryItem = {
-  id: int;
+  id: number;
   name: string;
   quantity: number;
   unit: string;
