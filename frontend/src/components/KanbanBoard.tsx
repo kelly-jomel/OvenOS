@@ -1,10 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Types for our Kanban board
 type Order = {
-  id: string;
-  customerName: string;
+  id: number;
+  display_id: string;
+  customer_name: string;
   items: string;
   status: 'new' | 'preparing' | 'baking' | 'ready' | 'delivered';
   source: 'website' | 'whatsapp' | 'instagram';
@@ -25,25 +26,64 @@ const COLUMNS = [
   { id: 'delivered', title: 'Delivered' },
 ];
 
-export default function KanbanBoard() {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+import api from '@/lib/api';
 
-  const handleDragStart = (e: React.DragEvent, id: string) => {
-    e.dataTransfer.setData('orderId', id);
+export default function KanbanBoard() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await api.get('/orders/');
+      setOrders(response.data);
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+      setError('Failed to load orders.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDrop = (e: React.DragEvent, status: Order['status']) => {
-    const id = e.dataTransfer.getData('orderId');
+  const handleDragStart = (e: React.DragEvent, id: number) => {
+    e.dataTransfer.setData('orderId', id.toString());
+  };
+
+  const handleDrop = async (e: React.DragEvent, status: Order['status']) => {
+    const id = parseInt(e.dataTransfer.getData('orderId'), 10);
+    if (!id) return;
+    
+    // Optimistic update
     setOrders((prev) =>
       prev.map((order) =>
         order.id === id ? { ...order, status } : order
       )
     );
+
+    try {
+      await api.patch(`/orders/${id}`, { status });
+    } catch (err) {
+      console.error('Failed to update order status:', err);
+      // Revert on failure by refetching
+      fetchOrders();
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
+
+  if (loading) {
+    return <div className="p-10 flex justify-center text-gray-500">Loading orders...</div>;
+  }
+
+  if (error) {
+    return <div className="p-10 flex justify-center text-red-500">{error}</div>;
+  }
 
   return (
     <div className="flex gap-4 p-4 overflow-x-auto min-h-[70vh] bg-gray-50">
@@ -72,7 +112,7 @@ export default function KanbanBoard() {
                   className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing hover:border-blue-400 hover:shadow-md transition-all group"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-xs font-bold text-gray-500">{order.id}</span>
+                    <span className="text-xs font-bold text-gray-500">{order.display_id}</span>
                     <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
                       order.source === 'whatsapp' ? 'bg-green-100 text-green-700' :
                       order.source === 'instagram' ? 'bg-pink-100 text-pink-700' :
@@ -81,7 +121,7 @@ export default function KanbanBoard() {
                       {order.source}
                     </span>
                   </div>
-                  <h4 className="font-medium text-gray-900">{order.customerName}</h4>
+                  <h4 className="font-medium text-gray-900">{order.customer_name}</h4>
                   <p className="text-sm text-gray-600 mt-1">{order.items}</p>
                 </div>
               ))}

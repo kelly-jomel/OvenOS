@@ -61,6 +61,12 @@ def run_migrations_online() -> None:
 
     """
     import os
+    env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+    if os.path.exists(env_file):
+        with open(env_file) as f:
+            for line in f:
+                if line.startswith('DATABASE_URL='):
+                    os.environ['DATABASE_URL'] = line.strip().split('=', 1)[1].strip("'").strip('"')
     
     config_section = config.get_section(config.config_ini_section, {})
     # Override URL with environment variable if present
