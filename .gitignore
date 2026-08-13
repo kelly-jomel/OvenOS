@@ -1,0 +1,14 @@
+# Python / FastAPI
+venv/
+__pycache__/
+*.pyc
+.env
+alembic.ini
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.log
