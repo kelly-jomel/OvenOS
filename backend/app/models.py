@@ -22,6 +22,7 @@ class Recipe(Base):
     name = Column(String, index=True, nullable=False)
     description = Column(String, nullable=True)
     yield_amount = Column(String, nullable=True) # e.g. "12 cupcakes"
+    image_data = Column(String, nullable=True) # Base64 string for image < 1MB
     bakery_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

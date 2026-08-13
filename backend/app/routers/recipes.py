@@ -17,6 +17,7 @@ def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db), c
         name=recipe.name,
         description=recipe.description,
         yield_amount=recipe.yield_amount,
+        image_data=recipe.image_data,
         bakery_id=current_user.bakery_id
     )
     db.add(db_recipe)
@@ -57,6 +58,7 @@ def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db), c
         name=db_recipe.name,
         description=db_recipe.description,
         yield_amount=db_recipe.yield_amount,
+        image_data=db_recipe.image_data,
         bakery_id=db_recipe.bakery_id,
         created_at=db_recipe.created_at,
         updated_at=db_recipe.updated_at,
@@ -82,6 +84,7 @@ def get_recipes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), 
             name=r.name,
             description=r.description,
             yield_amount=r.yield_amount,
+            image_data=r.image_data,
             bakery_id=r.bakery_id,
             created_at=r.created_at,
             updated_at=r.updated_at,

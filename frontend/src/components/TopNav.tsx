@@ -16,7 +16,7 @@ export default function TopNav({ title }: TopNavProps) {
     { name: 'Purchases', path: '/purchases' },
     { name: 'Billing', path: '/billing' },
     { name: 'Inventory', path: '/inventory' },
-    { name: 'Profile', path: '/profile' },
+    { name: 'Recipes', path: '/recipes' },
   ];
 
   return (
@@ -50,7 +50,7 @@ export default function TopNav({ title }: TopNavProps) {
         
         {/* Right side actions */}
         <div className="flex gap-4">
-          <button onClick={() => alert("Search functionality coming soon!")} className="text-gray-500 hover:text-gray-900 text-xl cursor-pointer">🔍</button>
+          <Link href="/profile" className="text-gray-500 hover:text-gray-900 text-xl cursor-pointer">👤</Link>
           <button onClick={() => alert("Notifications coming soon!")} className="text-gray-500 hover:text-gray-900 text-xl relative cursor-pointer">
             🔔
             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>

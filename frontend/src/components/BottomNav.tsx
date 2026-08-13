@@ -5,11 +5,11 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: 'Home', path: '/dashboard', icon: '🏠' },
+    { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
     { name: 'Customers', path: '/parties', icon: '👥' },
+    { name: 'Inventory', path: '/inventory', icon: '📦' },
     { name: 'Billing', path: '/billing', icon: '🧾' },
-    { name: 'Items', path: '/inventory', icon: '📦' },
-    { name: 'More', path: '/profile', icon: '⚙️' },
+    { name: 'Recipes', path: '/recipes', icon: '🍲' },
   ];
 
   return (

@@ -302,6 +302,7 @@ class RecipeBase(BaseModel):
     name: str
     description: Optional[str] = None
     yield_amount: Optional[str] = None
+    image_data: Optional[str] = None
 
 class RecipeCreate(RecipeBase):
     ingredients: list[RecipeIngredientCreate] = []

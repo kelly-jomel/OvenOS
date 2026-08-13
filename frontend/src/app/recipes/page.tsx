@@ -1,260 +1,302 @@
-'use client';
-import React, { useEffect, useState } from 'react';
+"use client";
+
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import Link from 'next/link';
+import { onAuthStateChanged } from 'firebase/auth';
 import api from '@/lib/api';
+import TopNav from '@/components/TopNav';
+import BottomNav from '@/components/BottomNav';
+import { useBakery } from '@/context/BakeryContext';
+import Link from 'next/link';
 
-type RecipeIngredient = {
-  id: number;
-  inventory_item_id: number;
-  quantity_required: number;
-};
-
-type Recipe = {
-  id: number;
-  name: string;
-  description: string;
-  yield_amount: string;
-  ingredients: RecipeIngredient[];
-};
-
-type InventoryItem = {
+interface InventoryItem {
   id: number;
   name: string;
   quantity: number;
   unit: string;
   purchase_price: number;
+}
+
+interface RecipeIngredient {
+  id?: number;
+  inventory_item_id: number;
+  quantity_required: number;
+  // UI only fields
+  item_name?: string;
+  unit?: string;
+  purchase_price?: number;
+}
+
+interface Recipe {
+  id: number;
+  name: string;
+  description: string;
+  yield_amount: string;
+  image_data?: string;
+  ingredients: RecipeIngredient[];
+}
+
+// Unit conversion helper
+const calculateCost = (ingredient: RecipeIngredient, item: InventoryItem): number => {
+  if (!item) return 0;
+  
+  let requiredQty = ingredient.quantity_required;
+  let itemUnit = item.unit.toLowerCase();
+  let ingUnit = ingredient.unit?.toLowerCase() || itemUnit;
+  
+  // Standardize common unit strings
+  if (itemUnit === 'kg' && ingUnit === 'g') {
+    requiredQty = requiredQty / 1000;
+  } else if (itemUnit === 'g' && ingUnit === 'kg') {
+    requiredQty = requiredQty * 1000;
+  } else if (itemUnit === 'l' && ingUnit === 'ml') {
+    requiredQty = requiredQty / 1000;
+  } else if (itemUnit === 'ml' && ingUnit === 'l') {
+    requiredQty = requiredQty * 1000;
+  }
+  
+  return (requiredQty / item.quantity) * item.purchase_price;
 };
 
 export default function RecipesPage() {
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { currencySymbol } = useBakery();
+  
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   
+  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-
+  
   // Form State
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [yieldAmount, setYieldAmount] = useState('');
-  const [selectedIngredients, setSelectedIngredients] = useState<{inventory_item_id: number, quantity_required: number}[]>([]);
-
-  const router = useRouter();
+  const [newRecipe, setNewRecipe] = useState<Partial<Recipe>>({
+    name: '',
+    description: '',
+    yield_amount: '',
+    image_data: '',
+    ingredients: []
+  });
+  
+  // Temp Ingredient selection
+  const [selectedItemId, setSelectedItemId] = useState<number | ''>('');
+  const [selectedItemQty, setSelectedItemQty] = useState<string>('');
+  const [selectedItemUnit, setSelectedItemUnit] = useState<string>('g'); // Default input unit
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        router.push('/login');
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchData();
       } else {
-        await Promise.all([fetchRecipes(), fetchInventory()]);
-        setLoading(false);
+        router.push('/login');
       }
     });
-
     return () => unsubscribe();
-  }, [router, refreshKey]);
+  }, [router]);
 
-  const fetchRecipes = async () => {
+  const fetchData = async () => {
     try {
-      const response = await api.get('/recipes/');
-      setRecipes(response.data);
-    } catch (err) {
-      console.error('Failed to fetch recipes', err);
+      setLoading(true);
+      const [recipesRes, inventoryRes] = await Promise.all([
+        api.get('/recipes/'),
+        api.get('/inventory/')
+      ]);
+      setRecipes(recipesRes.data);
+      setInventory(inventoryRes.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchInventory = async () => {
-    try {
-      const response = await api.get('/inventory/');
-      setInventory(response.data);
-    } catch (err) {
-      console.error('Failed to fetch inventory', err);
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1024 * 1024) {
+      alert("Image size must be less than 1MB.");
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewRecipe({ ...newRecipe, image_data: reader.result as string });
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleAddIngredientToRecipe = () => {
-    if (inventory.length === 0) return;
-    setSelectedIngredients([
-      ...selectedIngredients,
-      { inventory_item_id: inventory[0].id, quantity_required: 0 }
-    ]);
+  const addIngredientToRecipe = () => {
+    if (!selectedItemId || !selectedItemQty) return;
+    
+    const item = inventory.find(i => i.id === Number(selectedItemId));
+    if (!item) return;
+
+    const newIngredient: RecipeIngredient = {
+      inventory_item_id: item.id,
+      quantity_required: Number(selectedItemQty),
+      item_name: item.name,
+      unit: selectedItemUnit,
+      purchase_price: item.purchase_price
+    };
+
+    setNewRecipe({
+      ...newRecipe,
+      ingredients: [...(newRecipe.ingredients || []), newIngredient]
+    });
+    
+    // Reset selections
+    setSelectedItemId('');
+    setSelectedItemQty('');
   };
 
-  const handleUpdateIngredient = (index: number, field: string, value: string) => {
-    const newIngredients = [...selectedIngredients];
-    if (field === 'id') {
-      newIngredients[index].inventory_item_id = parseInt(value);
-    } else {
-      newIngredients[index].quantity_required = parseFloat(value) || 0;
+  const removeIngredient = (index: number) => {
+    const updatedIngredients = [...(newRecipe.ingredients || [])];
+    updatedIngredients.splice(index, 1);
+    setNewRecipe({ ...newRecipe, ingredients: updatedIngredients });
+  };
+
+  const handleSaveRecipe = async () => {
+    if (!newRecipe.name || !newRecipe.ingredients || newRecipe.ingredients.length === 0) {
+      alert("Please provide a name and at least one ingredient.");
+      return;
     }
-    setSelectedIngredients(newIngredients);
-  };
 
-  const handleRemoveIngredient = (index: number) => {
-    const newIngredients = [...selectedIngredients];
-    newIngredients.splice(index, 1);
-    setSelectedIngredients(newIngredients);
-  };
-
-  const handleAddRecipe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
     try {
-      await api.post('/recipes/', {
-        name,
-        description,
-        yield_amount: yieldAmount,
-        ingredients: selectedIngredients
-      });
+      setIsSubmitting(true);
+      
+      const payload = {
+        ...newRecipe,
+        ingredients: newRecipe.ingredients.map(ing => {
+          const item = inventory.find(i => i.id === ing.inventory_item_id);
+          let qty = ing.quantity_required;
+          let ingUnit = ing.unit?.toLowerCase() || '';
+          let itemUnit = item?.unit.toLowerCase() || '';
+          
+          if (itemUnit === 'kg' && ingUnit === 'g') {
+            qty = qty / 1000;
+          } else if (itemUnit === 'g' && ingUnit === 'kg') {
+            qty = qty * 1000;
+          } else if (itemUnit === 'l' && ingUnit === 'ml') {
+            qty = qty / 1000;
+          } else if (itemUnit === 'ml' && ingUnit === 'l') {
+            qty = qty * 1000;
+          }
+          
+          return {
+            inventory_item_id: ing.inventory_item_id,
+            quantity_required: qty
+          };
+        })
+      };
+
+      await api.post('/recipes/', payload);
+      await fetchData();
       setIsModalOpen(false);
-      setName('');
-      setDescription('');
-      setYieldAmount('');
-      setSelectedIngredients([]);
-      setRefreshKey(prev => prev + 1);
-    } catch (err) {
-      console.error('Failed to add recipe', err);
-      alert('Failed to add recipe');
+      setNewRecipe({ name: '', description: '', yield_amount: '', image_data: '', ingredients: [] });
+    } catch (error) {
+      console.error("Error saving recipe:", error);
+      alert("Failed to save recipe. Please check your connection.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this recipe?')) return;
+  const deleteRecipe = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this recipe?")) return;
     try {
       await api.delete(`/recipes/${id}`);
-      setRefreshKey(prev => prev + 1);
-    } catch (err) {
-      console.error('Failed to delete', err);
+      setRecipes(recipes.filter(r => r.id !== id));
+    } catch (error) {
+      console.error("Error deleting recipe:", error);
+      alert("Failed to delete recipe.");
     }
   };
 
-  // Helper to get ingredient name from ID
-  const getIngredientName = (id: number) => {
-    const item = inventory.find(i => i.id === id);
-    return item ? item.name : 'Unknown Ingredient';
-  };
-  
-  const getIngredientUnit = (id: number) => {
-    const item = inventory.find(i => i.id === id);
-    return item ? item.unit : '';
+  const calculateTotalRecipeCost = (ingredients: RecipeIngredient[]) => {
+    return ingredients.reduce((total, ing) => {
+      const inventoryItem = inventory.find(i => i.id === ing.inventory_item_id);
+      if (!inventoryItem) return total;
+      return total + calculateCost({ ...ing, unit: ing.unit || inventoryItem.unit }, inventoryItem);
+    }, 0);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+      <div className="min-h-screen bg-gray-50 flex flex-col pb-20">
+        <TopNav title="Recipes" />
+        <div className="flex-1 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        </div>
+        <BottomNav />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Top Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center space-x-3">
-                <img src="/logo.png" alt="OvenOS Logo" className="h-8 w-auto object-contain" />
-                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-rose-500">
-                  OvenOS
-                </span>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link href="/dashboard" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Dashboard
-                </Link>
-                <Link href="/inventory" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Inventory
-                </Link>
-                <Link href="/billing" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Billing
-                </Link>
-                <Link href="/recipes" className="border-orange-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Recipes
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="ml-3 relative flex-shrink-0">
-                <Link href="/profile">
-                  <button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                    <img className="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin" />
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-20">
+      <TopNav title="Recipes" />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 sm:px-0 mb-6 flex justify-between items-end">
+      <main className="flex-1 p-4 max-w-4xl mx-auto w-full">
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Recipe Manager</h1>
-            <p className="text-sm text-gray-500 mt-1">Build dynamic recipes and calculate ingredient requirements.</p>
+            <h1 className="text-2xl font-bold text-gray-900">Recipe Costing</h1>
+            <p className="text-gray-500 text-sm">Calculate the exact cost of your products.</p>
           </div>
           <button 
-            onClick={() => {
-              if (inventory.length === 0) {
-                alert("Please add items to your Inventory first!");
-                router.push('/inventory');
-                return;
-              }
-              setIsModalOpen(true);
-            }}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 shadow-sm transition-colors"
+            onClick={() => setIsModalOpen(true)}
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-700 transition"
           >
-            + Add Recipe
+            + New Recipe
           </button>
         </div>
 
-        {/* Recipe Grid */}
         {recipes.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-12 text-center">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 mb-6">
-              <span className="text-4xl">🍰</span>
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">No Recipes Yet</h2>
-            <p className="text-gray-500">Click the button above to start building your recipe database.</p>
+          <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+            <span className="text-4xl mb-4 block">🍲</span>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Recipes Yet</h3>
+            <p className="text-gray-500 mb-4 max-w-sm mx-auto">Create a recipe to automatically calculate its cost based on your inventory prices.</p>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="text-orange-600 font-medium hover:text-orange-700"
+            >
+              Add Your First Recipe
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {recipes.map((recipe) => (
-              <div key={recipe.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                <div className="p-6">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-bold text-gray-900">{recipe.name}</h3>
-                    <button onClick={() => handleDelete(recipe.id)} className="text-red-500 hover:text-red-700 text-sm">Delete</button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {recipes.map(recipe => (
+              <div key={recipe.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex gap-4">
+                    {recipe.image_data ? (
+                      <img src={recipe.image_data} alt={recipe.name} className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                    ) : (
+                      <div className="w-16 h-16 bg-orange-100 text-orange-500 rounded-lg flex items-center justify-center text-2xl border border-orange-200">
+                        🍲
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-900">{recipe.name}</h3>
+                      <p className="text-gray-500 text-sm">Yield: {recipe.yield_amount || "N/A"}</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1 mb-4">{recipe.description || 'No description provided.'}</p>
-                  
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-md font-medium">
-                      Yield: {recipe.yield_amount || 'Unknown'}
+                  <button onClick={() => deleteRecipe(recipe.id)} className="text-gray-400 hover:text-red-500">
+                    ✕
+                  </button>
+                </div>
+                
+                <p className="text-gray-600 text-sm mb-4 flex-1">{recipe.description}</p>
+                
+                <div className="bg-gray-50 p-3 rounded-lg mt-auto flex justify-between items-center border border-gray-100">
+                  <span className="text-sm text-gray-500">{recipe.ingredients.length} Ingredients</span>
+                  <div className="text-right">
+                    <span className="text-xs text-gray-400 block uppercase tracking-wide">Total Cost</span>
+                    <span className="font-bold text-lg text-gray-900">
+                      {currencySymbol}{calculateTotalRecipeCost(recipe.ingredients).toFixed(2)}
                     </span>
-                    <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-md">
-                      {recipe.ingredients.length} Ingredients
-                    </span>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-2">Ingredients</h4>
-                    <ul className="space-y-2">
-                      {recipe.ingredients.map((ing) => (
-                        <li key={ing.id} className="flex justify-between text-sm">
-                          <span className="text-gray-700">{getIngredientName(ing.inventory_item_id)}</span>
-                          <span className="text-gray-900 font-medium">{ing.quantity_required} {getIngredientUnit(ing.inventory_item_id)}</span>
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 </div>
               </div>
@@ -263,138 +305,193 @@ export default function RecipesPage() {
         )}
       </main>
 
-      {/* Add Recipe Modal */}
+      {/* Recipe Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-lg font-semibold text-gray-800">Add New Recipe</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                ✕
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            
+            {/* Modal Header */}
+            <div className="p-5 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+              <h2 className="text-xl font-bold text-gray-900">Create New Recipe</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
             </div>
-            <div className="p-6 overflow-y-auto flex-1">
-              <form id="recipe-form" onSubmit={handleAddRecipe} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Name</label>
-                  <input
-                    required
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    placeholder="e.g. Classic Vanilla Sponge"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
-                  <input
-                    type="text"
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    placeholder="e.g. A light and fluffy base for tier cakes"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Yield Amount</label>
-                  <input
-                    required
-                    type="text"
-                    value={yieldAmount}
-                    onChange={e => setYieldAmount(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    placeholder="e.g. Two 8-inch layers"
-                  />
-                </div>
 
-                <div className="mt-6 border-t border-gray-200 pt-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-md font-medium text-gray-900">Ingredients Formulation</h4>
-                    <button 
-                      type="button" 
-                      onClick={handleAddIngredientToRecipe}
-                      className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center"
-                    >
-                      + Add Item
-                    </button>
-                  </div>
-                  
-                  {selectedIngredients.length === 0 ? (
-                    <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                      <p className="text-sm text-gray-500">No ingredients added yet.</p>
-                      <button 
-                        type="button" 
-                        onClick={handleAddIngredientToRecipe}
-                        className="mt-2 text-sm text-orange-600 font-medium"
-                      >
-                        Click to add the first ingredient
-                      </button>
-                    </div>
+            {/* Modal Body */}
+            <div className="p-5 overflow-y-auto">
+              {/* Image Upload */}
+              <div className="mb-6 flex gap-4 items-center">
+                <div className="w-20 h-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                  {newRecipe.image_data ? (
+                    <img src={newRecipe.image_data} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="space-y-3">
-                      {selectedIngredients.map((ing, idx) => (
-                        <div key={idx} className="flex gap-3 items-end">
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 mb-1">Inventory Item</label>
-                            <select
-                              value={ing.inventory_item_id}
-                              onChange={e => handleUpdateIngredient(idx, 'id', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                            >
-                              {inventory.map(invItem => (
-                                <option key={invItem.id} value={invItem.id}>
-                                  {invItem.name} ({invItem.unit})
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="w-1/3">
-                            <label className="block text-xs text-gray-500 mb-1">Quantity Req.</label>
-                            <input
-                              required
-                              type="number"
-                              step="0.01"
-                              value={ing.quantity_required || ''}
-                              onChange={e => handleUpdateIngredient(idx, 'qty', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                              placeholder="0.0"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveIngredient(idx)}
-                            className="p-2 text-gray-400 hover:text-red-500 mb-1"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    <span className="text-2xl text-gray-300">📷</span>
                   )}
                 </div>
-              </form>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Image</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-lg file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-orange-50 file:text-orange-700
+                      hover:file:bg-orange-100 cursor-pointer"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Max size 1MB (Optional)</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Name *</label>
+                  <input
+                    type="text"
+                    value={newRecipe.name}
+                    onChange={(e) => setNewRecipe({...newRecipe, name: e.target.value})}
+                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                    placeholder="e.g., Chocolate Cake"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Yield (Output) *</label>
+                  <input
+                    type="text"
+                    value={newRecipe.yield_amount}
+                    onChange={(e) => setNewRecipe({...newRecipe, yield_amount: e.target.value})}
+                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                    placeholder="e.g., 12 slices"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                  <textarea
+                    value={newRecipe.description}
+                    onChange={(e) => setNewRecipe({...newRecipe, description: e.target.value})}
+                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                    placeholder="Short description or instructions..."
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t pt-6 mb-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Ingredients</h3>
+                
+                {/* Add Ingredient Bar */}
+                <div className="flex flex-wrap md:flex-nowrap gap-2 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200 items-end">
+                  <div className="flex-1 w-full md:w-auto">
+                    <label className="block text-xs text-gray-500 mb-1">Inventory Item</label>
+                    <select
+                      value={selectedItemId}
+                      onChange={(e) => setSelectedItemId(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full border rounded-lg p-2 bg-white outline-none"
+                    >
+                      <option value="">Select Item...</option>
+                      {inventory.map(item => (
+                        <option key={item.id} value={item.id}>
+                          {item.name} ({item.quantity}{item.unit} / {currencySymbol}{item.purchase_price})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="w-full md:w-24">
+                    <label className="block text-xs text-gray-500 mb-1">Qty</label>
+                    <input
+                      type="number"
+                      value={selectedItemQty}
+                      onChange={(e) => setSelectedItemQty(e.target.value)}
+                      className="w-full border rounded-lg p-2 bg-white outline-none"
+                      placeholder="0.0"
+                    />
+                  </div>
+                  <div className="w-full md:w-24">
+                    <label className="block text-xs text-gray-500 mb-1">Unit</label>
+                    <select
+                      value={selectedItemUnit}
+                      onChange={(e) => setSelectedItemUnit(e.target.value)}
+                      className="w-full border rounded-lg p-2 bg-white outline-none"
+                    >
+                      <option value="g">g</option>
+                      <option value="kg">kg</option>
+                      <option value="ml">ml</option>
+                      <option value="L">L</option>
+                      <option value="pcs">pcs</option>
+                    </select>
+                  </div>
+                  <button 
+                    onClick={addIngredientToRecipe}
+                    className="w-full md:w-auto bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-black mt-2 md:mt-0"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {/* Ingredient List */}
+                {newRecipe.ingredients && newRecipe.ingredients.length > 0 ? (
+                  <div className="space-y-2">
+                    {newRecipe.ingredients.map((ing, idx) => {
+                      const item = inventory.find(i => i.id === ing.inventory_item_id);
+                      if (!item) return null;
+                      const cost = calculateCost(ing, item);
+                      
+                      return (
+                        <div key={idx} className="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                          <div>
+                            <p className="font-medium text-gray-900">{ing.item_name}</p>
+                            <p className="text-sm text-gray-500">{ing.quantity_required} {ing.unit} @ {currencySymbol}{item.purchase_price} per {item.quantity}{item.unit}</p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <span className="font-bold text-gray-900">{currencySymbol}{cost.toFixed(2)}</span>
+                            <button onClick={() => removeIngredient(idx)} className="text-gray-400 hover:text-red-500 p-1">
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-8 italic border border-dashed rounded-lg bg-gray-50">No ingredients added yet.</p>
+                )}
+              </div>
             </div>
-            <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50/50">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                form="recipe-form"
-                disabled={isSubmitting || selectedIngredients.length === 0}
-                className="px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 disabled:opacity-50 min-w-[120px]"
-              >
-                {isSubmitting ? 'Saving...' : 'Save Recipe'}
-              </button>
+
+            {/* Modal Footer */}
+            <div className="p-5 border-t bg-gray-50 sticky bottom-0 z-10 flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-500 uppercase tracking-wide">Total Recipe Cost</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {currencySymbol}{calculateTotalRecipeCost(newRecipe.ingredients || []).toFixed(2)}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-200 rounded-lg transition"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSaveRecipe}
+                  disabled={isSubmitting}
+                  className="px-5 py-2.5 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition disabled:opacity-50 flex items-center justify-center min-w-[120px]"
+                >
+                  {isSubmitting ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    'Save Recipe'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      <BottomNav />
     </div>
   );
 }
