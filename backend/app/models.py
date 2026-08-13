@@ -45,3 +45,31 @@ class Quotation(Base):
     estimated_amount = Column(Float, nullable=False)
     status = Column(String, default="draft") # draft, sent, accepted, rejected
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Bakery(Base):
+    __tablename__ = "bakeries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    firebase_uid = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    bakery_id = Column(Integer, nullable=False) # Foreign key simplified for now
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    display_id = Column(String, nullable=False) # e.g. ORD-001
+    customer_name = Column(String, nullable=False)
+    items = Column(String, nullable=False)
+    status = Column(String, default="new") # new, preparing, baking, ready, delivered
+    source = Column(String, default="website") # website, whatsapp, instagram
+    bakery_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

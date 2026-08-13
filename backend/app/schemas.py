@@ -52,3 +52,38 @@ class QuotationResponse(QuotationCreate):
 
     class Config:
         from_attributes = True
+
+# User & Bakery Schemas
+class UserCreate(BaseModel):
+    email: str
+    bakery_name: str
+    firebase_uid: str
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    bakery_id: int
+    
+    class Config:
+        from_attributes = True
+
+# Order Schemas
+class OrderCreate(BaseModel):
+    customer_name: str
+    items: str
+    source: str = "website"
+
+class OrderUpdate(BaseModel):
+    status: str
+
+class OrderResponse(BaseModel):
+    id: int
+    display_id: str
+    customer_name: str
+    items: str
+    status: str
+    source: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
