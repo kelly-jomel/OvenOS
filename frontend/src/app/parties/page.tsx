@@ -13,12 +13,17 @@ interface Party {
   party_type: string;
   phone: string | null;
   email: string | null;
+  address: string | null;
+  created_at: string;
+  total_orders: number;
+  balance: number;
 }
 
 export default function PartiesPage() {
   const [loading, setLoading] = useState(true);
   const [parties, setParties] = useState<Party[]>([]);
   const [activeTab, setActiveTab] = useState<'customer' | 'supplier'>('customer');
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -97,20 +102,46 @@ export default function PartiesPage() {
         ) : (
           <div className="space-y-3">
             {filteredParties.map(party => (
-              <div key={party.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
-                    {party.name.charAt(0).toUpperCase()}
+              <div 
+                key={party.id} 
+                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setExpandedId(expandedId === party.id ? null : party.id)}
+              >
+                <div className="p-4 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
+                      {party.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">{party.name}</h3>
+                      <p className="text-xs text-gray-500">{party.phone || 'No Phone'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">{party.name}</h3>
-                    <p className="text-xs text-gray-500">{party.phone || 'No Phone'}</p>
+                  <div className="text-right">
+                    <p className={`text-sm font-bold ${party.balance > 0 ? 'text-rose-600' : 'text-gray-900'}`}>
+                      ₹{party.balance.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-gray-500">Balance</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-gray-900">₹0.00</p>
-                  <p className="text-xs text-gray-500">Balance</p>
-                </div>
+                
+                {/* Expandable Details */}
+                {expandedId === party.id && (
+                  <div className="bg-gray-50 p-4 border-t border-gray-100 grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-500 text-xs mb-1">Total Orders</p>
+                      <p className="font-medium text-gray-900">{party.total_orders}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 text-xs mb-1">Customer Since</p>
+                      <p className="font-medium text-gray-900">{new Date(party.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-gray-500 text-xs mb-1">Address</p>
+                      <p className="font-medium text-gray-900 whitespace-pre-wrap">{party.address || 'No address provided'}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

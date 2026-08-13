@@ -43,6 +43,8 @@ class PartyResponse(PartyBase):
     id: int
     bakery_id: int
     created_at: datetime
+    total_orders: int = 0
+    balance: float = 0.0
 
     class Config:
         from_attributes = True
