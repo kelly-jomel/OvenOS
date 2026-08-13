@@ -26,6 +26,19 @@ export default function PartiesPage() {
   const [parties, setParties] = useState<Party[]>([]);
   const [activeTab, setActiveTab] = useState<'customer' | 'supplier'>('customer');
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newParty, setNewParty] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    gstin_or_tax_id: '',
+    is_b2b: false
+  });
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -50,6 +63,25 @@ export default function PartiesPage() {
     }
   };
 
+  const handleAddParty = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await api.post('/parties/', {
+        ...newParty,
+        party_type: activeTab
+      });
+      setIsModalOpen(false);
+      setNewParty({ name: '', phone: '', email: '', address: '', gstin_or_tax_id: '', is_b2b: false });
+      fetchParties();
+    } catch (err) {
+      console.error('Failed to add party', err);
+      alert('Error adding party');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const filteredParties = parties.filter(p => p.party_type === activeTab);
 
   if (loading) {
@@ -61,12 +93,15 @@ export default function PartiesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
+    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0 relative">
       <TopNav title="Parties" />
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-[64px] z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-end">
-          <button className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
-            <span>+</span> Add Party
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 hover:bg-orange-200 transition-colors"
+          >
+            <span>+</span> Add {activeTab === 'customer' ? 'Customer' : 'Supplier'}
           </button>
         </div>
         {/* Tabs */}
@@ -90,7 +125,7 @@ export default function PartiesPage() {
         <div className="relative">
           <input 
             type="text" 
-            placeholder="Search parties..." 
+            placeholder={`Search ${activeTab}s...`}
             className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <span className="absolute right-4 top-3 text-gray-400">🔍</span>
@@ -149,6 +184,103 @@ export default function PartiesPage() {
           </div>
         )}
       </main>
+
+      {/* Add Party Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900">Add New {activeTab === 'customer' ? 'Customer' : 'Supplier'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            
+            <form onSubmit={handleAddParty} className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input 
+                  required
+                  type="text" 
+                  value={newParty.name}
+                  onChange={e => setNewParty({...newParty, name: e.target.value})}
+                  placeholder="e.g. John Doe or ACME Corp" 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                  <input 
+                    type="tel" 
+                    value={newParty.phone}
+                    onChange={e => setNewParty({...newParty, phone: e.target.value})}
+                    placeholder="+91..." 
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
+                  <input 
+                    type="email" 
+                    value={newParty.email}
+                    onChange={e => setNewParty({...newParty, email: e.target.value})}
+                    placeholder="john@example.com" 
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Address (Optional)</label>
+                <textarea 
+                  value={newParty.address}
+                  onChange={e => setNewParty({...newParty, address: e.target.value})}
+                  rows={2}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN / Tax ID (Optional)</label>
+                <input 
+                  type="text" 
+                  value={newParty.gstin_or_tax_id}
+                  onChange={e => setNewParty({...newParty, gstin_or_tax_id: e.target.value})}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input 
+                  type="checkbox" 
+                  id="is_b2b"
+                  checked={newParty.is_b2b}
+                  onChange={e => setNewParty({...newParty, is_b2b: e.target.checked})}
+                  className="rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                />
+                <label htmlFor="is_b2b" className="text-sm text-gray-700">This is a B2B {activeTab}</label>
+              </div>
+              
+              <div className="pt-2 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSubmitting ? 'Saving...' : `Save ${activeTab === 'customer' ? 'Customer' : 'Supplier'}`}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       
       <BottomNav />
     </div>
