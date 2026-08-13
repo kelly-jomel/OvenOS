@@ -94,6 +94,75 @@ class RecipeIngredientBase(BaseModel):
     inventory_item_id: int
     quantity_required: float
 
+class BakeryBase(BaseModel):
+    name: str
+    
+    # 1. Core Business Identity
+    trading_name: Optional[str] = None
+    gstin: Optional[str] = None
+    fssai_license_number: Optional[str] = None
+    msme_udyam_number: Optional[str] = None
+    pan_number: Optional[str] = None
+    address: Optional[str] = None
+    pin_code: Optional[str] = None
+    godown_locations: Optional[str] = None
+
+    # 2. Financial & Fintech
+    primary_upi_id: Optional[str] = None
+    payment_links: Optional[str] = None
+    bank_account_details: Optional[str] = None
+    fiscal_year_start: Optional[str] = "04-01"
+    primary_tax_scheme: Optional[str] = "composition"
+    inventory_valuation_method: Optional[str] = "FIFO"
+
+    # 3. Kitchen Operations
+    default_kitchen_unit: Optional[str] = "g"
+    kitchen_capacity_orders_per_day: Optional[int] = None
+    standard_lead_time_hours: Optional[int] = 24
+    low_stock_alert_toggle: Optional[bool] = True
+    fefo_expiry_window_hours: Optional[int] = 48
+
+    # 4. Branding
+    business_logo_url: Optional[str] = None
+    digital_signature_url: Optional[str] = None
+    invoice_footer_text: Optional[str] = None
+    brand_color_palette: Optional[str] = None
+
+class BakeryCreate(BakeryBase):
+    pass
+
+class BakeryUpdate(BaseModel):
+    trading_name: Optional[str] = None
+    gstin: Optional[str] = None
+    fssai_license_number: Optional[str] = None
+    msme_udyam_number: Optional[str] = None
+    pan_number: Optional[str] = None
+    address: Optional[str] = None
+    pin_code: Optional[str] = None
+    godown_locations: Optional[str] = None
+    primary_upi_id: Optional[str] = None
+    payment_links: Optional[str] = None
+    bank_account_details: Optional[str] = None
+    fiscal_year_start: Optional[str] = None
+    primary_tax_scheme: Optional[str] = None
+    inventory_valuation_method: Optional[str] = None
+    default_kitchen_unit: Optional[str] = None
+    kitchen_capacity_orders_per_day: Optional[int] = None
+    standard_lead_time_hours: Optional[int] = None
+    low_stock_alert_toggle: Optional[bool] = None
+    fefo_expiry_window_hours: Optional[int] = None
+    business_logo_url: Optional[str] = None
+    digital_signature_url: Optional[str] = None
+    invoice_footer_text: Optional[str] = None
+    brand_color_palette: Optional[str] = None
+
+class BakeryResponse(BakeryBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 class RecipeIngredientCreate(RecipeIngredientBase):
     pass
 

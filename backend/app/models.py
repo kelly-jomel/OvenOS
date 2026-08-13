@@ -71,6 +71,38 @@ class Bakery(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    
+    # 1. Core Business Identity & Regulatory Compliance
+    trading_name = Column(String, nullable=True)
+    gstin = Column(String, nullable=True)
+    fssai_license_number = Column(String, nullable=True)
+    msme_udyam_number = Column(String, nullable=True)
+    pan_number = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    pin_code = Column(String, nullable=True)
+    godown_locations = Column(String, nullable=True) # Stored as JSON string or comma-separated
+
+    # 2. Financial & Fintech Settings
+    primary_upi_id = Column(String, nullable=True)
+    payment_links = Column(String, nullable=True) # Stored as JSON string
+    bank_account_details = Column(String, nullable=True) # Stored as JSON string
+    fiscal_year_start = Column(String, default='04-01')
+    primary_tax_scheme = Column(String, default='composition')
+    inventory_valuation_method = Column(String, default='FIFO')
+
+    # 3. Kitchen Operations & Metric Intelligence
+    default_kitchen_unit = Column(String, default='g')
+    kitchen_capacity_orders_per_day = Column(Integer, nullable=True)
+    standard_lead_time_hours = Column(Integer, default=24)
+    low_stock_alert_toggle = Column(Boolean, default=True)
+    fefo_expiry_window_hours = Column(Integer, default=48)
+
+    # 4. Branding & UX Customization
+    business_logo_url = Column(String, nullable=True)
+    digital_signature_url = Column(String, nullable=True)
+    invoice_footer_text = Column(String, nullable=True)
+    brand_color_palette = Column(String, nullable=True)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class User(Base):
