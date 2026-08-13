@@ -12,7 +12,7 @@ export default function TopNav({ title }: TopNavProps) {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Parties', path: '/parties' },
+    { name: 'Customers', path: '/parties' },
     { name: 'Purchases', path: '/purchases' },
     { name: 'Billing', path: '/billing' },
     { name: 'Inventory', path: '/inventory' },
