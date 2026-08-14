@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.crumbledger.app',
-  appName: 'CrumbLedger',
+  appId: 'com.kellyjomel.ovenos',
+  appName: 'OvenOS',
   webDir: 'out',
 };
 

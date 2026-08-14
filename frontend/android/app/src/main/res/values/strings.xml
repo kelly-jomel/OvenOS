@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">OvenOS</string>
     <string name="title_activity_main">OvenOS</string>
-    <string name="package_name">com.ovenos.app</string>
-    <string name="custom_url_scheme">com.ovenos.app</string>
+    <string name="package_name">com.kellyjomel.ovenos</string>
+    <string name="custom_url_scheme">com.kellyjomel.ovenos</string>
     <string name="server_client_id">110873735436-tokgdpudrgbk3fele26gjdc5g7do62f6.apps.googleusercontent.com</string>
 </resources>
