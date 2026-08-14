@@ -150,6 +150,9 @@ export default function ProfilePage() {
               <button onClick={() => setActiveTab('kitchen')} className={`px-4 py-3 text-sm font-medium text-left ${activeTab === 'kitchen' ? 'bg-orange-50 text-orange-700 border-r-4 border-orange-500' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
                 Kitchen Operations
               </button>
+              <button onClick={() => setActiveTab('operational_costs')} className={`px-4 py-3 text-sm font-medium text-left ${activeTab === 'operational_costs' ? 'bg-orange-50 text-orange-700 border-r-4 border-orange-500' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                Operational Costs
+              </button>
               <button onClick={() => setActiveTab('branding')} className={`px-4 py-3 text-sm font-medium text-left ${activeTab === 'branding' ? 'bg-orange-50 text-orange-700 border-r-4 border-orange-500' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
                 Branding & Templates
               </button>
@@ -171,6 +174,7 @@ export default function ProfilePage() {
                 {activeTab === 'regulatory' && 'Regulatory Compliance'}
                 {activeTab === 'financial' && 'Banking & Fintech Settings'}
                 {activeTab === 'kitchen' && 'Kitchen Operations'}
+                {activeTab === 'operational_costs' && 'Operational Costs & Labor'}
                 {activeTab === 'branding' && 'Branding & Templates'}
               </h3>
               <button
@@ -379,6 +383,32 @@ export default function ProfilePage() {
                     <div className="sm:col-span-6 flex items-center">
                       <input type="checkbox" checked={profile?.low_stock_alert_toggle || false} onChange={e => updateField('low_stock_alert_toggle', e.target.checked)} className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded" />
                       <label className="ml-2 block text-sm text-gray-900">Enable automated low-stock alerts</label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'operational_costs' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div className="sm:col-span-6">
+                      <h4 className="text-md font-medium text-gray-900 border-b pb-2">Overhead & Labor Baselines</h4>
+                      <p className="text-xs text-gray-500 mt-1 mb-4">Set your standard operational costs here. These rates will automatically be used to calculate exact recipe costs based on prep time and bake time.</p>
+                    </div>
+                    <div className="sm:col-span-3">
+                      <label className="block text-sm font-medium text-gray-700">Base Hourly Labor Rate</label>
+                      <input type="number" step="0.01" value={profile?.base_hourly_labor_rate || ''} onChange={e => updateField('base_hourly_labor_rate', parseFloat(e.target.value))} placeholder="e.g. 500" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                      <p className="mt-1 text-xs text-gray-500">How much your time is worth per hour.</p>
+                    </div>
+                    <div className="sm:col-span-3">
+                      <label className="block text-sm font-medium text-gray-700">Energy / Fuel Cost (per hour)</label>
+                      <input type="number" step="0.01" value={profile?.energy_cost_per_hour || ''} onChange={e => updateField('energy_cost_per_hour', parseFloat(e.target.value))} placeholder="e.g. 25" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                      <p className="mt-1 text-xs text-gray-500">Hourly cost to run your oven.</p>
+                    </div>
+                    <div className="sm:col-span-3">
+                      <label className="block text-sm font-medium text-gray-700">Misc Overhead (%)</label>
+                      <input type="number" step="0.1" value={profile?.misc_overhead_percentage || ''} onChange={e => updateField('misc_overhead_percentage', parseFloat(e.target.value))} placeholder="e.g. 5.0" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" />
+                      <p className="mt-1 text-xs text-gray-500">Markup applied to cover water, soap, parchment paper, etc.</p>
                     </div>
                   </div>
                 </div>
