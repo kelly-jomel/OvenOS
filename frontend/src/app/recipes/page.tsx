@@ -34,6 +34,11 @@ interface Recipe {
   description: string;
   yield_amount: string;
   image_data?: string;
+  prep_time_minutes?: number;
+  bake_time_minutes?: number;
+  use_custom_overheads?: boolean;
+  custom_labor_cost?: number;
+  custom_overhead_cost?: number;
   ingredients: RecipeIngredient[];
 }
 
