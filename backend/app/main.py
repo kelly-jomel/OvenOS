@@ -69,7 +69,17 @@ def patch_db(db: Session = Depends(database.get_db)):
         "ALTER TABLE orders ADD COLUMN delivery_date VARCHAR",
         # users
         "ALTER TABLE users ADD COLUMN phone VARCHAR",
-        "ALTER TABLE users ADD COLUMN address VARCHAR"
+        "ALTER TABLE users ADD COLUMN address VARCHAR",
+        # inventory_items
+        "ALTER TABLE inventory_items ADD COLUMN purchase_price FLOAT DEFAULT 0.0",
+        "ALTER TABLE inventory_items ADD COLUMN contains_allergens VARCHAR",
+        "ALTER TABLE inventory_items ADD COLUMN barcode VARCHAR",
+        "ALTER TABLE inventory_items ADD COLUMN low_stock_threshold FLOAT DEFAULT 0.0",
+        # purchases
+        "ALTER TABLE purchases ADD COLUMN tax_amount FLOAT DEFAULT 0.0",
+        "ALTER TABLE purchases ADD COLUMN notes VARCHAR",
+        # purchase_items
+        "ALTER TABLE purchase_items ADD COLUMN tax_rate FLOAT DEFAULT 0.0"
     ]
     results = []
     for cmd in commands:
