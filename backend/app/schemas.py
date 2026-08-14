@@ -197,9 +197,11 @@ class OrderCreate(BaseModel):
     customer_phone: Optional[str] = None
     items: str
     source: str = "website"
+    delivery_date: Optional[datetime] = None
 
 class OrderUpdate(BaseModel):
     status: str
+    delivery_date: Optional[datetime] = None
 
 class OrderResponse(BaseModel):
     id: int
@@ -209,6 +211,7 @@ class OrderResponse(BaseModel):
     items: str
     status: str
     source: str
+    delivery_date: Optional[datetime]
     created_at: datetime
     
     class Config:

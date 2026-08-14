@@ -41,13 +41,14 @@ def create_purchase(purchase: schemas.PurchaseCreate, db: Session = Depends(get_
         )
         db.add(db_item)
         
-        # INCREASE inventory
+        # INCREASE inventory and update latest purchase price
         inventory_item = db.query(models.InventoryItem).filter(
             models.InventoryItem.id == item.inventory_item_id,
             models.InventoryItem.bakery_id == current_user.bakery_id
         ).first()
         if inventory_item:
             inventory_item.quantity += item.quantity
+            inventory_item.purchase_price = item.unit_price
 
     db.commit()
     db.refresh(db_purchase)

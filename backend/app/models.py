@@ -221,5 +221,6 @@ class Order(Base):
     items = Column(String, nullable=False)
     status = Column(String, default="new") # new, preparing, baking, ready, delivered
     source = Column(String, default="website") # website, whatsapp, instagram
+    delivery_date = Column(DateTime, nullable=True)
     bakery_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

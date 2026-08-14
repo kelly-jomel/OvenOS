@@ -39,6 +39,7 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db), auth
         customer_phone=order.customer_phone,
         items=order.items,
         source=order.source,
+        delivery_date=order.delivery_date,
         bakery_id=bakery_id
     )
     db.add(new_order)
@@ -62,6 +63,7 @@ def create_public_order(bakery_id: int, order: schemas.OrderCreate, db: Session 
         customer_phone=order.customer_phone,
         items=order.items,
         source=order.source,
+        delivery_date=order.delivery_date,
         bakery_id=bakery_id
     )
     db.add(new_order)
@@ -78,6 +80,9 @@ def update_order_status(order_id: int, order_update: schemas.OrderUpdate, db: Se
         raise HTTPException(status_code=404, detail="Order not found")
         
     db_order.status = order_update.status
+    if order_update.delivery_date is not None:
+        db_order.delivery_date = order_update.delivery_date
+        
     db.commit()
     db.refresh(db_order)
     return db_order

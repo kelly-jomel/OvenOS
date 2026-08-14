@@ -78,7 +78,16 @@ export default function PurchasesPage() {
     e.preventDefault();
     setIsSubmittingSupplier(true);
     try {
-      const res = await api.post('/parties/', { ...newSupplier, party_type: 'supplier' });
+      const payload = {
+        name: newSupplier.name,
+        party_type: 'supplier',
+        phone: newSupplier.phone || null,
+        email: newSupplier.email || null,
+        address: newSupplier.address || null,
+        gstin_or_tax_id: newSupplier.gstin_or_tax_id || null,
+        is_b2b: newSupplier.is_b2b
+      };
+      const res = await api.post('/parties/', payload);
       setIsSupplierModalOpen(false);
       setNewSupplier({ name: '', phone: '', email: '', address: '', gstin_or_tax_id: '', is_b2b: false });
       setSelectedSupplier(res.data); // Auto-select the newly created supplier
@@ -95,7 +104,14 @@ export default function PurchasesPage() {
     e.preventDefault();
     setIsSubmittingItem(true);
     try {
-      const res = await api.post('/inventory/', newItem);
+      const payload = {
+        name: newItem.name,
+        quantity: Number(newItem.quantity) || 0,
+        unit: newItem.unit,
+        purchase_price: Number(newItem.purchase_price) || 0,
+        low_stock_threshold: Number(newItem.min_stock) || 0
+      };
+      const res = await api.post('/inventory/', payload);
       setIsItemModalOpen(false);
       setNewItem({ name: '', quantity: 0, unit: 'pcs', purchase_price: 0, selling_price: 0, min_stock: 0, tax_rate: 0 });
       addToCart(res.data); // Auto-add to cart

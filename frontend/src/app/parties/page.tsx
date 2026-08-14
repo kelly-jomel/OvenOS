@@ -67,10 +67,16 @@ export default function PartiesPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await api.post('/parties/', {
-        ...newParty,
-        party_type: activeTab
-      });
+      const payload = {
+        name: newParty.name,
+        party_type: activeTab,
+        phone: newParty.phone || null,
+        email: newParty.email || null,
+        address: newParty.address || null,
+        gstin_or_tax_id: newParty.gstin_or_tax_id || null,
+        is_b2b: newParty.is_b2b
+      };
+      await api.post('/parties/', payload);
       setIsModalOpen(false);
       setNewParty({ name: '', phone: '', email: '', address: '', gstin_or_tax_id: '', is_b2b: false });
       fetchParties();

@@ -12,6 +12,7 @@ import { useBakery } from '@/context/BakeryContext';
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const { currencySymbol } = useBakery();
+  const [upcomingOrders, setUpcomingOrders] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,9 +20,36 @@ export default function DashboardPage() {
       if (!user) {
         router.push('/login');
       } else {
-        setLoading(false);
+        fetchDashboardData();
       }
     });
+
+    const fetchDashboardData = async () => {
+      try {
+        const [ordersRes] = await Promise.all([
+          api.get('/orders/')
+        ]);
+        
+        // Filter upcoming orders (next 10 days)
+        const now = new Date();
+        const tenDaysFromNow = new Date();
+        tenDaysFromNow.setDate(now.getDate() + 10);
+        
+        const filtered = ordersRes.data.filter((o: any) => {
+          if (!o.delivery_date) return false;
+          const dDate = new Date(o.delivery_date);
+          return dDate >= now && dDate <= tenDaysFromNow;
+        });
+        
+        // Sort by closest date
+        filtered.sort((a: any, b: any) => new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime());
+        setUpcomingOrders(filtered);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     return () => unsubscribe();
   }, [router]);
@@ -115,6 +143,34 @@ export default function DashboardPage() {
               <p className="text-lg font-bold text-gray-900">{currencySymbol}0.00</p>
             </div>
           </div>
+        </section>
+
+        {/* Upcoming Orders (Next 10 Days) */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Upcoming Orders (Next 10 Days)</h2>
+            <Link href="/orders" className="text-xs text-orange-600 font-medium hover:underline">View All</Link>
+          </div>
+          {upcomingOrders.length === 0 ? (
+            <div className="p-6 text-center text-sm text-gray-500">No upcoming orders in the next 10 days.</div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {upcomingOrders.map((order) => (
+                <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">{order.customer_name}</p>
+                    <p className="text-xs text-gray-500 mt-1 max-w-[200px] truncate">{order.items}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-orange-600">
+                      {new Date(order.delivery_date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">{new Date(order.delivery_date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Storefront Upsell Banner */}

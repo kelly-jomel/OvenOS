@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
-    title="OvenOS API",
-    description="Backend API for the OvenOS Bakery Management System",
+    title="CrumbLedger API",
+    description="Backend API for the CrumbLedger Bakery Management System",
     version="1.0.0",
 )
 
