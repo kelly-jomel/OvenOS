@@ -21,8 +21,8 @@ except ValueError:
     else:
         # Warning: For local testing only if credentials are not set.
         # In production, ensure credentials are provided.
-        print("Warning: FIREBASE_CREDENTIALS_PATH not set. Auth will fail if not using GCP defaults.")
-        firebase_admin.initialize_app()
+        print("Warning: FIREBASE_CREDENTIALS_PATH not set. Initializing with Project ID for token verification only.")
+        firebase_admin.initialize_app(options={'projectId': os.getenv("FIREBASE_PROJECT_ID", "crumbledger-b8429")})
 
 
 security = HTTPBearer()
