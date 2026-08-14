@@ -82,7 +82,8 @@ export default function PartiesPage() {
       fetchParties();
     } catch (err) {
       console.error('Failed to add party', err);
-      alert('Error adding party');
+      const msg = err.response?.data?.detail || err.message || 'Unknown error';
+      alert(`Error adding party: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`);
     } finally {
       setIsSubmitting(false);
     }

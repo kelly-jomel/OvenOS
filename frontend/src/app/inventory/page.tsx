@@ -78,9 +78,10 @@ export default function InventoryPage() {
       setPurchasePrice('');
       setAllergens('');
       setRefreshKey(prev => prev + 1);
-    } catch (err) {
-      console.error('Failed to add ingredient', err);
-      alert('Failed to add ingredient');
+    } catch (err: any) {
+      console.error(err);
+      const msg = err.response?.data?.detail || err.message || 'Unknown error';
+      alert(`Failed to add ingredient: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`);
     } finally {
       setIsSubmitting(false);
     }

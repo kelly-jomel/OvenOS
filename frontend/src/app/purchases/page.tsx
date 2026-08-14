@@ -118,7 +118,8 @@ export default function PurchasesPage() {
       fetchData();
     } catch (err) {
       console.error(err);
-      alert('Error adding item');
+      const msg = err.response?.data?.detail || err.message || 'Unknown error';
+      alert(`Error adding item: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`);
     } finally {
       setIsSubmittingItem(false);
     }
