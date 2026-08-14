@@ -19,7 +19,10 @@ from .auth import verify_token
 from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases, accounting, storefront
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from . import database
+from . import database, models
+
+# Ensure database tables are created automatically on startup
+models.Base.metadata.create_all(bind=database.engine)
 
 app.include_router(inventory.router)
 app.include_router(billing.router)
@@ -44,6 +47,10 @@ def secure_data(user: dict = Depends(verify_token)):
 @app.get("/patch-db")
 def patch_db(db: Session = Depends(database.get_db)):
     from sqlalchemy import text
+    from . import models
+    # Create any missing tables (like inventory_items, purchases, etc.)
+    models.Base.metadata.create_all(bind=database.engine)
+    
     commands = [
         # bakeries
         "ALTER TABLE bakeries ADD COLUMN base_hourly_labor_rate FLOAT DEFAULT 0.0",
