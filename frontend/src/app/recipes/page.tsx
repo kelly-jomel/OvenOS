@@ -42,8 +42,8 @@ const calculateCost = (ingredient: RecipeIngredient, item: InventoryItem): numbe
   if (!item) return 0;
   
   let requiredQty = ingredient.quantity_required;
-  let itemUnit = item.unit.toLowerCase();
-  let ingUnit = ingredient.unit?.toLowerCase() || itemUnit;
+  const itemUnit = item.unit.toLowerCase();
+  const ingUnit = ingredient.unit?.toLowerCase() || itemUnit;
   
   // Standardize common unit strings
   if (itemUnit === 'kg' && ingUnit === 'g') {
@@ -85,17 +85,6 @@ export default function RecipesPage() {
   const [selectedItemQty, setSelectedItemQty] = useState<string>('');
   const [selectedItemUnit, setSelectedItemUnit] = useState<string>('g'); // Default input unit
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        fetchData();
-      } else {
-        router.push('/login');
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
-
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -111,6 +100,17 @@ export default function RecipesPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchData();
+      } else {
+        router.push('/login');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -172,8 +172,8 @@ export default function RecipesPage() {
         ingredients: newRecipe.ingredients.map(ing => {
           const item = inventory.find(i => i.id === ing.inventory_item_id);
           let qty = ing.quantity_required;
-          let ingUnit = ing.unit?.toLowerCase() || '';
-          let itemUnit = item?.unit.toLowerCase() || '';
+          const ingUnit = ing.unit?.toLowerCase() || '';
+          const itemUnit = item?.unit.toLowerCase() || '';
           
           if (itemUnit === 'kg' && ingUnit === 'g') {
             qty = qty / 1000;

@@ -48,6 +48,21 @@ export default function PurchasesPage() {
 
   const router = useRouter();
 
+  const fetchData = async () => {
+    try {
+      const [invRes, partyRes] = await Promise.all([
+        api.get('/inventory/'),
+        api.get('/parties/')
+      ]);
+      setInventory(invRes.data);
+      setSuppliers(partyRes.data.filter((p: any) => p.party_type === 'supplier'));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -58,21 +73,6 @@ export default function PurchasesPage() {
     });
     return () => unsubscribe();
   }, [router]);
-
-  const fetchData = async () => {
-    try {
-      const [invRes, partyRes] = await Promise.all([
-        api.get('/inventory'),
-        api.get('/parties/?party_type=supplier')
-      ]);
-      setInventory(invRes.data);
-      setSuppliers(partyRes.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAddSupplier = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,8 +135,9 @@ export default function PurchasesPage() {
     if (!selectedSupplier) return alert('Select a supplier');
 
     try {
+      const now = Date.now();
       const purchaseData = {
-        bill_number: `PB-${Date.now()}`,
+        bill_number: `PB-${now}`,
         party_id: selectedSupplier.id,
         party_name: selectedSupplier.name,
         subtotal: subtotal,
