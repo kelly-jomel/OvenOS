@@ -108,7 +108,6 @@ export default function LoginPage() {
     <div className="min-h-screen bg-paper-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center items-center gap-4">
-          <img src="/logo.png" alt="CrumbLedger Logo" className="h-16 w-auto object-contain drop-shadow-md" />
           <h1 className="text-4xl sm:text-5xl leading-tight flex items-baseline">
             <span className="font-brand font-semibold tracking-tight text-ledger-navy">Crumb</span>
             <span className="font-data tracking-[0.15em] font-light text-ledger-navy/80">Ledger</span>

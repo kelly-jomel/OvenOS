@@ -25,7 +25,6 @@ export default function TopNav({ title }: TopNavProps) {
         
         {/* Logo and Brand Name */}
         <Link href="/dashboard" className="flex items-center gap-3">
-          <img src="/logo.png" alt="CrumbLedger Logo" className="h-10 w-auto object-contain drop-shadow-md" />
           <div>
             <h1 className="text-xl sm:text-2xl text-white leading-tight flex items-baseline">
               <span className="font-brand font-semibold tracking-tight text-white">Crumb</span>
