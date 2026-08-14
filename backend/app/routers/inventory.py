@@ -24,6 +24,16 @@ def get_inventory_items(skip: int = 0, limit: int = 100, db: Session = Depends(g
     items = db.query(models.InventoryItem).filter(models.InventoryItem.bakery_id == current_user.bakery_id).offset(skip).limit(limit).all()
     return items
 
+@router.get("/public/{bakery_id}", response_model=List[schemas.InventoryItemResponse])
+def get_public_inventory(bakery_id: int, db: Session = Depends(get_db)):
+    # Verify bakery exists
+    bakery = db.query(models.Bakery).filter(models.Bakery.id == bakery_id).first()
+    if not bakery:
+        raise HTTPException(status_code=404, detail="Bakery not found")
+        
+    items = db.query(models.InventoryItem).filter(models.InventoryItem.bakery_id == bakery_id).all()
+    return items
+
 @router.get("/{item_id}", response_model=schemas.InventoryItemResponse)
 def get_inventory_item(item_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     item = db.query(models.InventoryItem).filter(models.InventoryItem.id == item_id, models.InventoryItem.bakery_id == current_user.bakery_id).first()

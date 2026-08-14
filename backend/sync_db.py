@@ -34,6 +34,14 @@ try:
             db.rollback()
             print(f"Column razorpay_key_secret might already exist, skipping. Error: {e}")
             
+        # Check if customer_phone exists in orders, if not add it
+        cursor = db.connection.cursor()
+        cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='orders' AND column_name='customer_phone'")
+        if not cursor.fetchone():
+            print("Adding customer_phone column to orders table...")
+            db.execute(text("ALTER TABLE orders ADD COLUMN customer_phone VARCHAR"))
+            db.commit()
+
         # Add payment_link_url to invoices if it doesn't exist
         try:
             db.execute(text('ALTER TABLE invoices ADD COLUMN payment_link_url TEXT'))

@@ -198,6 +198,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
     display_id = Column(String, nullable=False) # e.g. ORD-001
     customer_name = Column(String, nullable=False)
+    customer_phone = Column(String, nullable=True)
     items = Column(String, nullable=False)
     status = Column(String, default="new") # new, preparing, baking, ready, delivered
     source = Column(String, default="website") # website, whatsapp, instagram

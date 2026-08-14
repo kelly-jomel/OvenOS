@@ -166,6 +166,7 @@ class UserResponse(BaseModel):
 # Order Schemas
 class OrderCreate(BaseModel):
     customer_name: str
+    customer_phone: Optional[str] = None
     items: str
     source: str = "website"
 
@@ -176,6 +177,7 @@ class OrderResponse(BaseModel):
     id: int
     display_id: str
     customer_name: str
+    customer_phone: Optional[str]
     items: str
     status: str
     source: str

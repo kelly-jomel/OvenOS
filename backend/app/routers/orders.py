@@ -36,6 +36,30 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db), auth
     new_order = models.Order(
         display_id=display_id,
         customer_name=order.customer_name,
+        customer_phone=order.customer_phone,
+        items=order.items,
+        source=order.source,
+        bakery_id=bakery_id
+    )
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    return new_order
+
+@router.post("/public/{bakery_id}", response_model=schemas.OrderResponse)
+def create_public_order(bakery_id: int, order: schemas.OrderCreate, db: Session = Depends(get_db)):
+    # Verify bakery exists
+    bakery = db.query(models.Bakery).filter(models.Bakery.id == bakery_id).first()
+    if not bakery:
+        raise HTTPException(status_code=404, detail="Bakery not found")
+        
+    count = db.query(models.Order).filter(models.Order.bakery_id == bakery_id).count()
+    display_id = f"ORD-{count + 1:03d}"
+    
+    new_order = models.Order(
+        display_id=display_id,
+        customer_name=order.customer_name,
+        customer_phone=order.customer_phone,
         items=order.items,
         source=order.source,
         bakery_id=bakery_id

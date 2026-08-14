@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 import { BakeryProvider } from "@/context/BakeryContext";
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"

@@ -6,8 +6,8 @@ export default function BottomNav() {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
+    { name: 'Orders', path: '/orders', icon: '📝' },
     { name: 'Customers', path: '/parties', icon: '👥' },
-    { name: 'Inventory', path: '/inventory', icon: '📦' },
     { name: 'Billing', path: '/billing', icon: '🧾' },
     { name: 'Recipes', path: '/recipes', icon: '🍲' },
   ];
