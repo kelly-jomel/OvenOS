@@ -1,48 +1,46 @@
 'use client';
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
+import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push('/profile');
-    } catch (err: any) {
-      console.error(err);
-      setError('Invalid email or password.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      let email = '';
+      let displayName = '';
+      let uid = '';
+
+      // Use Native Capacitor Plugin if on iOS/Android, otherwise use standard web popup
+      if (Capacitor.isNativePlatform()) {
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        email = result.user?.email || '';
+        displayName = result.user?.displayName || 'My';
+        uid = result.user?.uid || '';
+      } else {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        email = result.user.email || '';
+        displayName = result.user.displayName || 'My';
+        uid = result.user.uid;
+      }
       
       // Attempt to register the user in our backend
       // If they already exist, this will gracefully fail and we just proceed
       try {
         await api.post('/users/', {
-          email: result.user.email || '',
-          bakery_name: `${result.user.displayName || 'My'} Bakery`,
-          firebase_uid: result.user.uid
+          email: email,
+          bakery_name: `${displayName} Bakery`.trim(),
+          firebase_uid: uid
         });
       } catch (apiErr) {
         console.log('User might already exist in backend, continuing...');
@@ -51,114 +49,64 @@ export default function LoginPage() {
       router.push('/profile');
     } catch (err: any) {
       console.error(err);
-      setError('Failed to sign in with Google.');
+      setError('Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-paper-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <img src="/logo.png" alt="OvenOS Logo" className="h-12 w-auto object-contain" />
+        <div className="flex justify-center items-center gap-4">
+          <img src="/logo.png" alt="CrumbLedger Logo" className="h-16 w-auto object-contain drop-shadow-md" />
+          <h1 className="text-4xl sm:text-5xl leading-tight flex items-baseline">
+            <span className="font-brand font-semibold tracking-tight text-ledger-navy">Crumb</span>
+            <span className="font-data tracking-[0.15em] font-light text-ledger-navy/80">Ledger</span>
+          </h1>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+        <h2 className="mt-4 text-center text-2xl font-brand font-medium text-ink-grey">
+          Welcome to CrumbLedger
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link href="/signup" className="font-medium text-orange-600 hover:text-orange-500">
-            start your 14-day free trial
-          </Link>
+        <p className="mt-2 text-center text-sm font-data text-ink-grey/70">
+          Sign in or create an account to manage your bakery
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-          <form className="space-y-6" onSubmit={handleLogin}>
-            
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded text-sm">
-                {error}
-              </div>
+        <div className="bg-white py-12 px-4 shadow-sm rounded-md sm:px-10 border border-gray-200 flex flex-col items-center">
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm w-full mb-6">
+              {error}
+            </div>
+          )}
+
+          <button
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-md shadow-sm text-lg font-brand font-semibold text-ledger-navy bg-jupiter-gold hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jupiter-gold disabled:opacity-50 transition-all"
+          >
+            {loading ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-ledger-navy" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connecting to Google...
+              </span>
+            ) : (
+              <>
+                <img className="h-6 w-6 mr-3 bg-white p-1 rounded-full" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" />
+                Continue with Google
+              </>
             )}
+          </button>
+          
+          <p className="mt-6 text-xs text-center font-data text-ink-grey/50">
+            By continuing, you agree to CrumbLedger's Terms of Service and Privacy Policy.
+          </p>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email address</label>
-              <div className="mt-1">
-                <input 
-                  required 
-                  type="email" 
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" 
-                  placeholder="you@example.com" 
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <div className="mt-1">
-                <input 
-                  required 
-                  type="password" 
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm" 
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded" />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a href="#" className="font-medium text-orange-600 hover:text-orange-500">
-                  Forgot your password?
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <button 
-                type="submit" 
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
-              >
-                {loading ? 'Signing in...' : 'Sign In'}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <button
-                onClick={handleGoogleLogin}
-                type="button"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors"
-              >
-                <img className="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" />
-                Sign in with Google
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

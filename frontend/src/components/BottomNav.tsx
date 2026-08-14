@@ -18,7 +18,7 @@ export default function BottomNav() {
       <div className="h-16 md:hidden"></div>
       
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between px-2 pb-safe pt-2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-ledger-navy border-t border-ledger-navy flex justify-between px-2 pb-safe pt-2 shadow-[0_-2px_10px_rgba(0,0,0,0.2)] z-50">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
           return (
@@ -26,7 +26,7 @@ export default function BottomNav() {
               key={item.name}
               href={item.path}
               className={`flex flex-col items-center justify-center w-full py-1 text-xs ${
-                isActive ? 'text-orange-600 font-bold' : 'text-gray-500 font-medium hover:text-gray-900'
+                isActive ? 'text-jupiter-gold font-bold' : 'text-gray-400 font-medium hover:text-gray-300'
               }`}
             >
               <span className={`text-xl mb-1 ${isActive ? 'scale-110 transition-transform' : ''}`}>

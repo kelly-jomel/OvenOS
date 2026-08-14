@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "110873735436",
+    "project_id": "ovenos-ba3a9",
+    "storage_bucket": "ovenos-ba3a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110873735436:android:a377e1617b349d0f9d9929",
+        "android_client_info": {
+          "package_name": "com.kellyjomel.ovenos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110873735436-tokgdpudrgbk3fele26gjdc5g7do62f6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSPQaBVHcVpbs6XktHbHvQdzdvcNXjA6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110873735436-tokgdpudrgbk3fele26gjdc5g7do62f6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

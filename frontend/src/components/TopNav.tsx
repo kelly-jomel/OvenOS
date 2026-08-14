@@ -20,17 +20,17 @@ export default function TopNav({ title }: TopNavProps) {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <header className="bg-ledger-navy shadow-md border-b border-ledger-navy sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Logo and Brand Name */}
         <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold text-lg">
-            O
-          </div>
+          <img src="/logo.png" alt="CrumbLedger Logo" className="h-10 w-auto object-contain drop-shadow-md" />
           <div>
-            <h1 className="text-sm sm:text-lg font-bold text-gray-900 leading-tight">
-              OvenOS <span className="text-xs sm:text-sm font-normal text-gray-500">{title ? `/ ${title}` : ''}</span>
+            <h1 className="text-xl sm:text-2xl text-white leading-tight flex items-baseline">
+              <span className="font-brand font-semibold tracking-tight text-white">Crumb</span>
+              <span className="font-data tracking-[0.15em] font-light text-white/80">Ledger</span>
+              <span className="text-xs sm:text-sm font-normal text-gray-400 ml-2">{title ? `/ ${title}` : ''}</span>
             </h1>
           </div>
         </Link>
@@ -41,7 +41,7 @@ export default function TopNav({ title }: TopNavProps) {
             <Link 
               key={item.name} 
               href={item.path}
-              className={`text-sm font-medium transition-colors ${pathname === item.path ? 'text-orange-600' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`text-sm font-medium transition-colors ${pathname === item.path ? 'text-jupiter-gold' : 'text-gray-300 hover:text-white'}`}
             >
               {item.name}
             </Link>
@@ -50,10 +50,10 @@ export default function TopNav({ title }: TopNavProps) {
         
         {/* Right side actions */}
         <div className="flex gap-4">
-          <Link href="/profile" className="text-gray-500 hover:text-gray-900 text-xl cursor-pointer">👤</Link>
-          <button onClick={() => alert("Notifications coming soon!")} className="text-gray-500 hover:text-gray-900 text-xl relative cursor-pointer">
+          <Link href="/profile" className="text-gray-300 hover:text-white text-xl cursor-pointer">👤</Link>
+          <button onClick={() => alert("Notifications coming soon!")} className="text-gray-300 hover:text-white text-xl relative cursor-pointer">
             🔔
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            <span className="absolute top-0 right-0 w-2 h-2 bg-yield-green rounded-full"></span>
           </button>
         </div>
       </div>

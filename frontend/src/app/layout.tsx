@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
+  variable: "--font-poppins",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "OvenOS | Billing & Invoicing Software for Home Bakers",
-  description: "Streamline your home bakery business with OvenOS. Send professional invoices, collect advance deposits, and track custom cake orders effortlessly. Try it free!",
-  keywords: "billing software for home bakers, invoice template for bakers, home bakery management software, OvenOS, cake order tracking app, collect bakery deposits online, how to invoice for custom cakes, small bakery software"
+  title: "CrumbLedger | Financial Software for Bakers",
+  description: "Balance expansive, optimistic energy with the grounded structure required for financial software. Designed for home bakers.",
+  keywords: "billing software for home bakers, invoice template for bakers, home bakery management software, CrumbLedger, cake order tracking app, collect bakery deposits online"
 };
 
 import { BakeryProvider } from "@/context/BakeryContext";
@@ -24,9 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${poppins.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col font-data">
         <BakeryProvider>
           {children}
         </BakeryProvider>
