@@ -85,10 +85,10 @@ def patch_db(db: Session = Depends(database.get_db)):
     for cmd in commands:
         try:
             db.execute(text(cmd))
+            db.commit()
             results.append(f"Success: {cmd}")
         except Exception as e:
             results.append(f"Failed: {cmd} - {str(e)}")
             db.rollback()
     
-    db.commit()
     return {"results": results}
