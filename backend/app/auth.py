@@ -23,7 +23,7 @@ except ValueError:
         # In production, ensure credentials are provided.
         print("Warning: FIREBASE_CREDENTIALS_PATH not set. Initializing with Project ID for token verification only.")
         from google.auth.credentials import AnonymousCredentials
-        firebase_admin.initialize_app(AnonymousCredentials(), options={'projectId': os.getenv("FIREBASE_PROJECT_ID", "crumbledger-b8429")})
+        firebase_admin.initialize_app(AnonymousCredentials(), options={'projectId': os.getenv("FIREBASE_PROJECT_ID", "ovenos-ba3a9")})
 
 
 security = HTTPBearer()
