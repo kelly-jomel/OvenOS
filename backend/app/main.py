@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 from .auth import verify_token
-from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases
+from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases, accounting, storefront
 from fastapi import Depends
 
 app.include_router(inventory.router)
@@ -28,6 +28,8 @@ app.include_router(recipes.router)
 app.include_router(profile.router)
 app.include_router(parties.router)
 app.include_router(purchases.router)
+app.include_router(accounting.router)
+app.include_router(storefront.router)
 
 @app.get("/")
 def read_root():

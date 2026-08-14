@@ -7,6 +7,7 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import TopNav from '@/components/TopNav';
 import { useBakery } from '@/context/BakeryContext';
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 
 type InventoryItem = {
   id: number;
@@ -25,6 +26,7 @@ export default function InventoryPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isScanning, setIsScanning] = useState(false);
 
   // Form State
   const [name, setName] = useState('');
@@ -94,6 +96,44 @@ export default function InventoryPage() {
     }
   };
 
+  const startScan = async () => {
+    try {
+      setIsScanning(true);
+      const status = await BarcodeScanner.checkPermission({ force: true });
+      if (status.granted) {
+        document.body.style.background = 'transparent';
+        document.body.classList.add('barcode-scanner-active');
+        BarcodeScanner.hideBackground();
+        const result = await BarcodeScanner.startScan();
+        if (result.hasContent) {
+          alert(`Scanned Barcode: ${result.content}\nYou can now map this barcode to an item.`);
+        }
+      } else if (status.denied) {
+        alert("Camera permission denied. Please allow it in device settings.");
+      }
+    } catch (e) {
+      console.error("Scan error:", e);
+      alert("Scanning is only available on native devices via Capacitor.");
+    } finally {
+      setIsScanning(false);
+      document.body.style.background = '';
+      document.body.classList.remove('barcode-scanner-active');
+      BarcodeScanner.showBackground();
+      BarcodeScanner.stopScan();
+    }
+  };
+
+  const sendLowStockToWhatsApp = async () => {
+    try {
+      const response = await api.get('/inventory/low-stock/whatsapp');
+      const text = encodeURIComponent(response.data.message);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    } catch (e) {
+      console.error(e);
+      alert("Failed to fetch low stock message.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -113,12 +153,26 @@ export default function InventoryPage() {
             <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
             <p className="text-sm text-gray-500 mt-1">Track your raw ingredients, calculate batch costs, and get low-stock alerts.</p>
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 shadow-sm transition-colors"
-          >
-            + Add Ingredient
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={sendLowStockToWhatsApp}
+              className="bg-[#25D366] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 shadow-sm transition-colors"
+            >
+              Share Low Stock (WA)
+            </button>
+            <button 
+              onClick={startScan}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 shadow-sm transition-colors flex items-center gap-2"
+            >
+              <span>📷</span> Scan Barcode
+            </button>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-[#FDB813] text-[#1C2833] px-4 py-2 rounded-lg text-sm font-bold hover:bg-yellow-400 shadow-sm transition-colors"
+            >
+              + Add Ingredient
+            </button>
+          </div>
         </div>
 
         {/* Data Table */}

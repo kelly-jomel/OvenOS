@@ -117,6 +117,27 @@ export default function DashboardPage() {
           </div>
         </section>
 
+        {/* Storefront Upsell Banner */}
+        <section className="bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl shadow-md p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold">Want Your Own E-Commerce Website?</h2>
+            <p className="text-sm opacity-90">Get a fully custom branded website with online ordering and payment gateway for just {currencySymbol}8,000.</p>
+          </div>
+          <button 
+            onClick={async () => {
+              try {
+                const res = await api.post('/storefront/request');
+                alert(res.data.message || 'Request sent! We will contact you soon.');
+              } catch (e) {
+                alert('Failed to send request. Please try again.');
+              }
+            }}
+            className="bg-white text-orange-600 px-6 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-gray-50 transition-colors whitespace-nowrap"
+          >
+            I'm Interested
+          </button>
+        </section>
+
       </main>
 
       <BottomNav />

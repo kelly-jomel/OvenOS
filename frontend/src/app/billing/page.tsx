@@ -8,6 +8,7 @@ import Link from 'next/link';
 import TopNav from '@/components/TopNav';
 import BottomNav from '@/components/BottomNav';
 import { useBakery } from '@/context/BakeryContext';
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 
 interface InventoryItem {
   id: number;
@@ -38,6 +39,7 @@ export default function BillingPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMode, setPaymentMode] = useState<string>('cash');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
   
   const router = useRouter();
 
@@ -89,6 +91,33 @@ export default function BillingPage() {
   const totalTax = cart.reduce((acc, item) => acc + (item.cartQuantity * item.selling_price * (item.tax_rate / 100)), 0);
   const total = subtotal + totalTax;
 
+  const startScan = async () => {
+    try {
+      setIsScanning(true);
+      const status = await BarcodeScanner.checkPermission({ force: true });
+      if (status.granted) {
+        document.body.style.background = 'transparent';
+        document.body.classList.add('barcode-scanner-active');
+        BarcodeScanner.hideBackground();
+        const result = await BarcodeScanner.startScan();
+        if (result.hasContent) {
+          alert(`Scanned Barcode: ${result.content}\nFeature to map barcode to cart coming soon!`);
+        }
+      } else if (status.denied) {
+        alert("Camera permission denied. Please allow it in device settings.");
+      }
+    } catch (e) {
+      console.error("Scan error:", e);
+      alert("Scanning is only available on native devices via Capacitor.");
+    } finally {
+      setIsScanning(false);
+      document.body.style.background = '';
+      document.body.classList.remove('barcode-scanner-active');
+      BarcodeScanner.showBackground();
+      BarcodeScanner.stopScan();
+    }
+  };
+
   const handleCheckout = async () => {
     if (cart.length === 0) return alert('Cart is empty');
     if (!selectedCustomer) return alert('Select a customer');
@@ -101,6 +130,9 @@ export default function BillingPage() {
         party_phone: selectedCustomer.phone,
         subtotal: subtotal,
         tax_amount: totalTax,
+        cgst_amount: totalTax / 2, // Assuming Intra-state for now (50% CGST)
+        sgst_amount: totalTax / 2, // Assuming Intra-state for now (50% SGST)
+        igst_amount: 0,
         discount_amount: 0,
         total_amount: total,
         status: paymentMode === 'razorpay' ? 'unpaid' : 'paid',
@@ -159,7 +191,15 @@ export default function BillingPage() {
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex-1">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Products (Tap to add)</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-900">Products (Tap to add)</h2>
+              <button 
+                onClick={startScan}
+                className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center gap-1"
+              >
+                <span>📷</span> Scan
+              </button>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {inventory.map((item) => (
                 <button

@@ -49,3 +49,8 @@ def get_current_user(decoded_token: dict = Depends(verify_token), db: Session = 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in database")
     
     return user
+
+def require_admin(current_user: models.User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
+    return current_user

@@ -8,6 +8,8 @@ class InventoryItemBase(BaseModel):
     unit: str
     purchase_price: float
     contains_allergens: Optional[str] = None
+    barcode: Optional[str] = None
+    low_stock_threshold: float = 0.0
 
 class InventoryItemCreate(InventoryItemBase):
     pass
@@ -17,11 +19,30 @@ class InventoryItemUpdate(InventoryItemBase):
     quantity: Optional[float] = None
     unit: Optional[str] = None
     purchase_price: Optional[float] = None
+    barcode: Optional[str] = None
+    low_stock_threshold: Optional[float] = None
 
 class InventoryItemResponse(InventoryItemBase):
     id: int
+    bakery_id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class InventoryBatchBase(BaseModel):
+    inventory_item_id: int
+    batch_number: str
+    quantity: float
+    expiry_date: datetime
+
+class InventoryBatchCreate(InventoryBatchBase):
+    pass
+
+class InventoryBatchResponse(InventoryBatchBase):
+    id: int
+    created_at: datetime
 
     class Config:
         from_attributes = True
@@ -76,6 +97,9 @@ class InvoiceBase(BaseModel):
     party_phone: Optional[str] = None
     subtotal: float
     tax_amount: float = 0.0
+    cgst_amount: float = 0.0
+    sgst_amount: float = 0.0
+    igst_amount: float = 0.0
     discount_amount: float = 0.0
     total_amount: float
     status: str = "paid"
@@ -120,6 +144,9 @@ class PurchaseBase(BaseModel):
     party_name: str
     subtotal: float
     tax_amount: float = 0.0
+    cgst_amount: float = 0.0
+    sgst_amount: float = 0.0
+    igst_amount: float = 0.0
     total_amount: float
     status: str = "paid"
     payment_mode: Optional[str] = None
@@ -158,6 +185,7 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: str
+    role: str
     bakery_id: int
     
     class Config:
@@ -193,34 +221,22 @@ class RecipeIngredientBase(BaseModel):
 
 class BakeryBase(BaseModel):
     name: str
-    
-    # 1. Core Business Identity
     country: Optional[str] = "IN"
     trading_name: Optional[str] = None
-    
-    # IN
     gstin: Optional[str] = None
     fssai_license_number: Optional[str] = None
     msme_udyam_number: Optional[str] = None
     pan_number: Optional[str] = None
-    
-    # US
     ein_number: Optional[str] = None
     state_tax_id: Optional[str] = None
     food_handler_license: Optional[str] = None
-    
-    # UK
     company_registration_number: Optional[str] = None
     vat_number: Optional[str] = None
     utr_number: Optional[str] = None
     local_authority_registration: Optional[str] = None
-    
-    # Common Address
     address: Optional[str] = None
     pin_code: Optional[str] = None
     godown_locations: Optional[str] = None
-
-    # 2. Financial & Fintech
     primary_upi_id: Optional[str] = None
     payment_links: Optional[str] = None
     bank_account_details: Optional[str] = None
@@ -229,15 +245,11 @@ class BakeryBase(BaseModel):
     fiscal_year_start: Optional[str] = "04-01"
     primary_tax_scheme: Optional[str] = "composition"
     inventory_valuation_method: Optional[str] = "FIFO"
-
-    # 3. Kitchen Operations
     default_kitchen_unit: Optional[str] = "g"
     kitchen_capacity_orders_per_day: Optional[int] = None
     standard_lead_time_hours: Optional[int] = 24
     low_stock_alert_toggle: Optional[bool] = True
     fefo_expiry_window_hours: Optional[int] = 48
-
-    # 4. Branding
     business_logo_url: Optional[str] = None
     digital_signature_url: Optional[str] = None
     invoice_footer_text: Optional[str] = None
@@ -249,24 +261,17 @@ class BakeryCreate(BakeryBase):
 class BakeryUpdate(BaseModel):
     trading_name: Optional[str] = None
     country: Optional[str] = None
-    
-    # IN
     gstin: Optional[str] = None
     fssai_license_number: Optional[str] = None
     msme_udyam_number: Optional[str] = None
     pan_number: Optional[str] = None
-    
-    # US
     ein_number: Optional[str] = None
     state_tax_id: Optional[str] = None
     food_handler_license: Optional[str] = None
-    
-    # UK
     company_registration_number: Optional[str] = None
     vat_number: Optional[str] = None
     utr_number: Optional[str] = None
     local_authority_registration: Optional[str] = None
-    
     address: Optional[str] = None
     pin_code: Optional[str] = None
     godown_locations: Optional[str] = None

@@ -11,9 +11,21 @@ class InventoryItem(Base):
     unit = Column(String, nullable=False)
     purchase_price = Column(Float, nullable=False)
     contains_allergens = Column(String, nullable=True) # e.g. "Nuts, Dairy"
+    barcode = Column(String, nullable=True, index=True)
+    low_stock_threshold = Column(Float, default=0.0)
     bakery_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class InventoryBatch(Base):
+    __tablename__ = "inventory_batches"
+
+    id = Column(Integer, primary_key=True, index=True)
+    inventory_item_id = Column(Integer, ForeignKey("inventory_items.id"), nullable=False)
+    batch_number = Column(String, nullable=False)
+    quantity = Column(Float, nullable=False)
+    expiry_date = Column(DateTime, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class Recipe(Base):
     __tablename__ = "recipes"
@@ -69,6 +81,9 @@ class Invoice(Base):
     party_phone = Column(String, nullable=True)
     subtotal = Column(Float, nullable=False, default=0.0)
     tax_amount = Column(Float, nullable=False, default=0.0)
+    cgst_amount = Column(Float, nullable=False, default=0.0)
+    sgst_amount = Column(Float, nullable=False, default=0.0)
+    igst_amount = Column(Float, nullable=False, default=0.0)
     discount_amount = Column(Float, nullable=False, default=0.0)
     total_amount = Column(Float, nullable=False, default=0.0)
     status = Column(String, default="paid") # paid, unpaid, partial
@@ -98,6 +113,9 @@ class Purchase(Base):
     party_name = Column(String, nullable=False)
     subtotal = Column(Float, nullable=False, default=0.0)
     tax_amount = Column(Float, nullable=False, default=0.0)
+    cgst_amount = Column(Float, nullable=False, default=0.0)
+    sgst_amount = Column(Float, nullable=False, default=0.0)
+    igst_amount = Column(Float, nullable=False, default=0.0)
     total_amount = Column(Float, nullable=False, default=0.0)
     status = Column(String, default="paid") # unpaid, paid
     payment_mode = Column(String, nullable=True)
@@ -189,6 +207,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     firebase_uid = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
+    role = Column(String, default="admin") # admin, staff, delivery
     bakery_id = Column(Integer, nullable=False) # Foreign key simplified for now
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
