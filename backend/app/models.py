@@ -35,6 +35,14 @@ class Recipe(Base):
     description = Column(String, nullable=True)
     yield_amount = Column(String, nullable=True) # e.g. "12 cupcakes"
     image_data = Column(String, nullable=True) # Base64 string for image < 1MB
+    
+    # Operational Costs
+    prep_time_minutes = Column(Float, default=0.0)
+    bake_time_minutes = Column(Float, default=0.0)
+    use_custom_overheads = Column(Boolean, default=False)
+    custom_labor_cost = Column(Float, default=0.0)
+    custom_overhead_cost = Column(Float, default=0.0)
+
     bakery_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -198,6 +206,11 @@ class Bakery(Base):
     digital_signature_url = Column(String, nullable=True)
     invoice_footer_text = Column(String, nullable=True)
     brand_color_palette = Column(String, nullable=True)
+    
+    # 5. Operational Baselines
+    base_hourly_labor_rate = Column(Float, default=0.0)
+    energy_cost_per_hour = Column(Float, default=0.0)
+    misc_overhead_percentage = Column(Float, default=5.0)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

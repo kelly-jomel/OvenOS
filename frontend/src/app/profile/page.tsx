@@ -49,6 +49,11 @@ type BakeryProfile = {
   digital_signature_url: string | null;
   invoice_footer_text: string | null;
   brand_color_palette: string | null;
+  
+  // Operational Costs
+  base_hourly_labor_rate: number | null;
+  energy_cost_per_hour: number | null;
+  misc_overhead_percentage: number | null;
 };
 
 export default function ProfilePage() {

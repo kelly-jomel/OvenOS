@@ -257,6 +257,10 @@ class BakeryBase(BaseModel):
     digital_signature_url: Optional[str] = None
     invoice_footer_text: Optional[str] = None
     brand_color_palette: Optional[str] = None
+    
+    base_hourly_labor_rate: Optional[float] = 0.0
+    energy_cost_per_hour: Optional[float] = 0.0
+    misc_overhead_percentage: Optional[float] = 5.0
 
 class BakeryCreate(BakeryBase):
     pass
@@ -296,6 +300,10 @@ class BakeryUpdate(BaseModel):
     invoice_footer_text: Optional[str] = None
     brand_color_palette: Optional[str] = None
 
+    base_hourly_labor_rate: Optional[float] = None
+    energy_cost_per_hour: Optional[float] = None
+    misc_overhead_percentage: Optional[float] = None
+
 class BakeryResponse(BakeryBase):
     id: int
     created_at: datetime
@@ -318,6 +326,12 @@ class RecipeBase(BaseModel):
     description: Optional[str] = None
     yield_amount: Optional[str] = None
     image_data: Optional[str] = None
+    
+    prep_time_minutes: Optional[float] = 0.0
+    bake_time_minutes: Optional[float] = 0.0
+    use_custom_overheads: Optional[bool] = False
+    custom_labor_cost: Optional[float] = 0.0
+    custom_overhead_cost: Optional[float] = 0.0
 
 class RecipeCreate(RecipeBase):
     ingredients: list[RecipeIngredientCreate] = []

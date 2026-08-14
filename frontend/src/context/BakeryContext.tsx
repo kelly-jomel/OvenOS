@@ -8,22 +8,26 @@ import { onAuthStateChanged } from 'firebase/auth';
 type BakeryContextType = {
   currencySymbol: string;
   country: string;
+  profile: any | null;
 };
 
 const BakeryContext = createContext<BakeryContextType>({
   currencySymbol: '₹',
   country: 'IN',
+  profile: null,
 });
 
 export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
   const [currencySymbol, setCurrencySymbol] = useState('₹');
   const [country, setCountry] = useState('IN');
+  const [profile, setProfile] = useState<any | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
           const res = await api.get('/profile/');
+          setProfile(res.data);
           const userCountry = res.data.country || 'IN';
           setCountry(userCountry);
           
@@ -39,7 +43,7 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <BakeryContext.Provider value={{ currencySymbol, country }}>
+    <BakeryContext.Provider value={{ currencySymbol, country, profile }}>
       {children}
     </BakeryContext.Provider>
   );

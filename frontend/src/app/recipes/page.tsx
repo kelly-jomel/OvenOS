@@ -61,7 +61,7 @@ const calculateCost = (ingredient: RecipeIngredient, item: InventoryItem): numbe
 
 export default function RecipesPage() {
   const router = useRouter();
-  const { currencySymbol } = useBakery();
+  const { currencySymbol, profile } = useBakery();
   
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -77,6 +77,11 @@ export default function RecipesPage() {
     description: '',
     yield_amount: '',
     image_data: '',
+    prep_time_minutes: 0,
+    bake_time_minutes: 0,
+    use_custom_overheads: false,
+    custom_labor_cost: 0,
+    custom_overhead_cost: 0,
     ingredients: []
   });
   
@@ -215,12 +220,34 @@ export default function RecipesPage() {
     }
   };
 
-  const calculateTotalRecipeCost = (ingredients: RecipeIngredient[]) => {
-    return ingredients.reduce((total, ing) => {
+  const calculateTotalRecipeCost = (recipe: Partial<Recipe>) => {
+    const ingredients = recipe.ingredients || [];
+    const ingredientCost = ingredients.reduce((total, ing) => {
       const inventoryItem = inventory.find(i => i.id === ing.inventory_item_id);
       if (!inventoryItem) return total;
       return total + calculateCost({ ...ing, unit: ing.unit || inventoryItem.unit }, inventoryItem);
     }, 0);
+
+    let laborCost = 0;
+    let overheadCost = 0;
+
+    if (recipe.use_custom_overheads) {
+      laborCost = recipe.custom_labor_cost || 0;
+      overheadCost = recipe.custom_overhead_cost || 0;
+    } else {
+      const baseLabor = profile?.base_hourly_labor_rate || 0;
+      const energyRate = profile?.energy_cost_per_hour || 0;
+      const miscPercent = profile?.misc_overhead_percentage ?? 5.0;
+
+      const prepTime = recipe.prep_time_minutes || 0;
+      const bakeTime = recipe.bake_time_minutes || 0;
+
+      laborCost = (baseLabor / 60) * prepTime;
+      const energyCost = (energyRate / 60) * bakeTime;
+      overheadCost = energyCost + ((ingredientCost + laborCost + energyCost) * (miscPercent / 100));
+    }
+
+    return ingredientCost + laborCost + overheadCost;
   };
 
   if (loading) {
@@ -295,7 +322,7 @@ export default function RecipesPage() {
                   <div className="text-right">
                     <span className="text-xs text-gray-400 block uppercase tracking-wide">Total Cost</span>
                     <span className="font-bold text-lg text-gray-900">
-                      {currencySymbol}{calculateTotalRecipeCost(recipe.ingredients).toFixed(2)}
+                      {currencySymbol}{calculateTotalRecipeCost(recipe).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -375,6 +402,76 @@ export default function RecipesPage() {
                     rows={2}
                   />
                 </div>
+              </div>
+
+              {/* Operational Costs Section */}
+              <div className="border-t pt-6 mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-gray-900">Labor & Overheads</h3>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                      checked={newRecipe.use_custom_overheads || false}
+                      onChange={(e) => setNewRecipe({...newRecipe, use_custom_overheads: e.target.checked})}
+                    />
+                    <span className="text-sm text-gray-600">Override Profile Defaults</span>
+                  </label>
+                </div>
+
+                {!newRecipe.use_custom_overheads ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Active Prep Time (Mins)</label>
+                      <input
+                        type="number"
+                        value={newRecipe.prep_time_minutes || ''}
+                        onChange={(e) => setNewRecipe({...newRecipe, prep_time_minutes: parseFloat(e.target.value) || 0})}
+                        className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 outline-none bg-gray-50"
+                        placeholder="e.g., 45"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Bake Time (Mins)</label>
+                      <input
+                        type="number"
+                        value={newRecipe.bake_time_minutes || ''}
+                        onChange={(e) => setNewRecipe({...newRecipe, bake_time_minutes: parseFloat(e.target.value) || 0})}
+                        className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 outline-none bg-gray-50"
+                        placeholder="e.g., 60"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Custom Labor Fee</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-gray-500">{currencySymbol}</span>
+                        <input
+                          type="number"
+                          value={newRecipe.custom_labor_cost || ''}
+                          onChange={(e) => setNewRecipe({...newRecipe, custom_labor_cost: parseFloat(e.target.value) || 0})}
+                          className="w-full border rounded-lg pl-8 pr-3 p-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Custom Overhead Fee</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-gray-500">{currencySymbol}</span>
+                        <input
+                          type="number"
+                          value={newRecipe.custom_overhead_cost || ''}
+                          onChange={(e) => setNewRecipe({...newRecipe, custom_overhead_cost: parseFloat(e.target.value) || 0})}
+                          className="w-full border rounded-lg pl-8 pr-3 p-2.5 focus:ring-2 focus:ring-orange-500 outline-none"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="border-t pt-6 mb-6">
@@ -464,7 +561,7 @@ export default function RecipesPage() {
               <div>
                 <p className="text-sm text-gray-500 uppercase tracking-wide">Total Recipe Cost</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {currencySymbol}{calculateTotalRecipeCost(newRecipe.ingredients || []).toFixed(2)}
+                  {currencySymbol}{calculateTotalRecipeCost(newRecipe).toFixed(2)}
                 </p>
               </div>
               <div className="flex gap-3">
