@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
@@ -202,7 +203,7 @@ export default function LoginPage() {
           </div>
           
           <p className="mt-6 text-xs text-center font-data text-ink-grey/50">
-            By continuing, you agree to CrumbLedger's Terms of Service and Privacy Policy.
+            By continuing, you agree to CrumbLedger's <Link href="/terms" className="underline hover:text-ledger-navy">Terms of Service</Link> and <Link href="/privacy" className="underline hover:text-ledger-navy">Privacy Policy</Link>.
           </p>
 
         </div>
