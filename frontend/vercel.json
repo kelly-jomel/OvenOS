@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/__/auth/:path*",
+      "destination": "https://ovenos-ba3a9.firebaseapp.com/__/auth/:path*"
+    }
+  ]
+}
