@@ -80,7 +80,7 @@ export default function PartiesPage() {
       setIsModalOpen(false);
       setNewParty({ name: '', phone: '', email: '', address: '', gstin_or_tax_id: '', is_b2b: false });
       fetchParties();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to add party', err);
       const msg = err.response?.data?.detail || err.message || 'Unknown error';
       alert(`Error adding party: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`);

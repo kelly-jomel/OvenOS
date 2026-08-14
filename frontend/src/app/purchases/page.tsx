@@ -116,7 +116,7 @@ export default function PurchasesPage() {
       setNewItem({ name: '', quantity: 0, unit: 'pcs', purchase_price: 0, selling_price: 0, min_stock: 0, tax_rate: 0 });
       addToCart(res.data); // Auto-add to cart
       fetchData();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       const msg = err.response?.data?.detail || err.message || 'Unknown error';
       alert(`Error adding item: ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`);
