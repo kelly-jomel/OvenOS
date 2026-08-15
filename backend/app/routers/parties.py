@@ -3,26 +3,16 @@ from sqlalchemy.orm import Session
 from typing import List
 from .. import models, schemas
 from ..database import get_db
-from ..auth import verify_token
+from ..auth import get_current_user
 
 router = APIRouter(
     prefix="/parties",
     tags=["parties"]
 )
 
-def get_user_bakery(user_dict: dict, db: Session):
-    firebase_uid = user_dict.get("uid")
-    if not firebase_uid:
-        raise HTTPException(status_code=401, detail="Invalid auth token")
-    
-    user = db.query(models.User).filter(models.User.firebase_uid == firebase_uid).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found in DB")
-    return user.bakery_id
-
 @router.post("/", response_model=schemas.PartyResponse)
-def create_party(party: schemas.PartyCreate, db: Session = Depends(get_db), auth_user: dict = Depends(verify_token)):
-    bakery_id = get_user_bakery(auth_user, db)
+def create_party(party: schemas.PartyCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    bakery_id = current_user.bakery_id
     db_party = models.Party(**party.model_dump(), bakery_id=bakery_id)
     db.add(db_party)
     db.commit()
@@ -34,8 +24,8 @@ def create_party(party: schemas.PartyCreate, db: Session = Depends(get_db), auth
     return party_dict
 
 @router.get("/", response_model=List[schemas.PartyResponse])
-def get_parties(party_type: str = None, db: Session = Depends(get_db), auth_user: dict = Depends(verify_token)):
-    bakery_id = get_user_bakery(auth_user, db)
+def get_parties(party_type: str = None, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    bakery_id = current_user.bakery_id
     query = db.query(models.Party).filter(models.Party.bakery_id == bakery_id)
     if party_type:
         query = query.filter(models.Party.party_type == party_type)
