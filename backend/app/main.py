@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 from .auth import verify_token
-from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases, accounting, storefront
+from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases, accounting, storefront, subscription
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from . import database, models
