@@ -50,7 +50,10 @@ export default function TopNav({ title }: TopNavProps) {
         </nav>
         
         {/* Right side actions */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
+          <Link href="/upgrade" className="text-xs font-bold bg-jupiter-gold text-ledger-navy px-3 py-1.5 rounded-full hover:bg-yellow-400 transition hidden sm:block">
+            Upgrade ⚡️
+          </Link>
           <Link href="/profile" className="text-gray-300 hover:text-white text-xl cursor-pointer">👤</Link>
           <button onClick={() => alert("Notifications coming soon!")} className="text-gray-300 hover:text-white text-xl relative cursor-pointer">
             🔔

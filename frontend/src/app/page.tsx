@@ -51,9 +51,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             {/*  Logo with Dual Typography  */}
             <div className="flex items-center space-x-2.5">
-                <div className="w-10 h-10 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-bold text-xl shadow-md">
-                    <i className="fa-solid fa-cookie-bite"></i>
-                </div>
+                <img src="/logo.png" alt="CrumbLedger Logo" className="h-10 w-auto object-contain rounded-md shadow-sm bg-white p-1" />
                 <div className="flex items-baseline">
                     <span className="font-brand font-bold text-2xl text-white tracking-tight">Crumb</span><span className="font-data font-light text-xl text-jupiter-gold tracking-[0.15em] ml-0.5">LEDGER</span>
                 </div>
@@ -458,9 +456,7 @@ export default function LandingPage() {
     <footer className="bg-ledger-navy text-slate-400 py-12 border-t border-slate-800 font-data">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
             <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-bold">
-                    <i className="fa-solid fa-cookie-bite"></i>
-                </div>
+                <img src="/logo.png" alt="CrumbLedger Logo" className="h-8 w-auto object-contain rounded-md shadow-sm bg-white p-0.5" />
                 <div className="flex items-baseline">
                     <span className="font-brand font-bold text-xl text-white tracking-tight">Crumb</span><span className="font-data font-light text-base text-jupiter-gold tracking-[0.15em] ml-0.5">LEDGER</span>
                 </div>
