@@ -1,0 +1,48 @@
+# Vercel Web Analytics Installation Report
+
+## Summary
+Successfully installed and configured Vercel Web Analytics for the Next.js project following the latest official documentation from https://vercel.com/docs/analytics/quickstart.
+
+## Changes Made
+
+### 1. Package Installation
+- **Installed**: `@vercel/analytics` package (version installed via npm)
+- **Package Manager**: npm
+- **Lock File Updated**: `package-lock.json` updated with new dependencies
+
+### 2. Code Changes
+**Modified**: `frontend/src/app/layout.tsx`
+
+Added the Analytics component to the root layout following Next.js App Router best practices:
+
+1. **Import Statement**: Added `import { Analytics } from "@vercel/analytics/next";` at the top of the file
+2. **Component Integration**: Added `<Analytics />` component inside the `<body>` tag, after the main content and BakeryProvider
+
+The Analytics component is properly positioned at the end of the body to ensure optimal loading and tracking without affecting the user experience.
+
+### 3. Implementation Details
+- **Framework**: Next.js 16.3.0 with App Router
+- **Location**: Root layout (`src/app/layout.tsx`)
+- **Integration Method**: Framework-specific Next.js import (`@vercel/analytics/next`)
+- **Placement**: End of body tag as recommended by Vercel documentation
+
+### 4. Verification Steps Completed
+✓ Package installed successfully using npm
+✓ Build completed successfully with no errors
+✓ TypeScript compilation passed
+✓ All static pages generated correctly (19 routes)
+✓ Linter run completed (no new errors introduced by Analytics integration)
+✓ Lock file properly updated with new dependency
+
+## Next Steps for Users
+1. **Enable Analytics in Vercel Dashboard**: Navigate to your project's Analytics section in the Vercel dashboard and click "Enable" to activate Web Analytics
+2. **Deploy**: Deploy the application to Vercel using `vercel deploy` or push to your connected git repository
+3. **Verify**: After deployment, check the browser's Network tab for analytics requests to `/<unique-path>/view` to confirm tracking is working
+4. **Monitor**: View analytics data in your Vercel project dashboard
+
+## Implementation Notes
+- The implementation strictly follows the official Vercel documentation retrieved on 2026-08-15
+- Uses the framework-specific Next.js import for optimal performance
+- Preserves all existing code structure and styling
+- No breaking changes introduced
+- Analytics component will be inert during local development and only active on Vercel-deployed environments
