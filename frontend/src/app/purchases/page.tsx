@@ -43,7 +43,7 @@ export default function PurchasesPage() {
   const [isSubmittingSupplier, setIsSubmittingSupplier] = useState(false);
 
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [newItem, setNewItem] = useState({ name: '', quantity: 0, unit: 'pcs', purchase_price: 0, selling_price: 0, min_stock: 0, tax_rate: 0 });
+  const [newItem, setNewItem] = useState({ name: '', quantity: 0, unit: '', purchase_price: 0, selling_price: 0, min_stock: 0, tax_rate: 0 });
   const [isSubmittingItem, setIsSubmittingItem] = useState(false);
 
   const router = useRouter();
@@ -385,7 +385,7 @@ export default function PurchasesPage() {
                     <option value="kg">kg</option>
                     <option value="ml">ml</option>
                     <option value="liters">liters</option>
-                    <option value="pieces">pieces</option>
+                    <option value="pcs">pieces</option>
                   </select>
                 </div>
               </div>
