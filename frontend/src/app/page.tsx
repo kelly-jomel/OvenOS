@@ -67,8 +67,8 @@ export default function LandingPage() {
 
             {/*  CTA Actions  */}
             <div className="hidden md:flex items-center space-x-4">
-                <a href="https://app.crumbledger.com/login" className="text-slate-300 font-data font-semibold hover:text-white transition">Sign In</a>
-                <a href="https://app.crumbledger.com/login" className="bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold px-5 py-2.5 rounded-md shadow-md transition transform hover:-translate-y-0.5">Start Free Trial</a>
+                <Link href="/login" className="text-slate-300 font-data font-semibold hover:text-white transition">Sign In</Link>
+                <Link href="/login" className="bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold px-5 py-2.5 rounded-md shadow-md transition transform hover:-translate-y-0.5">Start Free Trial</Link>
             </div>
 
             {/*  Mobile Menu Button  */}
@@ -84,8 +84,8 @@ export default function LandingPage() {
             <a href="#pricing" className="block text-slate-300 font-medium hover:text-jupiter-gold">Pricing</a>
             <a href="#faq" className="block text-slate-300 font-medium hover:text-jupiter-gold">FAQ</a>
             <div className="pt-4 border-t border-slate-800 flex flex-col space-y-3">
-                <a href="https://app.crumbledger.com/login" className="text-center text-slate-300 font-semibold py-2">Sign In</a>
-                <a href="https://app.crumbledger.com/login" className="text-center bg-jupiter-gold text-ledger-navy font-bold py-3 rounded-md shadow-md">Start Free Trial</a>
+                <Link href="/login" className="text-center text-slate-300 font-semibold py-2">Sign In</Link>
+                <Link href="/login" className="text-center bg-jupiter-gold text-ledger-navy font-bold py-3 rounded-md shadow-md">Start Free Trial</Link>
             </div>
         </div>
     </header>
@@ -101,7 +101,7 @@ export default function LandingPage() {
                 The ultimate operating system for independent bakers, food creators, and micro-merchants. Automate inventory tracking, precise ingredient costing, POS billing, and tax invoicing in one place.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-5">
-                <a href="https://app.crumbledger.com/login" className="w-full sm:w-auto bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md shadow-lg transition transform hover:-translate-y-1">
+                <Link href="/login" className="w-full sm:w-auto bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md shadow-lg transition transform hover:-translate-y-1">
                     Start 14-Day Free Trial <i className="fa-solid fa-arrow-right ml-2 text-sm"></i>
                 </a>
                 <a href="#demo" className="w-full sm:w-auto bg-white hover:bg-slate-100 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md border border-slate-300 shadow-sm transition">
@@ -447,7 +447,7 @@ export default function LandingPage() {
             <h2 className="font-brand text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to Take Control of Your Profits?</h2>
             <p className="font-data mt-4 text-ledger-navy/90 text-lg max-w-2xl mx-auto">Join thousands of food entrepreneurs who rely on CrumbLedger for billing, inventory, and recipe costing.</p>
             <div className="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="https://app.crumbledger.com/login" className="bg-ledger-navy text-white hover:bg-slate-800 font-brand font-bold px-8 py-4 rounded-md shadow-xl transition">Start Your 14-Day Free Trial</a>
+                <Link href="/login" className="bg-ledger-navy text-white hover:bg-slate-800 font-brand font-bold px-8 py-4 rounded-md shadow-xl transition">Start Your 14-Day Free Trial</Link>
             </div>
         </div>
     </section>
