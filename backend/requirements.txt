@@ -33,7 +33,7 @@ idna==3.18
 Mako==1.4.1
 MarkupSafe==3.0.3
 msgpack==1.2.1
-proto-plus==1.28.3
+proto-plus
 protobuf
 psycopg2-binary==2.9.12
 pyasn1==0.6.4
