@@ -156,7 +156,7 @@ export default function LandingPage() {
     </section>
 
     {/*  INTERACTIVE FEATURES SECTION  */}
-    <section  className="py-24 bg-paper-white">
+    <section id="features" className="py-24 bg-paper-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto">
                 <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Everything You Need to Run Your Business Profitably</h2>
@@ -222,7 +222,7 @@ export default function LandingPage() {
     </section>
 
     {/*  RECIPE COSTING SPOTLIGHT  */}
-    <section  className="py-24 bg-white border-t border-slate-200">
+    <section id="costing" className="py-24 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
@@ -286,7 +286,7 @@ export default function LandingPage() {
     </section>
 
     {/*  PRICING SECTION  */}
-    <section  className="py-24 bg-paper-white border-t border-slate-200">
+    <section id="pricing" className="py-24 bg-paper-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto">
                 <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Simple, Transparent Pricing</h2>
@@ -386,7 +386,7 @@ export default function LandingPage() {
     </section>
 
     {/*  FAQ ACCORDION  */}
-    <section  className="py-24 bg-paper-white border-t border-slate-200">
+    <section id="faq" className="py-24 bg-paper-white border-t border-slate-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
                 <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Frequently Asked Questions</h2>
