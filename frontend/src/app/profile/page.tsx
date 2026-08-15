@@ -6,6 +6,7 @@ import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import api from '@/lib/api';
 import TopNav from '@/components/TopNav';
+import { useBakery } from '@/context/BakeryContext';
 
 type BakeryProfile = {
   name: string;
@@ -87,10 +88,13 @@ export default function ProfilePage() {
     }
   };
 
+  const { refreshProfile } = useBakery();
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await api.put('/profile/', profile);
+      await refreshProfile();
       alert('Profile saved successfully!');
     } catch (err) {
       console.error('Failed to save profile', err);
