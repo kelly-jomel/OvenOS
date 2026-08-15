@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Request, Response, status, HTTPException
+from fastapi import APIRouter, Request, Response, status, HTTPException, Depends
+from sqlalchemy.orm import Session
+from ..database import get_db
 import os
 
 router = APIRouter(
@@ -58,3 +60,41 @@ async def handle_whatsapp_messages(request: Request):
         return Response(status_code=200)
     
     raise HTTPException(status_code=404, detail="Not Found")
+
+import razorpay
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET")
+
+@router.post("/razorpay")
+async def handle_razorpay_webhook(request: Request, db: Session = Depends(get_db)):
+    payload = await request.body()
+    signature = request.headers.get("X-Razorpay-Signature")
+
+    if not signature or not RAZORPAY_WEBHOOK_SECRET:
+        raise HTTPException(status_code=400, detail="Missing signature or webhook secret")
+
+    client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID", ""), RAZORPAY_KEY_SECRET))
+    
+    try:
+        client.utility.verify_webhook_signature(payload.decode('utf-8'), signature, RAZORPAY_WEBHOOK_SECRET)
+    except razorpay.errors.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    data = await request.json()
+    event = data.get("event")
+    
+    if event == "order.paid":
+        order = data["payload"]["order"]["entity"]
+        bakery_id = order.get("notes", {}).get("bakery_id")
+        plan_name = order.get("notes", {}).get("plan_name")
+        
+        if bakery_id and plan_name:
+            from .. import models
+            bakery = db.query(models.Bakery).filter(models.Bakery.id == bakery_id).first()
+            if bakery:
+                bakery.subscription_plan = plan_name
+                bakery.subscription_status = "active"
+                db.commit()
+                print(f"Upgraded bakery {bakery_id} to {plan_name}")
+                
+    return {"status": "success"}

@@ -159,6 +159,11 @@ class Bakery(Base):
     name = Column(String, nullable=False)
     
     # 1. Core Business Identity & Regulatory Compliance
+    subscription_plan = Column(String, default="free") # free, pro
+    subscription_status = Column(String, default="active") # active, cancelled, past_due
+    razorpay_customer_id = Column(String, nullable=True)
+    razorpay_subscription_id = Column(String, nullable=True)
+    
     country = Column(String, default='IN') # 'IN', 'US', 'GB'
     trading_name = Column(String, nullable=True)
     

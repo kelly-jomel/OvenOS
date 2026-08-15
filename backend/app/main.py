@@ -35,6 +35,7 @@ app.include_router(parties.router)
 app.include_router(purchases.router)
 app.include_router(accounting.router)
 app.include_router(storefront.router)
+app.include_router(subscription.router)
 
 @app.get("/")
 def read_root():
