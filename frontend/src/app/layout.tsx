@@ -14,9 +14,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CrumbLedger | Financial Software for Bakers",
-  description: "Balance expansive, optimistic energy with the grounded structure required for financial software. Designed for home bakers.",
-  keywords: "billing software for home bakers, invoice template for bakers, home bakery management software, CrumbLedger, cake order tracking app, collect bakery deposits online"
+  title: "CrumbLedger | Recipe Costing & Bakery Management Software",
+  description: "The ultimate bakery management software for home bakers. Accurately calculate recipe costs, track inventory, manage custom orders, and generate invoices in one place.",
+  keywords: "bakery software, home bakery management, recipe costing app, cake pricing calculator, inventory tracker for bakers, invoice template for bakers, CrumbLedger, food costing"
 };
 
 import { BakeryProvider } from "@/context/BakeryContext";

@@ -95,10 +95,7 @@ export default function LandingPage() {
     {/*  HERO SECTION  */}
     <section className="relative overflow-hidden pt-20 pb-24 lg:pt-32 lg:pb-36 bg-paper-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <div className="inline-flex items-center space-x-2 bg-amber-100 text-amber-800 px-4 py-1.5 rounded-md text-sm font-semibold mb-6 shadow-sm">
-                <i className="fa-solid fa-bolt-lightning text-jupiter-gold"></i>
-                <span>Jupiter Wealth Expansion Architecture</span>
-            </div>
+
             <h1 className="font-brand text-4xl sm:text-5xl lg:text-6xl font-extrabold text-ledger-navy tracking-tight max-w-4xl mx-auto leading-tight">
                 Stop Guessing Profit Margins. <span className="text-amber-600">Master Your Ledger.</span>
             </h1>
@@ -332,7 +329,7 @@ export default function LandingPage() {
                         </ul>
                     </div>
                     <div className="mt-12">
-                        <a href="https://app.crumbledger.com/login" className="block text-center bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold py-4 text-lg rounded-md shadow-lg transition">Start Free Trial</a>
+                        <a href="/login" className="block text-center bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold py-4 text-lg rounded-md shadow-lg transition">Start Free Trial</a>
                     </div>
                 </div>
             </div>
