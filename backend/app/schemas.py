@@ -307,6 +307,8 @@ class BakeryUpdate(BaseModel):
 class BakeryResponse(BakeryBase):
     id: int
     created_at: datetime
+    subscription_plan: str
+    subscription_status: str
 
     class Config:
         from_attributes = True

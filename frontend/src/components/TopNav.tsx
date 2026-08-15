@@ -15,19 +15,31 @@ export default function TopNav({ title }: TopNavProps) {
   const { profile } = useBakery();
 
   useEffect(() => {
-    if (profile && pathname !== '/upgrade') {
+    if (!profile) return;
+
+    const isProfileComplete = !!profile.trading_name;
+
+    // Priority 1: Enforce profile completion
+    if (!isProfileComplete) {
+      if (pathname !== '/profile') {
+        router.push('/profile');
+      }
+      return; // Stop further checks if profile is incomplete
+    }
+
+    // Priority 2: Enforce subscription after 15 days
+    if (isProfileComplete && pathname !== '/upgrade') {
       const createdDate = new Date(profile.created_at);
       const now = new Date();
       const diffTime = Math.abs(now.getTime() - createdDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      if (diffDays > 15) {
+      const isTrialExpired = diffDays > 15;
+      const isFreePlan = profile.subscription_plan === 'free';
+      
+      if (isTrialExpired && isFreePlan) {
         router.push('/upgrade');
       }
-    }
-
-    if (profile && !profile.trading_name && pathname !== '/profile') {
-      router.push('/profile');
     }
   }, [profile, pathname, router]);
 
