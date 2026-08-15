@@ -8,7 +8,7 @@ cffi==2.1.1
 charset-normalizer==3.5.0
 passlib[bcrypt]
 python-jose[cryptography]
-google-generativeai==50.0.0
+google-generativeai==0.8.6
 click==8.4.2
 cryptography==50.0.0
 fastapi==0.141.1
