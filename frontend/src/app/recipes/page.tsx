@@ -66,14 +66,20 @@ const calculateCost = (ingredient: RecipeIngredient, item: InventoryItem): numbe
 
 export default function RecipesPage() {
   const router = useRouter();
-  const { currencySymbol, profile } = useBakery();
+  const { currencySymbol, profile: bakeryProfile } = useBakery();
   
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importSourceType, setImportSourceType] = useState('url'); // 'url' or 'photo'
+  const [importSourceData, setImportSourceData] = useState('');
+  const [geminiApiKey, setGeminiApiKey] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form State
@@ -112,6 +118,9 @@ export default function RecipesPage() {
   };
 
   useEffect(() => {
+    const savedKey = localStorage.getItem('geminiApiKey');
+    if (savedKey) setGeminiApiKey(savedKey);
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchData();
@@ -121,6 +130,59 @@ export default function RecipesPage() {
     });
     return () => unsubscribe();
   }, [router]);
+
+  const handleImportRecipe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!geminiApiKey) {
+      alert("Please provide a Gemini API Key");
+      return;
+    }
+    
+    localStorage.setItem('geminiApiKey', geminiApiKey);
+    setIsImporting(true);
+
+    try {
+      const res = await api.post('/ai/import', {
+        source_type: importSourceType,
+        source_data: importSourceData
+      }, {
+        headers: {
+          'x-gemini-api-key': geminiApiKey
+        }
+      });
+      
+      const parsed = res.data;
+      if (parsed.warnings && parsed.warnings.length > 0) {
+        alert("Imported with warnings:\n" + parsed.warnings.join("\n"));
+        // Re-fetch inventory since new items might have been created
+        fetchData();
+      }
+
+      setNewRecipe({
+        name: parsed.name,
+        description: parsed.description,
+        yield_amount: parsed.yield_amount,
+        prep_time_minutes: parsed.prep_time_minutes,
+        bake_time_minutes: parsed.bake_time_minutes,
+        use_custom_overheads: false,
+        custom_labor_cost: 0,
+        custom_overhead_cost: 0,
+        ingredients: parsed.ingredients.map((ing: any) => ({
+          inventory_item_id: ing.inventory_item_id,
+          quantity_required: ing.quantity,
+          unit: ing.unit
+        }))
+      });
+      
+      setIsImportModalOpen(false);
+      setIsModalOpen(true);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.detail || "Failed to import recipe");
+    } finally {
+      setIsImporting(false);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -277,12 +339,20 @@ export default function RecipesPage() {
             <h1 className="text-2xl font-bold text-gray-900">Recipe Costing</h1>
             <p className="text-gray-500 text-sm">Calculate the exact cost of your products.</p>
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-700 transition"
-          >
-            + New Recipe
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => setIsImportModalOpen(true)}
+              className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition border border-indigo-200 flex items-center gap-2"
+            >
+              <span>✨</span> Import Recipe
+            </button>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-orange-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-700 transition"
+            >
+              + New Recipe
+            </button>
+          </div>
         </div>
 
         {recipes.length === 0 ? (
@@ -588,6 +658,106 @@ export default function RecipesPage() {
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import Recipe Modal */}
+      {isImportModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <span>✨</span> Import Recipe with AI
+              </h2>
+              <button onClick={() => setIsImportModalOpen(false)} className="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            
+            <div className="p-6">
+              <form onSubmit={handleImportRecipe}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
+                  <input
+                    required
+                    type="password"
+                    placeholder="AIzaSy..."
+                    value={geminiApiKey}
+                    onChange={(e) => setGeminiApiKey(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Google AI Studio</a>. Saved locally.
+                  </p>
+                </div>
+
+                <div className="mb-4 flex gap-2 p-1 bg-gray-100 rounded-lg">
+                  <button 
+                    type="button"
+                    onClick={() => setImportSourceType('url')}
+                    className={`flex-1 py-1.5 text-sm font-medium rounded-md ${importSourceType === 'url' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Website / YouTube
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setImportSourceType('photo')}
+                    className={`flex-1 py-1.5 text-sm font-medium rounded-md ${importSourceType === 'photo' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Photo
+                  </button>
+                </div>
+
+                {importSourceType === 'url' ? (
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Recipe URL</label>
+                    <input
+                      required
+                      type="url"
+                      placeholder="https://..."
+                      value={importSourceData}
+                      onChange={(e) => setImportSourceData(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Recipe Photo</label>
+                    <input
+                      required
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setImportSourceData(reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                    />
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3">
+                  <button type="button" onClick={() => setIsImportModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={isImporting} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                    {isImporting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Importing...
+                      </>
+                    ) : (
+                      'Extract Recipe'
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

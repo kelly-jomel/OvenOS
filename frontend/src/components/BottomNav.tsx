@@ -9,6 +9,7 @@ export default function BottomNav() {
     { name: 'Orders', path: '/orders', icon: '📝' },
     { name: 'Customers', path: '/parties', icon: '👥' },
     { name: 'Billing', path: '/billing', icon: '🧾' },
+    { name: 'Products', path: '/products', icon: '🍰' },
     { name: 'Recipes', path: '/recipes', icon: '🍲' },
   ];
 

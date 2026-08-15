@@ -8,12 +8,25 @@ import api from '@/lib/api';
 import BottomNav from '@/components/BottomNav';
 import TopNav from '@/components/TopNav';
 import { useBakery } from '@/context/BakeryContext';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Legend
+} from 'recharts';
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const { currencySymbol } = useBakery();
-  const [upcomingOrders, setUpcomingOrders] = useState<any[]>([]);
   const router = useRouter();
+
+  const [dashboardData, setDashboardData] = useState<any>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -26,24 +39,8 @@ export default function DashboardPage() {
 
     const fetchDashboardData = async () => {
       try {
-        const [ordersRes] = await Promise.all([
-          api.get('/orders/')
-        ]);
-        
-        // Filter upcoming orders (next 10 days)
-        const now = new Date();
-        const tenDaysFromNow = new Date();
-        tenDaysFromNow.setDate(now.getDate() + 10);
-        
-        const filtered = ordersRes.data.filter((o: any) => {
-          if (!o.delivery_date) return false;
-          const dDate = new Date(o.delivery_date);
-          return dDate >= now && dDate <= tenDaysFromNow;
-        });
-        
-        // Sort by closest date
-        filtered.sort((a: any, b: any) => new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime());
-        setUpcomingOrders(filtered);
+        const res = await api.get('/dashboard/');
+        setDashboardData(res.data);
       } catch (e) {
         console.error(e);
       } finally {
@@ -54,13 +51,15 @@ export default function DashboardPage() {
     return () => unsubscribe();
   }, [router]);
 
-  if (loading) {
+  if (loading || !dashboardData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     );
   }
+
+  const { summary, orders_by_customer, orders_by_month, trend_chart_data } = dashboardData;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
@@ -69,13 +68,13 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         
         {/* Financial Summary Cards */}
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-xl shadow-sm border border-emerald-100 p-4">
             <div className="flex items-center gap-2 text-gray-600 mb-1">
               <span className="text-emerald-500">↑</span>
               <h3 className="text-sm font-medium">To Collect</h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{currencySymbol}0.00</p>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{summary.accounts_receivable.toFixed(2)}</p>
             <Link href="/parties?type=customer" className="text-xs text-emerald-600 font-medium mt-2 inline-block">View Details →</Link>
           </div>
           
@@ -84,8 +83,95 @@ export default function DashboardPage() {
               <span className="text-rose-500">↓</span>
               <h3 className="text-sm font-medium">To Pay</h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{currencySymbol}0.00</p>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{summary.accounts_payable.toFixed(2)}</p>
             <Link href="/parties?type=supplier" className="text-xs text-rose-600 font-medium mt-2 inline-block">View Details →</Link>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-600 mb-1">
+              <span className="text-blue-500">📈</span>
+              <h3 className="text-sm font-medium">Total Sales</h3>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{summary.total_sales.toFixed(2)}</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center gap-2 text-gray-600 mb-1">
+              <span className="text-purple-500">🛒</span>
+              <h3 className="text-sm font-medium">Total Orders</h3>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{summary.total_orders}</p>
+          </div>
+        </section>
+
+        {/* 30-Day Revenue Trend Chart */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <h2 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">30-Day Revenue vs Expenses</h2>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trend_chart_data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} minTickGap={20} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  formatter={(value: number) => [`${currencySymbol}${value.toFixed(2)}`, undefined]}
+                />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                <Area type="monotone" dataKey="expenses" name="Expenses" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorExpenses)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        {/* Orders Analytics Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Orders by Month */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <h2 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Orders by Month</h2>
+            {orders_by_month.length > 0 ? (
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={orders_by_month} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} allowDecimals={false} />
+                    <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Bar dataKey="count" name="Orders" fill="#f97316" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center text-sm text-gray-500">No data available</div>
+            )}
+          </div>
+
+          {/* Orders by Customer */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <h2 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Top Customers</h2>
+            {orders_by_customer.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {orders_by_customer.sort((a: any, b: any) => b.count - a.count).slice(0, 5).map((cust: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-center py-3">
+                    <span className="text-sm font-medium text-gray-900">{cust.name}</span>
+                    <span className="text-xs bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded-full">{cust.count} orders</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center text-sm text-gray-500">No customers yet</div>
+            )}
           </div>
         </section>
 
@@ -122,80 +208,7 @@ export default function DashboardPage() {
             </Link>
           </div>
         </section>
-
-        {/* Business Metrics */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Today's Overview</h2>
-            <select className="text-xs bg-gray-50 border border-gray-200 rounded p-1 outline-none text-gray-700">
-              <option>Today</option>
-              <option>Yesterday</option>
-              <option>This Month</option>
-            </select>
-          </div>
-          <div className="grid grid-cols-2 divide-x divide-gray-100">
-            <div className="p-4 text-center">
-              <p className="text-xs text-gray-500 mb-1">Sales</p>
-              <p className="text-lg font-bold text-gray-900">{currencySymbol}0.00</p>
-            </div>
-            <div className="p-4 text-center">
-              <p className="text-xs text-gray-500 mb-1">Purchases</p>
-              <p className="text-lg font-bold text-gray-900">{currencySymbol}0.00</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Upcoming Orders (Next 10 Days) */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Upcoming Orders (Next 10 Days)</h2>
-            <Link href="/orders" className="text-xs text-orange-600 font-medium hover:underline">View All</Link>
-          </div>
-          {upcomingOrders.length === 0 ? (
-            <div className="p-6 text-center text-sm text-gray-500">No upcoming orders in the next 10 days.</div>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {upcomingOrders.map((order) => (
-                <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                  <div>
-                    <p className="text-sm font-bold text-gray-900">{order.customer_name}</p>
-                    <p className="text-xs text-gray-500 mt-1 max-w-[200px] truncate">{order.items}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-orange-600">
-                      {new Date(order.delivery_date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">{new Date(order.delivery_date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Storefront Upsell Banner */}
-        <section className="bg-gradient-to-r from-orange-600 to-yellow-500 rounded-xl shadow-md p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-bold">Want Your Own E-Commerce Website?</h2>
-            <p className="text-sm opacity-90">Get a fully custom branded website with online ordering and payment gateway for just {currencySymbol}8,000.</p>
-          </div>
-          <button 
-            onClick={async () => {
-              try {
-                const res = await api.post('/storefront/request');
-                alert(res.data.message || 'Request sent! We will contact you soon.');
-              } catch (e) {
-                alert('Failed to send request. Please try again.');
-              }
-            }}
-            className="bg-white text-orange-600 px-6 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-gray-50 transition-colors whitespace-nowrap"
-          >
-            I'm Interested
-          </button>
-        </section>
-
       </main>
-
       <BottomNav />
     </div>
   );

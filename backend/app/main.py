@@ -14,9 +14,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 from .auth import verify_token
-from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases, accounting, storefront, subscription
+from .routers import inventory, billing, webhooks, users, orders, recipes, profile, parties, purchases, accounting, storefront, subscription, dashboard, ai_import
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from . import database, models
@@ -36,6 +35,8 @@ app.include_router(purchases.router)
 app.include_router(accounting.router)
 app.include_router(storefront.router)
 app.include_router(subscription.router)
+app.include_router(dashboard.router)
+app.include_router(ai_import.router)
 
 @app.get("/")
 def read_root():

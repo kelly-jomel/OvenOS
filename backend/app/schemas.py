@@ -332,6 +332,7 @@ class RecipeBase(BaseModel):
     use_custom_overheads: Optional[bool] = False
     custom_labor_cost: Optional[float] = 0.0
     custom_overhead_cost: Optional[float] = 0.0
+    selling_price: Optional[float] = 0.0
 
 class RecipeCreate(RecipeBase):
     ingredients: list[RecipeIngredientCreate] = []

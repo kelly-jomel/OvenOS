@@ -15,6 +15,7 @@ export default function TopNav({ title }: TopNavProps) {
     { name: 'Customers', path: '/parties' },
     { name: 'Purchases', path: '/purchases' },
     { name: 'Billing', path: '/billing' },
+    { name: 'Products', path: '/products' },
     { name: 'Inventory', path: '/inventory' },
     { name: 'Recipes', path: '/recipes' },
   ];

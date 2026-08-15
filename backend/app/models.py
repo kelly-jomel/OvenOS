@@ -42,6 +42,7 @@ class Recipe(Base):
     use_custom_overheads = Column(Boolean, default=False)
     custom_labor_cost = Column(Float, default=0.0)
     custom_overhead_cost = Column(Float, default=0.0)
+    selling_price = Column(Float, default=0.0)
 
     bakery_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
