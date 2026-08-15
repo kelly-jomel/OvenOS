@@ -103,7 +103,7 @@ export default function LandingPage() {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-5">
                 <Link href="/login" className="w-full sm:w-auto bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md shadow-lg transition transform hover:-translate-y-1">
                     Start 14-Day Free Trial <i className="fa-solid fa-arrow-right ml-2 text-sm"></i>
-                </a>
+                </Link>
                 <a href="#demo" className="w-full sm:w-auto bg-white hover:bg-slate-100 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md border border-slate-300 shadow-sm transition">
                     <i className="fa-solid fa-play text-jupiter-gold mr-2"></i> Watch 2-Min Demo
                 </a>
