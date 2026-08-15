@@ -364,7 +364,9 @@ export default function PurchasesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {newItem.unit === 'pcs' || newItem.unit === 'pieces' ? `Price Per Piece` : `Total Purchase Price`}
+                  </label>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-gray-500">{currencySymbol}</span>
                     <input required type="number" step="0.01" value={newItem.purchase_price || ''} onChange={e => setNewItem({...newItem, purchase_price: parseFloat(e.target.value) || 0})} className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500" />

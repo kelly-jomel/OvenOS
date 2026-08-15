@@ -208,8 +208,8 @@ export default function InventoryPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{item.quantity} {item.unit}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{currencySymbol}{item.purchase_price.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{currencySymbol}{(item.quantity * item.purchase_price).toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{currencySymbol}{item.purchase_price.toFixed(2)} {item.unit === 'pcs' || item.unit === 'pieces' ? 'per pc' : 'total'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{currencySymbol}{(item.unit === 'pcs' || item.unit === 'pieces' ? item.quantity * item.purchase_price : item.purchase_price).toFixed(2)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.contains_allergens ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                           {item.contains_allergens || 'None'}
@@ -278,7 +278,9 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Total Purchase Price ({currencySymbol})</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {unit === 'pcs' ? `Price Per Piece (${currencySymbol})` : `Total Purchase Price (${currencySymbol})`}
+                </label>
                 <input
                   required
                   type="number"
