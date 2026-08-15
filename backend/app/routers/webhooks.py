@@ -90,11 +90,22 @@ async def handle_razorpay_webhook(request: Request, db: Session = Depends(get_db
         
         if bakery_id and plan_name:
             from .. import models
+            from datetime import datetime
+            from dateutil.relativedelta import relativedelta
+            
             bakery = db.query(models.Bakery).filter(models.Bakery.id == bakery_id).first()
             if bakery:
                 bakery.subscription_plan = plan_name
                 bakery.subscription_status = "active"
+                bakery.subscription_start_date = datetime.now()
+                # If plan has 'annual' in the name (though currently we just use 'pro' for both, 
+                # we should probably pass billing cycle in notes, but for now let's just add 1 month 
+                # unless we see 'annual' in plan name).
+                is_annual = 'annual' in plan_name.lower() or str(order.get('amount', 0)) == '480000' # 4800 INR in paise
+                months_to_add = 12 if is_annual else 1
+                bakery.subscription_end_date = datetime.now() + relativedelta(months=months_to_add)
+                
                 db.commit()
-                print(f"Upgraded bakery {bakery_id} to {plan_name}")
+                print(f"Upgraded bakery {bakery_id} to {plan_name}. Expires: {bakery.subscription_end_date}")
                 
     return {"status": "success"}

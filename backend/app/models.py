@@ -164,6 +164,8 @@ class Bakery(Base):
     subscription_status = Column(String, default="active") # active, cancelled, past_due
     razorpay_customer_id = Column(String, nullable=True)
     razorpay_subscription_id = Column(String, nullable=True)
+    subscription_start_date = Column(DateTime(timezone=True), nullable=True)
+    subscription_end_date = Column(DateTime(timezone=True), nullable=True)
     
     country = Column(String, default='IN') # 'IN', 'US', 'GB'
     trading_name = Column(String, nullable=True)
