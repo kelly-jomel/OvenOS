@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrumbLedger — Smart Billing, Accounting & Recipe Costing</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        jupiter: '#FDB813',
+                        navy: '#1C2833',
+                        paper: '#F9F9FA',
+                        ink: '#333333',
+                        yield: '#2ECC71',
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'custom': '6px',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9F9FA;
+            color: #333333;
+        }
+        h1, h2, h3, h4, .font-brand {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-jupiter selection:text-navy">
+
+    <!-- NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-navy text-white border-b border-navy/80 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo with Dual Typography -->
+            <div class="flex items-center space-x-2.5">
+                <div class="w-10 h-10 bg-jupiter text-navy rounded-custom flex items-center justify-center font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-cookie-bite"></i>
+                </div>
+                <div class="flex items-baseline">
+                    <span class="font-poppins font-bold text-2xl text-white tracking-tight">Crumb</span><span class="font-inter font-light text-xl text-jupiter tracking-[0.15em] ml-0.5">LEDGER</span>
+                </div>
+            </div>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center space-x-8 font-inter font-medium text-slate-300">
+                <a href="#features" class="hover:text-jupiter transition">Features</a>
+                <a href="#costing" class="hover:text-jupiter transition">Recipe Costing</a>
+                <a href="#pricing" class="hover:text-jupiter transition">Pricing</a>
+                <a href="#faq" class="hover:text-jupiter transition">FAQ</a>
+            </nav>
+
+            <!-- CTA Actions -->
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="#login" class="text-slate-300 font-inter font-semibold hover:text-white transition">Sign In</a>
+                <a href="#pricing" class="bg-jupiter hover:bg-amber-400 text-navy font-poppins font-bold px-5 py-2.5 rounded-custom shadow-md transition transform hover:-translate-y-0.5">Start Free Trial</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-slate-300 focus:outline-none text-2xl">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-navy border-t border-slate-800 px-6 py-6 space-y-4 shadow-xl">
+            <a href="#features" class="block text-slate-300 font-medium hover:text-jupiter">Features</a>
+            <a href="#costing" class="block text-slate-300 font-medium hover:text-jupiter">Recipe Costing</a>
+            <a href="#pricing" class="block text-slate-300 font-medium hover:text-jupiter">Pricing</a>
+            <a href="#faq" class="block text-slate-300 font-medium hover:text-jupiter">FAQ</a>
+            <div class="pt-4 border-t border-slate-800 flex flex-col space-y-3">
+                <a href="#login" class="text-center text-slate-300 font-semibold py-2">Sign In</a>
+                <a href="#pricing" class="text-center bg-jupiter text-navy font-bold py-3 rounded-custom shadow-md">Start Free Trial</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative overflow-hidden pt-20 pb-24 lg:pt-32 lg:pb-36 bg-paper">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-amber-100 text-amber-800 px-4 py-1.5 rounded-custom text-sm font-semibold mb-6 shadow-sm">
+                <i class="fa-solid fa-bolt-lightning text-jupiter"></i>
+                <span>Jupiter Wealth Expansion Architecture</span>
+            </div>
+            <h1 class="font-poppins text-4xl sm:text-5xl lg:text-6xl font-extrabold text-navy tracking-tight max-w-4xl mx-auto leading-tight">
+                Stop Guessing Profit Margins. <span class="text-amber-600">Master Your Ledger.</span>
+            </h1>
+            <p class="font-inter mt-6 text-lg sm:text-xl text-ink max-w-2xl mx-auto leading-relaxed">
+                The ultimate operating system for independent bakers, food creators, and micro-merchants. Automate inventory tracking, precise ingredient costing, POS billing, and tax invoicing in one place.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-5">
+                <a href="#pricing" class="w-full sm:w-auto bg-jupiter hover:bg-amber-400 text-navy font-poppins font-bold text-lg px-8 py-4 rounded-custom shadow-lg transition transform hover:-translate-y-1">
+                    Start 14-Day Free Trial <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                </a>
+                <a href="#demo" class="w-full sm:w-auto bg-white hover:bg-slate-100 text-navy font-poppins font-bold text-lg px-8 py-4 rounded-custom border border-slate-300 shadow-sm transition">
+                    <i class="fa-solid fa-play text-jupiter mr-2"></i> Watch 2-Min Demo
+                </a>
+            </div>
+            <p class="mt-4 text-xs text-slate-500 font-inter font-medium">No credit card required • Setup takes less than 3 minutes</p>
+
+            <!-- Dashboard Mockup Preview with Tabular Inter Figures -->
+            <div class="mt-14 max-w-5xl mx-auto rounded-custom shadow-2xl border border-slate-300 bg-navy overflow-hidden p-3 sm:p-5 text-left">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 bg-red-500 rounded-full inline-block"></span>
+                        <span class="w-3 h-3 bg-yellow-500 rounded-full inline-block"></span>
+                        <span class="w-3 h-3 bg-yield rounded-full inline-block"></span>
+                        <span class="text-xs text-slate-400 ml-2 font-inter font-mono">crumbledger.app/dashboard</span>
+                    </div>
+                    <span class="text-xs bg-yield/20 text-yield px-3 py-1 rounded-custom font-inter font-medium"><i class="fa-solid fa-circle text-[8px] mr-1.5 animate-pulse"></i> Live Sync Active</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                    <div class="bg-slate-800/90 p-4 rounded-custom border border-slate-700">
+                        <p class="text-xs text-slate-400 font-inter">Today's Net Revenue</p>
+                        <p class="text-2xl font-inter font-bold text-white mt-1 tabular-nums">$2,480.50</p>
+                        <span class="text-xs text-yield font-inter font-semibold mt-1 inline-block"><i class="fa-solid fa-arrow-up"></i> +14.2% vs yesterday</span>
+                    </div>
+                    <div class="bg-slate-800/90 p-4 rounded-custom border border-slate-700">
+                        <p class="text-xs text-slate-400 font-inter">Pending Orders</p>
+                        <p class="text-2xl font-inter font-bold text-jupiter mt-1 tabular-nums">18 Orders</p>
+                        <span class="text-xs text-amber-400 font-inter font-semibold mt-1 inline-block"><i class="fa-solid fa-clock"></i> 4 require delivery today</span>
+                    </div>
+                    <div class="bg-slate-800/90 p-4 rounded-custom border border-slate-700">
+                        <p class="text-xs text-slate-400 font-inter">Low Stock Warning</p>
+                        <p class="text-2xl font-inter font-bold text-red-400 mt-1 tabular-nums">2 Items</p>
+                        <span class="text-xs text-red-400 font-inter font-semibold mt-1 inline-block"><i class="fa-solid fa-triangle-exclamation"></i> Butter & Dark Chocolate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF / TRUST BADGES -->
+    <section class="py-12 bg-white border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-xs font-inter font-bold tracking-widest text-slate-500 uppercase mb-8">Trusted by over 2,000+ independent patisseries, bakeries & food manufacturers</p>
+            <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-16 opacity-70 grayscale hover:grayscale-0 transition duration-300">
+                <span class="font-poppins text-xl font-extrabold tracking-tighter text-navy"><i class="fa-solid fa-wheat-awn mr-1 text-jupiter"></i> ArtisanCrust</span>
+                <span class="font-poppins text-xl font-extrabold tracking-tighter text-navy"><i class="fa-solid fa-cake-candles mr-1 text-jupiter"></i> SweetBoutique</span>
+                <span class="font-poppins text-xl font-extrabold tracking-tighter text-navy"><i class="fa-solid fa-mug-hot mr-1 text-jupiter"></i> MorningPastry</span>
+                <span class="font-poppins text-xl font-extrabold tracking-tighter text-navy"><i class="fa-solid fa-cookie mr-1 text-jupiter"></i> TheDailyCookie</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE FEATURES SECTION -->
+    <section id="features" class="py-24 bg-paper">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="font-poppins text-3xl sm:text-4xl font-extrabold text-navy tracking-tight">Everything You Need to Run Your Business Profitably</h2>
+                <p class="font-inter mt-4 text-lg text-ink">Built from the ground up for food and retail entrepreneurs who need precision down to the single gram.</p>
+            </div>
+
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white p-8 rounded-custom shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-custom flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter group-hover:text-navy transition">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 class="font-poppins text-xl font-bold text-navy">Dynamic Recipe Costing</h3>
+                    <p class="font-inter mt-3 text-ink leading-relaxed">Auto-calculate exact production costs based on real-time ingredient purchases, labor rates, and custom overhead factors.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white p-8 rounded-custom shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-custom flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter group-hover:text-navy transition">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <h3 class="font-poppins text-xl font-bold text-navy">Granular Inventory Tracking</h3>
+                    <p class="font-inter mt-3 text-ink leading-relaxed">Track raw materials by precise units (grams, kg, ml), manage stock thresholds, tag allergens, and monitor expiry batches easily.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white p-8 rounded-custom shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-custom flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter group-hover:text-navy transition">
+                        <i class="fa-solid fa-cash-register"></i>
+                    </div>
+                    <h3 class="font-poppins text-xl font-bold text-navy">Lightning-Fast POS & Cart</h3>
+                    <p class="font-inter mt-3 text-ink leading-relaxed">Ring up walk-in customers instantly with an optimized cart system and auto-sync inventory levels instantly upon checkout.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white p-8 rounded-custom shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-custom flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter group-hover:text-navy transition">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <h3 class="font-poppins text-xl font-bold text-navy">Custom Order Management</h3>
+                    <p class="font-inter mt-3 text-ink leading-relaxed">Never lose track of custom orders or catering events with scheduled delivery times and linked customer profiles.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white p-8 rounded-custom shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-custom flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter group-hover:text-navy transition">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3 class="font-poppins text-xl font-bold text-navy">B2B Invoicing & Quotes</h3>
+                    <p class="font-inter mt-3 text-ink leading-relaxed">Generate professional tax-compliant invoices, track accounts receivable, and send polished price quotes for wholesale clients.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white p-8 rounded-custom shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-custom flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter group-hover:text-navy transition">
+                        <i class="fa-solid fa-address-book"></i>
+                    </div>
+                    <h3 class="font-poppins text-xl font-bold text-navy">Unified CRM & Suppliers</h3>
+                    <p class="font-inter mt-3 text-ink leading-relaxed">Keep all supplier logs, ingredient purchase costs, customer contact details, and GSTIN/Tax IDs in a single address book.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RECIPE COSTING SPOTLIGHT -->
+    <section id="costing" class="py-24 bg-white border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="font-inter text-amber-700 font-bold uppercase tracking-wider text-sm bg-amber-100 px-3 py-1 rounded-custom">Precision Engineering</span>
+                    <h2 class="font-poppins text-3xl sm:text-4xl font-extrabold text-navy mt-4">Stop Guessing Your Margins. Know Your Exact Cost Per Batch.</h2>
+                    <p class="font-inter mt-4 text-ink leading-relaxed">
+                        When ingredient prices fluctuate, your margins shouldn't suffer in silence. CrumbLedger links your inventory purchases directly to your recipe builder. Whenever butter or flour prices change, your product costs update automatically across all recipes.
+                    </p>
+                    <ul class="font-inter mt-6 space-y-4">
+                        <li class="flex items-center space-x-3 text-ink font-medium">
+                            <i class="fa-solid fa-circle-check text-jupiter text-lg"></i>
+                            <span>Labor rate and electricity overhead auto-factoring</span>
+                        </li>
+                        <li class="flex items-center space-x-3 text-ink font-medium">
+                            <i class="fa-solid fa-circle-check text-jupiter text-lg"></i>
+                            <span>Batch yield calculation and custom markup overrides</span>
+                        </li>
+                        <li class="flex items-center space-x-3 text-ink font-medium">
+                            <i class="fa-solid fa-circle-check text-jupiter text-lg"></i>
+                            <span>Instant profit margin recommendations based on competitor benchmarks</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-navy p-6 sm:p-8 rounded-custom text-white shadow-2xl relative border border-slate-800">
+                    <div class="absolute -top-4 -right-4 bg-jupiter text-navy font-bold text-xs px-4 py-2 rounded-custom shadow-lg">
+                        <i class="fa-solid fa-fire mr-1"></i> Most Loved Feature
+                    </div>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest font-inter font-mono">Recipe Breakdown Example</p>
+                    <h3 class="font-poppins text-xl font-bold mt-1">Signature Chocolate Fudge Cake (10 Units)</h3>
+                    <div class="mt-6 space-y-3 font-inter text-sm">
+                        <div class="flex justify-between py-2 border-b border-slate-800 text-slate-300">
+                            <span>Dark Chocolate (500g)</span>
+                            <span class="text-white tabular-nums">$12.50</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-800 text-slate-300">
+                            <span>Unsalted Butter (300g)</span>
+                            <span class="text-white tabular-nums">$4.20</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-800 text-slate-300">
+                            <span>Labor & Oven Energy (45 mins)</span>
+                            <span class="text-white tabular-nums">$6.80</span>
+                        </div>
+                        <div class="flex justify-between py-3 text-base font-bold text-jupiter">
+                            <span>Total Production Cost:</span>
+                            <span class="tabular-nums">$23.50 ($2.35 / unit)</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 font-inter block">Suggested Retail Price</span>
+                            <span class="text-lg font-bold text-yield tabular-nums font-inter">$8.00 / unit</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 font-inter block">Net Profit Margin</span>
+                            <span class="text-xl font-extrabold text-yield tabular-nums font-inter">70.6%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="py-24 bg-paper border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="font-poppins text-3xl sm:text-4xl font-extrabold text-navy tracking-tight">Simple, Transparent Pricing</h2>
+                <p class="font-inter mt-4 text-lg text-ink">Choose the plan that fits your business scale. No hidden fees. Cancel anytime.</p>
+                
+                <!-- Billing Toggle -->
+                <div class="mt-8 inline-flex items-center bg-slate-200 p-1.5 rounded-custom">
+                    <button id="monthly-btn" onclick="setBilling('monthly')" class="px-4 py-2 text-sm font-semibold rounded-custom bg-white text-navy shadow-sm transition">Monthly Billing</button>
+                    <button id="annual-btn" onclick="setBilling('annual')" class="px-4 py-2 text-sm font-semibold rounded-custom text-slate-600 transition">Annual Billing <span class="text-xs text-amber-700 font-bold ml-1">(Save 20%)</span></button>
+                </div>
+            </div>
+
+            <div class="mt-16 max-w-3xl mx-auto">
+                <div class="bg-navy text-white p-8 sm:p-12 rounded-custom shadow-2xl border-2 border-jupiter flex flex-col relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-jupiter text-navy font-poppins font-bold text-xs uppercase tracking-wider px-4 py-1.5 rounded-custom shadow-lg">
+                        All-In-One Plan
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-poppins text-2xl font-bold text-white">CrumbLedger Pro</h3>
+                        <p class="font-inter text-slate-400 text-sm mt-2">Everything you need to run your business profitably.</p>
+                        <div class="mt-6">
+                            <span class="font-inter text-5xl font-extrabold text-white price-main tabular-nums">$6</span>
+                            <span class="font-inter text-slate-400 font-medium">/month</span>
+                        </div>
+                    </div>
+                    <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <ul class="font-inter space-y-4 text-sm text-slate-300">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Advanced Dynamic Recipe Costing</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Unlimited Recipes & Ingredients</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Standard POS & Cart System</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Multi-Location Inventory Sync</li>
+                        </ul>
+                        <ul class="font-inter space-y-4 text-sm text-slate-300">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> B2B Invoicing & Tax Calculation</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Custom Order Pipeline & CRM</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Advanced Financial Accounting Reports</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-jupiter mr-3"></i> Priority Live Chat Support</li>
+                        </ul>
+                    </div>
+                    <div class="mt-12">
+                        <a href="#signup" class="block text-center bg-jupiter hover:bg-amber-400 text-navy font-poppins font-bold py-4 text-lg rounded-custom shadow-lg transition">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="py-24 bg-white border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="font-poppins text-3xl sm:text-4xl font-extrabold text-navy tracking-tight">Loved by Food Entrepreneurs Everywhere</h2>
+                <p class="font-inter mt-4 text-lg text-ink">See how CrumbLedger transformed daily operations and boosted profit margins.</p>
+            </div>
+
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-paper p-8 rounded-custom border border-slate-200 flex flex-col justify-between">
+                    <p class="font-inter text-ink italic">"Before CrumbLedger, I was guessing how much to charge for my custom wedding cakes. Now I know down to the cent. My profit margins jumped by 22% in the first month."</p>
+                    <div class="mt-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-jupiter text-navy rounded-custom flex items-center justify-center font-poppins font-bold text-lg">
+                            SC
+                        </div>
+                        <div>
+                            <p class="font-poppins font-bold text-navy">Sarah Jenkins</p>
+                            <p class="font-inter text-xs text-slate-500">Owner, Sweet Craft Patisserie</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-paper p-8 rounded-custom border border-slate-200 flex flex-col justify-between">
+                    <p class="font-inter text-ink italic">"The inventory low-stock alerts save us from running out of butter and chocolate during peak holiday seasons. The POS and invoicing tools are exceptionally smooth."</p>
+                    <div class="mt-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-jupiter text-navy rounded-custom flex items-center justify-center font-poppins font-bold text-lg">
+                            MR
+                        </div>
+                        <div>
+                            <p class="font-poppins font-bold text-navy">Marcus Ross</p>
+                            <p class="font-inter text-xs text-slate-500">Head Baker, Daily Bread Co.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-paper p-8 rounded-custom border border-slate-200 flex flex-col justify-between">
+                    <p class="font-inter text-ink italic">"Managing wholesale B2B clients used to be a paperwork nightmare. With CrumbLedger's tax invoices and customer CRM, everything is streamlined in seconds."</p>
+                    <div class="mt-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-jupiter text-navy rounded-custom flex items-center justify-center font-poppins font-bold text-lg">
+                            EL
+                        </div>
+                        <div>
+                            <p class="font-poppins font-bold text-navy">Elena Lin</p>
+                            <p class="font-inter text-xs text-slate-500">Founder, Flour & Co.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ ACCORDION -->
+    <section id="faq" class="py-24 bg-paper border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="font-poppins text-3xl sm:text-4xl font-extrabold text-navy tracking-tight">Frequently Asked Questions</h2>
+                <p class="font-inter mt-4 text-lg text-ink">Got questions? We've got answers.</p>
+            </div>
+
+            <div class="mt-12 space-y-4 font-inter">
+                <!-- FAQ Item 1 -->
+                <div class="bg-white rounded-custom border border-slate-200 overflow-hidden shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-navy flex justify-between items-center focus:outline-none">
+                        <span>How does dynamic recipe costing work?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-5 text-ink text-sm leading-relaxed">
+                        CrumbLedger links your raw material purchases directly to your recipe builder. Whenever you log a new supplier delivery with updated prices, your recipe costs and profit margins recalculate automatically across all associated products.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="bg-white rounded-custom border border-slate-200 overflow-hidden shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-navy flex justify-between items-center focus:outline-none">
+                        <span>Can I use CrumbLedger on my tablet or phone?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-5 text-ink text-sm leading-relaxed">
+                        Yes! CrumbLedger is fully responsive and optimized for mobile devices, tablets, and desktop POS terminals so you can check inventory or ring up sales right from the kitchen counter.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="bg-white rounded-custom border border-slate-200 overflow-hidden shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-navy flex justify-between items-center focus:outline-none">
+                        <span>Is my business data secure?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-5 text-ink text-sm leading-relaxed">
+                        We use enterprise-grade Firebase authentication and secure token-based encryption to safeguard all your financial records, customer details, and proprietary recipes.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="bg-white rounded-custom border border-slate-200 overflow-hidden shadow-sm">
+                    <button class="faq-toggle w-full px-6 py-5 text-left font-bold text-navy flex justify-between items-center focus:outline-none">
+                        <span>Can I cancel my subscription at any time?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-5 text-ink text-sm leading-relaxed">
+                        Yes, absolutely. There are no long-term lock-in contracts. You can upgrade, downgrade, or cancel your subscription instantly from your global business profile settings.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <section class="py-20 bg-jupiter text-navy text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="font-poppins text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to Take Control of Your Profits?</h2>
+            <p class="font-inter mt-4 text-navy/90 text-lg max-w-2xl mx-auto">Join thousands of food entrepreneurs who rely on CrumbLedger for billing, inventory, and recipe costing.</p>
+            <div class="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#pricing" class="bg-navy text-white hover:bg-slate-800 font-poppins font-bold px-8 py-4 rounded-custom shadow-xl transition">Start Your 14-Day Free Trial</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-navy text-slate-400 py-12 border-t border-slate-800 font-inter">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 bg-jupiter text-navy rounded-custom flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-cookie-bite"></i>
+                </div>
+                <div class="flex items-baseline">
+                    <span class="font-poppins font-bold text-xl text-white tracking-tight">Crumb</span><span class="font-inter font-light text-base text-jupiter tracking-[0.15em] ml-0.5">LEDGER</span>
+                </div>
+            </div>
+            <p class="text-sm">&copy; 2026 CrumbLedger Technologies Inc. All rights reserved.</p>
+            <div class="flex space-x-6 text-xl">
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- COUNTRY SELECTION MODAL -->
+    <div id="country-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-navy/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 mx-4 transform scale-95 transition-transform duration-300">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-amber-100 text-jupiter rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                    <i class="fa-solid fa-globe"></i>
+                </div>
+                <h3 class="font-poppins text-2xl font-bold text-navy">Select Your Region</h3>
+                <p class="font-inter text-slate-500 mt-2 text-sm">Choose your country to see localized pricing and tax regulations.</p>
+            </div>
+            
+            <div class="space-y-3 font-inter">
+                <button onclick="selectCountry('US')" class="w-full flex items-center justify-between p-4 border border-slate-200 rounded-custom hover:border-jupiter hover:bg-amber-50 transition group">
+                    <span class="flex items-center space-x-3 text-navy font-medium"><i class="fa-solid fa-flag-usa w-6 text-slate-400 group-hover:text-jupiter text-center"></i> <span>United States</span></span>
+                </button>
+                <button onclick="selectCountry('IN')" class="w-full flex items-center justify-between p-4 border border-slate-200 rounded-custom hover:border-jupiter hover:bg-amber-50 transition group">
+                    <span class="flex items-center space-x-3 text-navy font-medium"><i class="fa-solid fa-earth-asia w-6 text-slate-400 group-hover:text-jupiter text-center"></i> <span>India</span></span>
+                </button>
+                <button onclick="selectCountry('GB')" class="w-full flex items-center justify-between p-4 border border-slate-200 rounded-custom hover:border-jupiter hover:bg-amber-50 transition group">
+                    <span class="flex items-center space-x-3 text-navy font-medium"><i class="fa-solid fa-earth-europe w-6 text-slate-400 group-hover:text-jupiter text-center"></i> <span>United Kingdom</span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE JAVASCRIPT -->
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // FAQ Accordion Toggle
+        const faqToggles = document.querySelectorAll('.faq-toggle');
+        faqToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('i');
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        let currentBilling = 'monthly';
+        let currentCountryCode = 'US';
+
+        const pricingData = {
+            'US': { symbol: '$', base: 6 },
+            'IN': { symbol: '₹', base: 500 },
+            'GB': { symbol: '£', base: 4 }
+        };
+
+        function updatePricing() {
+            const data = pricingData[currentCountryCode] || pricingData['US'];
+            
+            let mainPrice = data.base;
+
+            if (currentBilling === 'annual') {
+                // 20% discount for annual
+                mainPrice = Math.round(mainPrice * 0.8);
+            }
+
+            document.querySelector('.price-main').textContent = `${data.symbol}${mainPrice}`;
+        }
+
+        // Pricing Monthly / Annual Toggle
+        function setBilling(type) {
+            currentBilling = type;
+            const monthlyBtn = document.getElementById('monthly-btn');
+            const annualBtn = document.getElementById('annual-btn');
+
+            if (type === 'annual') {
+                annualBtn.classList.add('bg-white', 'text-navy', 'shadow-sm');
+                annualBtn.classList.remove('text-slate-600');
+                monthlyBtn.classList.remove('bg-white', 'text-navy', 'shadow-sm');
+                monthlyBtn.classList.add('text-slate-600');
+            } else {
+                monthlyBtn.classList.add('bg-white', 'text-navy', 'shadow-sm');
+                monthlyBtn.classList.remove('text-slate-600');
+                annualBtn.classList.remove('bg-white', 'text-navy', 'shadow-sm');
+                annualBtn.classList.add('text-slate-600');
+            }
+            updatePricing();
+        }
+
+        // Country Selection Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const countryModal = document.getElementById('country-modal');
+            const modalContent = countryModal.querySelector('div');
+            
+            const savedCountry = localStorage.getItem('crumbledger_country');
+            if (!savedCountry) {
+                // Show modal with a slight delay for better UX
+                setTimeout(() => {
+                    countryModal.classList.remove('hidden');
+                    // Small delay to allow display block to apply before animating opacity
+                    requestAnimationFrame(() => {
+                        countryModal.classList.remove('opacity-0');
+                        modalContent.classList.remove('scale-95');
+                        modalContent.classList.add('scale-100');
+                    });
+                }, 500);
+            } else {
+                currentCountryCode = savedCountry;
+                updatePricing();
+            }
+        });
+
+        function selectCountry(countryCode) {
+            localStorage.setItem('crumbledger_country', countryCode);
+            currentCountryCode = countryCode;
+            updatePricing();
+            
+            const countryModal = document.getElementById('country-modal');
+            const modalContent = countryModal.querySelector('div');
+            
+            // Animate out
+            countryModal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                countryModal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+</body>
+</html>

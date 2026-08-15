@@ -47,8 +47,24 @@ def get_current_user(decoded_token: dict = Depends(verify_token), db: Session = 
     
     user = db.query(models.User).filter(models.User.firebase_uid == firebase_uid).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in database")
-    
+        # Auto-register user and bakery if missing (e.g. if DB was wiped or signup failed)
+        email = decoded_token.get("email", "")
+        bakery_name = f"{email.split('@')[0]}'s Bakery" if email else "My Bakery"
+        
+        new_bakery = models.Bakery(name=bakery_name)
+        db.add(new_bakery)
+        db.commit()
+        db.refresh(new_bakery)
+        
+        user = models.User(
+            firebase_uid=firebase_uid,
+            email=email,
+            bakery_id=new_bakery.id
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
     return user
 
 def require_admin(current_user: models.User = Depends(get_current_user)):
