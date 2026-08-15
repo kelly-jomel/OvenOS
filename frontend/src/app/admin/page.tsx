@@ -98,9 +98,25 @@ export default function AdminDashboard() {
 
   const kpis = useMemo(() => {
     const total = filteredSubscribers.length;
-    const activePro = filteredSubscribers.filter(s => s.subscription_plan === 'pro' && s.subscription_status === 'active').length;
+    const activeProList = filteredSubscribers.filter(s => s.subscription_plan === 'pro' && s.subscription_status === 'active');
     const free = filteredSubscribers.filter(s => s.subscription_plan === 'free').length;
-    return { total, activePro, free };
+    
+    let mrrUsd = 0;
+    let mrrGbp = 0;
+    let mrrInr = 0;
+    activeProList.forEach(s => {
+      if (s.country === 'US') mrrUsd += 10;
+      else if (s.country === 'GB') mrrGbp += 8;
+      else mrrInr += 500;
+    });
+
+    const mrrParts = [];
+    if (mrrUsd > 0) mrrParts.push(`$${mrrUsd}`);
+    if (mrrGbp > 0) mrrParts.push(`£${mrrGbp}`);
+    if (mrrInr > 0) mrrParts.push(`₹${mrrInr}`);
+    const mrrString = mrrParts.length > 0 ? mrrParts.join(' + ') : '₹0';
+
+    return { total, activePro: activeProList.length, free, mrrString };
   }, [filteredSubscribers]);
 
   const countryChartData = useMemo(() => {
@@ -186,7 +202,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* KPIs */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-4">
               <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
                 <div className="px-4 py-5 sm:p-6">
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Bakeries</dt>
@@ -203,6 +219,12 @@ export default function AdminDashboard() {
                 <div className="px-4 py-5 sm:p-6">
                   <dt className="text-sm font-medium text-gray-500 truncate">Free / Trial Users</dt>
                   <dd className="mt-1 text-3xl font-semibold text-gray-900">{kpis.free}</dd>
+                </div>
+              </div>
+              <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
+                <div className="px-4 py-5 sm:p-6">
+                  <dt className="text-sm font-medium text-gray-500 truncate">Monthly Revenue (MRR)</dt>
+                  <dd className="mt-1 text-2xl font-semibold text-green-600">{kpis.mrrString}</dd>
                 </div>
               </div>
             </div>
