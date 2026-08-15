@@ -4,7 +4,7 @@ import TopNav from '@/components/TopNav';
 import BottomNav from '@/components/BottomNav';
 import { useRouter } from 'next/navigation';
 import { useBakery } from '@/context/BakeryContext';
-import Script from 'next/Script';
+import Script from 'next/script';
 
 export default function UpgradePage() {
   const router = useRouter();
