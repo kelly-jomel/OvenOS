@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import TopNav from '@/components/TopNav';
+import { useRouter } from 'next/navigation';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
 
 interface Subscriber {
@@ -20,8 +22,17 @@ export default function AdminDashboard() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/login');
+      } else {
+        fetchSubscribers();
+      }
+    });
+
     const fetchSubscribers = async () => {
       try {
         const response = await api.get('/admin/subscribers');
@@ -36,12 +47,32 @@ export default function AdminDashboard() {
         setLoading(false);
       }
     };
-    fetchSubscribers();
-  }, []);
+
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <TopNav title="Super Admin" />
+    <div className="min-h-screen bg-gray-50 flex flex-col font-data">
+      {/* Standalone Admin Header */}
+      <header className="bg-ledger-navy text-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+             <span className="font-brand font-bold text-xl tracking-tight text-white">Crumb</span>
+             <span className="font-data font-light text-lg tracking-[0.15em] text-jupiter-gold">ADMIN</span>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="text-sm font-medium text-slate-300 hover:text-white transition"
+          >
+            Sign Out
+          </button>
+        </div>
+      </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-8">
