@@ -15,6 +15,8 @@ export default function LoginPage() {
   const [passwordInput, setPasswordInput] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const router = useRouter();
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const redirectPath = searchParams.get('redirect');
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -50,7 +52,13 @@ export default function LoginPage() {
         console.log('User might already exist in backend, continuing...');
       }
       
-      router.push('/profile');
+      if (redirectPath) {
+        router.push(redirectPath);
+      } else if (email === 'sidrockss@gmail.com') {
+        router.push('/admin');
+      } else {
+        router.push('/profile');
+      }
     } catch (err: any) {
       console.error(err);
       setError('Failed to sign in with Google. Please try again.');
@@ -96,7 +104,13 @@ export default function LoginPage() {
         uid = result.user.uid;
       }
       
-      router.push('/profile');
+      if (redirectPath) {
+        router.push(redirectPath);
+      } else if (email === 'sidrockss@gmail.com') {
+        router.push('/admin');
+      } else {
+        router.push('/profile');
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Authentication failed. Please try again.');
