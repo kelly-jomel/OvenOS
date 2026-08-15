@@ -15,7 +15,7 @@ export default function TopNav({ title }: TopNavProps) {
   const { profile } = useBakery();
 
   useEffect(() => {
-    if (profile?.created_at && pathname !== '/upgrade') {
+    if (profile && pathname !== '/upgrade') {
       const createdDate = new Date(profile.created_at);
       const now = new Date();
       const diffTime = Math.abs(now.getTime() - createdDate.getTime());
@@ -24,6 +24,10 @@ export default function TopNav({ title }: TopNavProps) {
       if (diffDays > 15) {
         router.push('/upgrade');
       }
+    }
+
+    if (profile && !profile.trading_name && pathname !== '/profile') {
+      router.push('/profile');
     }
   }, [profile, pathname, router]);
 

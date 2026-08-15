@@ -130,6 +130,17 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 font-sans">
       <TopNav title="Profile" />
 
+      {!profile?.trading_name && (
+        <div className="bg-amber-50 border-b border-amber-200">
+          <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+            <p className="text-sm font-medium text-amber-800 text-center">
+              <i className="fa-solid fa-triangle-exclamation mr-2"></i>
+              Please set your <strong>Trading Name</strong> to complete your profile and unlock the dashboard.
+            </p>
+          </div>
+        </div>
+      )}
+
       <main className="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8 flex gap-8">
         {/* Sidebar Nav */}
         <div className="w-64 flex-shrink-0">
