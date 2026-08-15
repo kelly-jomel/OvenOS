@@ -1,233 +1,511 @@
+'use client';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import React from 'react';
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-paper-white font-data text-ink-grey selection:bg-jupiter-gold selection:text-ledger-navy">
-      {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-paper-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-1">
-            <span className="font-brand font-bold tracking-tighter text-ledger-navy text-2xl">Crumb</span>
-            <span className="font-data font-light tracking-[0.15em] text-ledger-navy text-2xl uppercase">Ledger</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-brand font-medium text-ledger-navy hover:opacity-80 transition-opacity">
-              Log In
-            </Link>
-            <Link href="/signup" className="text-sm font-brand font-bold bg-jupiter-gold text-ledger-navy px-5 py-2 rounded-md hover:bg-yellow-400 transition-colors shadow-sm">
-              Start Free
-            </Link>
-          </div>
-        </div>
-      </header>
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [billingType, setBillingType] = useState('monthly');
+    const [countryCode, setCountryCode] = useState('US');
+    const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
+    const [openFaq, setOpenFaq] = useState(-1);
 
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-24 pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h1 className="font-brand font-extrabold text-5xl md:text-7xl text-ledger-navy tracking-tight mb-6 max-w-4xl mx-auto leading-tight">
-            Bake Your Passion. <br />
-            <span className="text-jupiter-gold">We’ll Handle the Paperwork.</span>
-          </h1>
-          <p className="font-data text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            The all-in-one financial, inventory, and order management app built exclusively for home bakers. Calculate recipe costs to the gram, track your pantry, and collect UPI payments via WhatsApp—all from your kitchen.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/signup" className="font-brand font-bold text-lg bg-ledger-navy text-paper-white px-8 py-4 rounded-md hover:bg-gray-800 transition-colors shadow-lg shadow-ledger-navy/20">
-              Start Your Kitchen Ledger (Free)
-            </Link>
-            <a href="#features" className="font-brand font-bold text-lg bg-white text-ledger-navy border border-gray-200 px-8 py-4 rounded-md hover:bg-gray-50 transition-colors shadow-sm">
-              See How It Works
-            </a>
-          </div>
-          <p className="font-data text-sm text-gray-500 mt-6">
-            Join hundreds of home bakers simplifying their business today. No credit card required.
-          </p>
-        </div>
-        
-        {/* Subtle Background Elements */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-jupiter-gold/10 rounded-full blur-3xl -z-10"></div>
-      </section>
+    const pricingData: Record<string, { symbol: string, base: number }> = {
+        'US': { symbol: '$', base: 6 },
+        'IN': { symbol: '₹', base: 500 },
+        'GB': { symbol: '£', base: 4 }
+    };
 
-      {/* CORE FEATURES */}
-      <section id="features" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-brand font-bold text-3xl md:text-4xl text-ledger-navy tracking-tight">
-              Everything you need. Nothing you don't.
-            </h2>
-            <p className="font-data mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
-              Punchy, action-oriented tools built to simplify your baking business.
+    useEffect(() => {
+        const savedCountry = localStorage.getItem('crumbledger_country');
+        if (!savedCountry) {
+            setTimeout(() => {
+                setIsCountryModalOpen(true);
+            }, 500);
+        } else {
+            setCountryCode(savedCountry);
+        }
+    }, []);
+
+    const selectCountry = (code: string) => {
+        localStorage.setItem('crumbledger_country', code);
+        setCountryCode(code);
+        setIsCountryModalOpen(false);
+    };
+
+    const currentPricing = pricingData[countryCode] || pricingData['US'];
+    let mainPrice = currentPricing.base;
+    if (billingType === 'annual') {
+        mainPrice = Math.round(mainPrice * 0.8);
+    }
+
+    const toggleFaq = (index: number) => {
+        setOpenFaq(openFaq === index ? -1 : index);
+    };
+
+    return (
+        <div className="min-h-screen bg-paper-white font-data text-ink-grey selection:bg-jupiter-gold selection:text-ledger-navy">
+
+
+    {/*  NAVIGATION  */}
+    <header className="sticky top-0 z-50 bg-ledger-navy text-white border-b border-ledger-navy/80 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            {/*  Logo with Dual Typography  */}
+            <div className="flex items-center space-x-2.5">
+                <div className="w-10 h-10 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-bold text-xl shadow-md">
+                    <i className="fa-solid fa-cookie-bite"></i>
+                </div>
+                <div className="flex items-baseline">
+                    <span className="font-brand font-bold text-2xl text-white tracking-tight">Crumb</span><span className="font-data font-light text-xl text-jupiter-gold tracking-[0.15em] ml-0.5">LEDGER</span>
+                </div>
+            </div>
+
+            {/*  Desktop Nav Links  */}
+            <nav className="hidden md:flex items-center space-x-8 font-data font-medium text-slate-300">
+                <a href="#features" className="hover:text-jupiter-gold transition">Features</a>
+                <a href="#costing" className="hover:text-jupiter-gold transition">Recipe Costing</a>
+                <a href="#pricing" className="hover:text-jupiter-gold transition">Pricing</a>
+                <a href="#faq" className="hover:text-jupiter-gold transition">FAQ</a>
+            </nav>
+
+            {/*  CTA Actions  */}
+            <div className="hidden md:flex items-center space-x-4">
+                <a href="https://app.crumbledger.com/login" className="text-slate-300 font-data font-semibold hover:text-white transition">Sign In</a>
+                <a href="https://app.crumbledger.com/login" className="bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold px-5 py-2.5 rounded-md shadow-md transition transform hover:-translate-y-0.5">Start Free Trial</a>
+            </div>
+
+            {/*  Mobile Menu Button  */}
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-slate-300 focus:outline-none text-2xl">
+                <i className="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        {/*  Mobile Menu  */}
+        <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-ledger-navy border-t border-slate-800 px-6 py-6 space-y-4 shadow-xl`}>
+            <a href="#features" className="block text-slate-300 font-medium hover:text-jupiter-gold">Features</a>
+            <a href="#costing" className="block text-slate-300 font-medium hover:text-jupiter-gold">Recipe Costing</a>
+            <a href="#pricing" className="block text-slate-300 font-medium hover:text-jupiter-gold">Pricing</a>
+            <a href="#faq" className="block text-slate-300 font-medium hover:text-jupiter-gold">FAQ</a>
+            <div className="pt-4 border-t border-slate-800 flex flex-col space-y-3">
+                <a href="https://app.crumbledger.com/login" className="text-center text-slate-300 font-semibold py-2">Sign In</a>
+                <a href="https://app.crumbledger.com/login" className="text-center bg-jupiter-gold text-ledger-navy font-bold py-3 rounded-md shadow-md">Start Free Trial</a>
+            </div>
+        </div>
+    </header>
+
+    {/*  HERO SECTION  */}
+    <section className="relative overflow-hidden pt-20 pb-24 lg:pt-32 lg:pb-36 bg-paper-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div className="inline-flex items-center space-x-2 bg-amber-100 text-amber-800 px-4 py-1.5 rounded-md text-sm font-semibold mb-6 shadow-sm">
+                <i className="fa-solid fa-bolt-lightning text-jupiter-gold"></i>
+                <span>Jupiter Wealth Expansion Architecture</span>
+            </div>
+            <h1 className="font-brand text-4xl sm:text-5xl lg:text-6xl font-extrabold text-ledger-navy tracking-tight max-w-4xl mx-auto leading-tight">
+                Stop Guessing Profit Margins. <span className="text-amber-600">Master Your Ledger.</span>
+            </h1>
+            <p className="font-data mt-6 text-lg sm:text-xl text-ink-grey max-w-2xl mx-auto leading-relaxed">
+                The ultimate operating system for independent bakers, food creators, and micro-merchants. Automate inventory tracking, precise ingredient costing, POS billing, and tax invoicing in one place.
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Feature 1 */}
-            <div className="bg-paper-white p-8 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              <div className="w-12 h-12 bg-jupiter-gold/20 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                ⚖️
-              </div>
-              <h3 className="font-brand font-bold text-xl text-ledger-navy mb-3">Never Guess Your Profits Again.</h3>
-              <p className="font-data text-gray-600 text-sm mb-4 leading-relaxed flex-1">
-                Input your ingredients in grams or liters, and CrumbLedger automatically calculates the exact cost per batch. Know your true profit margin on every single cupcake.
-              </p>
-              <p className="font-data text-xs font-semibold text-yield-green tracking-wide uppercase">
-                Profitability, down to the last gram.
-              </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-5">
+                <a href="https://app.crumbledger.com/login" className="w-full sm:w-auto bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md shadow-lg transition transform hover:-translate-y-1">
+                    Start 14-Day Free Trial <i className="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                </a>
+                <a href="#demo" className="w-full sm:w-auto bg-white hover:bg-slate-100 text-ledger-navy font-brand font-bold text-lg px-8 py-4 rounded-md border border-slate-300 shadow-sm transition">
+                    <i className="fa-solid fa-play text-jupiter-gold mr-2"></i> Watch 2-Min Demo
+                </a>
             </div>
+            <p className="mt-4 text-xs text-slate-500 font-data font-medium">No credit card required • Setup takes less than 3 minutes</p>
 
-            {/* Feature 2 */}
-            <div className="bg-paper-white p-8 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              <div className="w-12 h-12 bg-ledger-navy/10 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                📦
-              </div>
-              <h3 className="font-brand font-bold text-xl text-ledger-navy mb-3">Track Your Stock, Stop the Waste.</h3>
-              <p className="font-data text-gray-600 text-sm mb-4 leading-relaxed flex-1">
-                Keep a digital eye on your flour, butter, and fondant. Our smart inventory system deducts ingredients as you log orders and alerts you before you run out.
-              </p>
-              <p className="font-data text-xs font-semibold text-ledger-navy tracking-wide uppercase">
-                Never run out of vanilla extract.
-              </p>
+            {/*  Dashboard Mockup Preview with Tabular Inter Figures  */}
+            <div className="mt-14 max-w-5xl mx-auto rounded-md shadow-2xl border border-slate-300 bg-ledger-navy overflow-hidden p-3 sm:p-5 text-left">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div className="flex items-center space-x-2">
+                        <span className="w-3 h-3 bg-red-500 rounded-full inline-block"></span>
+                        <span className="w-3 h-3 bg-yellow-500 rounded-full inline-block"></span>
+                        <span className="w-3 h-3 bg-yield-green rounded-full inline-block"></span>
+                        <span className="text-xs text-slate-400 ml-2 font-data font-mono">crumbledger.app/dashboard</span>
+                    </div>
+                    <span className="text-xs bg-yield-green/20 text-yield-green px-3 py-1 rounded-md font-data font-medium"><i className="fa-solid fa-circle text-[8px] mr-1.5 animate-pulse"></i> Live Sync Active</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                    <div className="bg-slate-800/90 p-4 rounded-md border border-slate-700">
+                        <p className="text-xs text-slate-400 font-data">Today's Net Revenue</p>
+                        <p className="text-2xl font-data font-bold text-white mt-1 tabular-nums">$2,480.50</p>
+                        <span className="text-xs text-yield-green font-data font-semibold mt-1 inline-block"><i className="fa-solid fa-arrow-up"></i> +14.2% vs yesterday</span>
+                    </div>
+                    <div className="bg-slate-800/90 p-4 rounded-md border border-slate-700">
+                        <p className="text-xs text-slate-400 font-data">Pending Orders</p>
+                        <p className="text-2xl font-data font-bold text-jupiter-gold mt-1 tabular-nums">18 Orders</p>
+                        <span className="text-xs text-amber-400 font-data font-semibold mt-1 inline-block"><i className="fa-solid fa-clock"></i> 4 require delivery today</span>
+                    </div>
+                    <div className="bg-slate-800/90 p-4 rounded-md border border-slate-700">
+                        <p className="text-xs text-slate-400 font-data">Low Stock Warning</p>
+                        <p className="text-2xl font-data font-bold text-red-400 mt-1 tabular-nums">2 Items</p>
+                        <span className="text-xs text-red-400 font-data font-semibold mt-1 inline-block"><i className="fa-solid fa-triangle-exclamation"></i> Butter & Dark Chocolate</span>
+                    </div>
+                </div>
             </div>
-
-            {/* Feature 3 */}
-            <div className="bg-paper-white p-8 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              <div className="w-12 h-12 bg-jupiter-gold/20 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                🧾
-              </div>
-              <h3 className="font-brand font-bold text-xl text-ledger-navy mb-3">Professional Invoices in Seconds.</h3>
-              <p className="font-data text-gray-600 text-sm mb-4 leading-relaxed flex-1">
-                Generate beautiful, GST-compliant invoices with just a few taps. Add your logo, apply custom discounts, and send them directly to your clients.
-              </p>
-              <p className="font-data text-xs font-semibold text-yield-green tracking-wide uppercase">
-                Look professional. Get paid faster.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="bg-paper-white p-8 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              <div className="w-12 h-12 bg-ledger-navy/10 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                🏪
-              </div>
-              <h3 className="font-brand font-bold text-xl text-ledger-navy mb-3">Your Own Bakery Website.</h3>
-              <p className="font-data text-gray-600 text-sm mb-4 leading-relaxed flex-1">
-                Stop taking orders via chaotic Instagram DMs. Launch a custom-branded digital storefront where customers can browse your menu, place orders, and pay instantly.
-              </p>
-              <p className="font-data text-xs font-semibold text-ledger-navy tracking-wide uppercase">
-                Sell while you sleep.
-              </p>
-            </div>
-          </div>
         </div>
-      </section>
+    </section>
 
-      {/* NOTIFICATIONS SECTION */}
-      <section className="py-24 bg-ledger-navy text-paper-white overflow-hidden">
+    {/*  SOCIAL PROOF / TRUST BADGES  */}
+    <section className="py-12 bg-white border-y border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+            <p className="text-xs font-data font-bold tracking-widest text-slate-500 uppercase mb-8">Trusted by over 2,000+ independent patisseries, bakeries & food manufacturers</p>
+            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-16 opacity-70 grayscale hover:grayscale-0 transition duration-300">
+                <span className="font-brand text-xl font-extrabold tracking-tighter text-ledger-navy"><i className="fa-solid fa-wheat-awn mr-1 text-jupiter-gold"></i> ArtisanCrust</span>
+                <span className="font-brand text-xl font-extrabold tracking-tighter text-ledger-navy"><i className="fa-solid fa-cake-candles mr-1 text-jupiter-gold"></i> SweetBoutique</span>
+                <span className="font-brand text-xl font-extrabold tracking-tighter text-ledger-navy"><i className="fa-solid fa-mug-hot mr-1 text-jupiter-gold"></i> MorningPastry</span>
+                <span className="font-brand text-xl font-extrabold tracking-tighter text-ledger-navy"><i className="fa-solid fa-cookie mr-1 text-jupiter-gold"></i> TheDailyCookie</span>
+            </div>
+        </div>
+    </section>
+
+    {/*  INTERACTIVE FEATURES SECTION  */}
+    <section  className="py-24 bg-paper-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="font-brand font-bold text-3xl md:text-5xl tracking-tight mb-6 text-white">
-                Seamless WhatsApp & <span className="text-jupiter-gold">UPI Integrations</span>
-              </h2>
-              <p className="font-data text-lg text-gray-300 mb-8 leading-relaxed">
-                Keep your customers in the loop without the manual hassle. CrumbLedger automates your communication so you can focus on the oven.
-              </p>
-              <ul className="space-y-6">
-                <li className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-md bg-jupiter-gold flex items-center justify-center shrink-0 mt-1 text-ledger-navy font-bold">✓</div>
-                  <div>
-                    <h4 className="font-brand font-bold text-xl text-white">Automated Order Confirmations</h4>
-                    <p className="font-data text-gray-400 text-sm mt-1">Send beautiful WhatsApp messages confirming cake details and delivery times.</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-md bg-jupiter-gold flex items-center justify-center shrink-0 mt-1 text-ledger-navy font-bold">✓</div>
-                  <div>
-                    <h4 className="font-brand font-bold text-xl text-white">One-Click UPI Reminders</h4>
-                    <p className="font-data text-gray-400 text-sm mt-1">Stop chasing payments awkwardly. Send a gentle reminder with a direct UPI payment link.</p>
-                  </div>
-                </li>
-              </ul>
+            <div className="text-center max-w-3xl mx-auto">
+                <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Everything You Need to Run Your Business Profitably</h2>
+                <p className="font-data mt-4 text-lg text-ink-grey">Built from the ground up for food and retail entrepreneurs who need precision down to the single gram.</p>
             </div>
 
-            {/* Simulated Phone UI */}
-            <div className="relative mx-auto w-full max-w-sm">
-              <div className="absolute inset-0 bg-jupiter-gold/20 blur-3xl rounded-full"></div>
-              <div className="relative bg-paper-white rounded-[2.5rem] border-[8px] border-gray-900 shadow-2xl p-4 overflow-hidden h-[600px] flex flex-col font-data text-ink-grey">
-                {/* Phone Header */}
-                <div className="bg-white -mx-4 -mt-4 px-4 pt-10 pb-4 border-b border-gray-200 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-yield-green rounded-full flex items-center justify-center text-white text-lg shadow-sm">
-                    💬
-                  </div>
-                  <div>
-                    <p className="font-brand font-bold text-ink-grey text-sm">CrumbLedger Bot</p>
-                    <p className="text-xs text-gray-500">Online</p>
-                  </div>
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/*  Feature 1  */}
+                <div className="bg-white p-8 rounded-md shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter-gold group-hover:text-ledger-navy transition">
+                        <i className="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 className="font-brand text-xl font-bold text-ledger-navy">Dynamic Recipe Costing</h3>
+                    <p className="font-data mt-3 text-ink-grey leading-relaxed">Auto-calculate exact production costs based on real-time ingredient purchases, labor rates, and custom overhead factors.</p>
                 </div>
-                {/* Chat Bubbles */}
-                <div className="flex-1 overflow-y-auto pt-6 space-y-4">
-                  <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm p-3 shadow-sm w-[85%]">
-                    <p className="text-sm">
-                      Hi Priya! 🧁 Your order for <strong>Chocolate Truffle (1kg)</strong> is confirmed. Total: ₹1,200. We’re excited to bake this for you! You can track your status here: crb.so/trk
-                    </p>
-                    <p className="text-[10px] text-gray-400 text-right mt-1">10:42 AM</p>
-                  </div>
-                  
-                  <div className="bg-[#E8F8F5] border border-[#A2D9CE] rounded-2xl rounded-tl-sm p-3 shadow-sm w-[85%] mt-6">
-                    <p className="text-sm text-ledger-navy">
-                      Hi Priya, a gentle reminder that a balance of <strong>₹600</strong> is pending for your bakery order. You can pay instantly via UPI here: crb.so/pay. Thank you! 🎂
-                    </p>
-                    <p className="text-[10px] text-gray-400 text-right mt-1">11:15 AM</p>
-                  </div>
 
-                  <div className="bg-[#FDEDEC] border border-[#F5B7B1] rounded-2xl rounded-tr-sm p-3 shadow-sm w-[85%] self-end ml-auto mt-6">
-                    <p className="text-sm text-red-900">
-                      🚨 <strong>Heads up!</strong> You have less than 500g of Callebaut Dark Chocolate left. Tap here to reorder from your supplier.
-                    </p>
-                    <p className="text-[10px] text-gray-400 text-right mt-1">12:30 PM</p>
-                  </div>
+                {/*  Feature 2  */}
+                <div className="bg-white p-8 rounded-md shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter-gold group-hover:text-ledger-navy transition">
+                        <i className="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <h3 className="font-brand text-xl font-bold text-ledger-navy">Granular Inventory Tracking</h3>
+                    <p className="font-data mt-3 text-ink-grey leading-relaxed">Track raw materials by precise units (grams, kg, ml), manage stock thresholds, tag allergens, and monitor expiry batches easily.</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* FOOTER (Empathy & Final CTA) */}
-      <footer className="bg-paper-white pt-24 pb-12 border-t border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="font-brand font-bold text-3xl md:text-4xl text-ledger-navy mb-6">
-            Built By Bakers, For Bakers.
-          </h2>
-          <p className="font-data text-lg text-gray-600 mb-10 leading-relaxed">
-            We know that baking is a science, but running a business shouldn't feel like one. 
-            Whether you're struggling to calculate baking shrinkage, confused about HSN codes for GST, or just tired of forgetting who owes you an advance payment—CrumbLedger is designed to feel like a helpful assistant sitting right on your kitchen counter.
-          </p>
-          <div className="bg-jupiter-gold/10 border border-jupiter-gold/30 rounded-md p-8 md:p-12 mb-16 shadow-inner">
-            <h3 className="font-brand font-bold text-2xl text-ledger-navy mb-4">
-              Ready to turn your passion into a profitable business?
-            </h3>
-            <Link href="/signup" className="inline-block font-brand font-bold text-lg bg-ledger-navy text-paper-white px-8 py-4 rounded-md hover:bg-gray-800 transition-colors shadow-lg">
-              Open My Ledger Today
-            </Link>
-          </div>
-          
-          <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-200 pt-8 mt-8">
-            <div className="flex items-center gap-1 mb-4 md:mb-0 opacity-80">
-              <span className="font-brand font-bold tracking-tight text-ledger-navy text-xl">Crumb</span>
-              <span className="font-data font-light tracking-[0.15em] text-ledger-navy text-xl uppercase">Ledger</span>
+                {/*  Feature 3  */}
+                <div className="bg-white p-8 rounded-md shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter-gold group-hover:text-ledger-navy transition">
+                        <i className="fa-solid fa-cash-register"></i>
+                    </div>
+                    <h3 className="font-brand text-xl font-bold text-ledger-navy">Lightning-Fast POS & Cart</h3>
+                    <p className="font-data mt-3 text-ink-grey leading-relaxed">Ring up walk-in customers instantly with an optimized cart system and auto-sync inventory levels instantly upon checkout.</p>
+                </div>
+
+                {/*  Feature 4  */}
+                <div className="bg-white p-8 rounded-md shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter-gold group-hover:text-ledger-navy transition">
+                        <i className="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <h3 className="font-brand text-xl font-bold text-ledger-navy">Custom Order Management</h3>
+                    <p className="font-data mt-3 text-ink-grey leading-relaxed">Never lose track of custom orders or catering events with scheduled delivery times and linked customer profiles.</p>
+                </div>
+
+                {/*  Feature 5  */}
+                <div className="bg-white p-8 rounded-md shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter-gold group-hover:text-ledger-navy transition">
+                        <i className="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3 className="font-brand text-xl font-bold text-ledger-navy">B2B Invoicing & Quotes</h3>
+                    <p className="font-data mt-3 text-ink-grey leading-relaxed">Generate professional tax-compliant invoices, track accounts receivable, and send polished price quotes for wholesale clients.</p>
+                </div>
+
+                {/*  Feature 6  */}
+                <div className="bg-white p-8 rounded-md shadow-sm border border-slate-200 hover:shadow-xl transition group">
+                    <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center text-2xl mb-6 group-hover:bg-jupiter-gold group-hover:text-ledger-navy transition">
+                        <i className="fa-solid fa-address-book"></i>
+                    </div>
+                    <h3 className="font-brand text-xl font-bold text-ledger-navy">Unified CRM & Suppliers</h3>
+                    <p className="font-data mt-3 text-ink-grey leading-relaxed">Keep all supplier logs, ingredient purchase costs, customer contact details, and GSTIN/Tax IDs in a single address book.</p>
+                </div>
             </div>
-            <div className="flex gap-6 text-sm text-gray-500 font-data">
-              <Link href="/terms" className="hover:text-ledger-navy transition-colors">Terms of Service</Link>
-              <Link href="/privacy" className="hover:text-ledger-navy transition-colors">Privacy Policy</Link>
-              <a href="#" className="hover:text-ledger-navy transition-colors">Contact Support</a>
-            </div>
-          </div>
-          <p className="text-gray-400 text-xs mt-6 font-data">
-            &copy; {new Date().getFullYear()} CrumbLedger. All rights reserved. Made with ❤️ for bakers everywhere.
-          </p>
         </div>
-      </footer>
+    </section>
+
+    {/*  RECIPE COSTING SPOTLIGHT  */}
+    <section  className="py-24 bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span className="font-data text-amber-700 font-bold uppercase tracking-wider text-sm bg-amber-100 px-3 py-1 rounded-md">Precision Engineering</span>
+                    <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy mt-4">Stop Guessing Your Margins. Know Your Exact Cost Per Batch.</h2>
+                    <p className="font-data mt-4 text-ink-grey leading-relaxed">
+                        When ingredient prices fluctuate, your margins shouldn't suffer in silence. CrumbLedger links your inventory purchases directly to your recipe builder. Whenever butter or flour prices change, your product costs update automatically across all recipes.
+                    </p>
+                    <ul className="font-data mt-6 space-y-4">
+                        <li className="flex items-center space-x-3 text-ink-grey font-medium">
+                            <i className="fa-solid fa-circle-check text-jupiter-gold text-lg"></i>
+                            <span>Labor rate and electricity overhead auto-factoring</span>
+                        </li>
+                        <li className="flex items-center space-x-3 text-ink-grey font-medium">
+                            <i className="fa-solid fa-circle-check text-jupiter-gold text-lg"></i>
+                            <span>Batch yield calculation and custom markup overrides</span>
+                        </li>
+                        <li className="flex items-center space-x-3 text-ink-grey font-medium">
+                            <i className="fa-solid fa-circle-check text-jupiter-gold text-lg"></i>
+                            <span>Instant profit margin recommendations based on competitor benchmarks</span>
+                        </li>
+                    </ul>
+                </div>
+                <div className="bg-ledger-navy p-6 sm:p-8 rounded-md text-white shadow-2xl relative border border-slate-800">
+                    <div className="absolute -top-4 -right-4 bg-jupiter-gold text-ledger-navy font-bold text-xs px-4 py-2 rounded-md shadow-lg">
+                        <i className="fa-solid fa-fire mr-1"></i> Most Loved Feature
+                    </div>
+                    <p className="text-xs text-slate-400 uppercase tracking-widest font-data font-mono">Recipe Breakdown Example</p>
+                    <h3 className="font-brand text-xl font-bold mt-1">Signature Chocolate Fudge Cake (10 Units)</h3>
+                    <div className="mt-6 space-y-3 font-data text-sm">
+                        <div className="flex justify-between py-2 border-b border-slate-800 text-slate-300">
+                            <span>Dark Chocolate (500g)</span>
+                            <span className="text-white tabular-nums">$12.50</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-slate-800 text-slate-300">
+                            <span>Unsalted Butter (300g)</span>
+                            <span className="text-white tabular-nums">$4.20</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-slate-800 text-slate-300">
+                            <span>Labor & Oven Energy (45 mins)</span>
+                            <span className="text-white tabular-nums">$6.80</span>
+                        </div>
+                        <div className="flex justify-between py-3 text-base font-bold text-jupiter-gold">
+                            <span>Total Production Cost:</span>
+                            <span className="tabular-nums">$23.50 ($2.35 / unit)</span>
+                        </div>
+                    </div>
+                    <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span className="text-xs text-slate-400 font-data block">Suggested Retail Price</span>
+                            <span className="text-lg font-bold text-yield-green tabular-nums font-data">$8.00 / unit</span>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-xs text-slate-400 font-data block">Net Profit Margin</span>
+                            <span className="text-xl font-extrabold text-yield-green tabular-nums font-data">70.6%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {/*  PRICING SECTION  */}
+    <section  className="py-24 bg-paper-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto">
+                <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Simple, Transparent Pricing</h2>
+                <p className="font-data mt-4 text-lg text-ink-grey">Choose the plan that fits your business scale. No hidden fees. Cancel anytime.</p>
+                
+                {/*  Billing Toggle  */}
+                <div className="mt-8 inline-flex items-center bg-slate-200 p-1.5 rounded-md">
+                    <button onClick={() => setBillingType('monthly')} className={`px-4 py-2 text-sm font-semibold rounded-md transition ${billingType === 'monthly' ? 'bg-white text-ledger-navy shadow-sm' : 'text-slate-600'}`}>Monthly Billing</button>
+                    <button onClick={() => setBillingType('annual')} className={`px-4 py-2 text-sm font-semibold rounded-md transition ${billingType === 'annual' ? 'bg-white text-ledger-navy shadow-sm' : 'text-slate-600'}`}>Annual Billing <span className="text-xs text-amber-700 font-bold ml-1">(Save 20%)</span></button>
+                </div>
+            </div>
+
+            <div className="mt-16 max-w-3xl mx-auto">
+                <div className="bg-ledger-navy text-white p-8 sm:p-12 rounded-md shadow-2xl border-2 border-jupiter-gold flex flex-col relative">
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-jupiter-gold text-ledger-navy font-brand font-bold text-xs uppercase tracking-wider px-4 py-1.5 rounded-md shadow-lg">
+                        All-In-One Plan
+                    </div>
+                    <div className="text-center">
+                        <h3 className="font-brand text-2xl font-bold text-white">CrumbLedger Pro</h3>
+                        <p className="font-data text-slate-400 text-sm mt-2">Everything you need to run your business profitably.</p>
+                        <div className="mt-6">
+                            <span className="font-data text-5xl font-extrabold text-white price-main tabular-nums">{currentPricing.symbol}{mainPrice}</span>
+                            <span className="font-data text-slate-400 font-medium">/month</span>
+                        </div>
+                    </div>
+                    <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <ul className="font-data space-y-4 text-sm text-slate-300">
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Advanced Dynamic Recipe Costing</li>
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Unlimited Recipes & Ingredients</li>
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Standard POS & Cart System</li>
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Multi-Location Inventory Sync</li>
+                        </ul>
+                        <ul className="font-data space-y-4 text-sm text-slate-300">
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> B2B Invoicing & Tax Calculation</li>
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Custom Order Pipeline & CRM</li>
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Advanced Financial Accounting Reports</li>
+                            <li className="flex items-center"><i className="fa-solid fa-check text-jupiter-gold mr-3"></i> Priority Live Chat Support</li>
+                        </ul>
+                    </div>
+                    <div className="mt-12">
+                        <a href="https://app.crumbledger.com/login" className="block text-center bg-jupiter-gold hover:bg-amber-400 text-ledger-navy font-brand font-bold py-4 text-lg rounded-md shadow-lg transition">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {/*  TESTIMONIALS SECTION  */}
+    <section className="py-24 bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto">
+                <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Loved by Food Entrepreneurs Everywhere</h2>
+                <p className="font-data mt-4 text-lg text-ink-grey">See how CrumbLedger transformed daily operations and boosted profit margins.</p>
+            </div>
+
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-paper-white p-8 rounded-md border border-slate-200 flex flex-col justify-between">
+                    <p className="font-data text-ink-grey italic">"Before CrumbLedger, I was guessing how much to charge for my custom wedding cakes. Now I know down to the cent. My profit margins jumped by 22% in the first month."</p>
+                    <div className="mt-6 flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-brand font-bold text-lg">
+                            SC
+                        </div>
+                        <div>
+                            <p className="font-brand font-bold text-ledger-navy">Sarah Jenkins</p>
+                            <p className="font-data text-xs text-slate-500">Owner, Sweet Craft Patisserie</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-paper-white p-8 rounded-md border border-slate-200 flex flex-col justify-between">
+                    <p className="font-data text-ink-grey italic">"The inventory low-stock alerts save us from running out of butter and chocolate during peak holiday seasons. The POS and invoicing tools are exceptionally smooth."</p>
+                    <div className="mt-6 flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-brand font-bold text-lg">
+                            MR
+                        </div>
+                        <div>
+                            <p className="font-brand font-bold text-ledger-navy">Marcus Ross</p>
+                            <p className="font-data text-xs text-slate-500">Head Baker, Daily Bread Co.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-paper-white p-8 rounded-md border border-slate-200 flex flex-col justify-between">
+                    <p className="font-data text-ink-grey italic">"Managing wholesale B2B clients used to be a paperwork nightmare. With CrumbLedger's tax invoices and customer CRM, everything is streamlined in seconds."</p>
+                    <div className="mt-6 flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-brand font-bold text-lg">
+                            EL
+                        </div>
+                        <div>
+                            <p className="font-brand font-bold text-ledger-navy">Elena Lin</p>
+                            <p className="font-data text-xs text-slate-500">Founder, Flour & Co.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {/*  FAQ ACCORDION  */}
+    <section  className="py-24 bg-paper-white border-t border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+                <h2 className="font-brand text-3xl sm:text-4xl font-extrabold text-ledger-navy tracking-tight">Frequently Asked Questions</h2>
+                <p className="font-data mt-4 text-lg text-ink-grey">Got questions? We've got answers.</p>
+            </div>
+
+            <div className="mt-12 space-y-4 font-data">
+                {/*  FAQ Item 1  */}
+                <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
+                    <button onClick={() => toggleFaq(0)} className="faq-toggle w-full px-6 py-5 text-left font-bold text-ledger-navy flex justify-between items-center focus:outline-none">
+                        <span>How does dynamic recipe costing work?</span>
+                        <i className={`fa-solid fa-chevron-down text-slate-400 transition-transform duration-200 ${openFaq === 0 ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    <div className={`faq-content px-6 pb-5 text-ink-grey text-sm leading-relaxed ${openFaq === 0 ? 'block' : 'hidden'}`}>
+                        CrumbLedger links your raw material purchases directly to your recipe builder. Whenever you log a new supplier delivery with updated prices, your recipe costs and profit margins recalculate automatically across all associated products.
+                    </div>
+                </div>
+
+                {/*  FAQ Item 2  */}
+                <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
+                    <button onClick={() => toggleFaq(1)} className="faq-toggle w-full px-6 py-5 text-left font-bold text-ledger-navy flex justify-between items-center focus:outline-none">
+                        <span>Can I use CrumbLedger on my tablet or phone?</span>
+                        <i className={`fa-solid fa-chevron-down text-slate-400 transition-transform duration-200 ${openFaq === 1 ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    <div className={`faq-content px-6 pb-5 text-ink-grey text-sm leading-relaxed ${openFaq === 1 ? 'block' : 'hidden'}`}>
+                        Yes! CrumbLedger is fully responsive and optimized for mobile devices, tablets, and desktop POS terminals so you can check inventory or ring up sales right from the kitchen counter.
+                    </div>
+                </div>
+
+                {/*  FAQ Item 3  */}
+                <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
+                    <button onClick={() => toggleFaq(2)} className="faq-toggle w-full px-6 py-5 text-left font-bold text-ledger-navy flex justify-between items-center focus:outline-none">
+                        <span>Is my business data secure?</span>
+                        <i className={`fa-solid fa-chevron-down text-slate-400 transition-transform duration-200 ${openFaq === 2 ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    <div className={`faq-content px-6 pb-5 text-ink-grey text-sm leading-relaxed ${openFaq === 2 ? 'block' : 'hidden'}`}>
+                        We use enterprise-grade Firebase authentication and secure token-based encryption to safeguard all your financial records, customer details, and proprietary recipes.
+                    </div>
+                </div>
+
+                {/*  FAQ Item 4  */}
+                <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
+                    <button onClick={() => toggleFaq(3)} className="faq-toggle w-full px-6 py-5 text-left font-bold text-ledger-navy flex justify-between items-center focus:outline-none">
+                        <span>Can I cancel my subscription at any time?</span>
+                        <i className={`fa-solid fa-chevron-down text-slate-400 transition-transform duration-200 ${openFaq === 3 ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    <div className={`faq-content px-6 pb-5 text-ink-grey text-sm leading-relaxed ${openFaq === 3 ? 'block' : 'hidden'}`}>
+                        Yes, absolutely. There are no long-term lock-in contracts. You can upgrade, downgrade, or cancel your subscription instantly from your global business profile settings.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {/*  FOOTER CTA  */}
+    <section className="py-20 bg-jupiter-gold text-ledger-navy text-center">
+        <div className="max-w-4xl mx-auto px-4">
+            <h2 className="font-brand text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to Take Control of Your Profits?</h2>
+            <p className="font-data mt-4 text-ledger-navy/90 text-lg max-w-2xl mx-auto">Join thousands of food entrepreneurs who rely on CrumbLedger for billing, inventory, and recipe costing.</p>
+            <div className="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="https://app.crumbledger.com/login" className="bg-ledger-navy text-white hover:bg-slate-800 font-brand font-bold px-8 py-4 rounded-md shadow-xl transition">Start Your 14-Day Free Trial</a>
+            </div>
+        </div>
+    </section>
+
+    {/*  FOOTER  */}
+    <footer className="bg-ledger-navy text-slate-400 py-12 border-t border-slate-800 font-data">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+            <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 bg-jupiter-gold text-ledger-navy rounded-md flex items-center justify-center font-bold">
+                    <i className="fa-solid fa-cookie-bite"></i>
+                </div>
+                <div className="flex items-baseline">
+                    <span className="font-brand font-bold text-xl text-white tracking-tight">Crumb</span><span className="font-data font-light text-base text-jupiter-gold tracking-[0.15em] ml-0.5">LEDGER</span>
+                </div>
+            </div>
+            <p className="text-sm">&copy; 2026 CrumbLedger Technologies Inc. All rights reserved.</p>
+            <div className="flex space-x-6 text-xl">
+                <a href="#" className="hover:text-white transition"><i className="fa-brands fa-twitter"></i></a>
+                <a href="#" className="hover:text-white transition"><i className="fa-brands fa-facebook"></i></a>
+                <a href="#" className="hover:text-white transition"><i className="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    {/*  COUNTRY SELECTION MODAL  */}
+    {isCountryModalOpen && (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ledger-navy/80 backdrop-blur-sm transition-opacity duration-300">
+        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 mx-4 transition-transform duration-300 scale-100">
+            <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-amber-100 text-jupiter-gold rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                    <i className="fa-solid fa-globe"></i>
+                </div>
+                <h3 className="font-brand text-2xl font-bold text-ledger-navy">Select Your Region</h3>
+                <p className="font-data text-slate-500 mt-2 text-sm">Choose your country to see localized pricing and tax regulations.</p>
+            </div>
+            
+            <div className="space-y-3 font-data">
+                <button onClick={() => selectCountry('US')} className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-md hover:border-jupiter-gold hover:bg-amber-50 transition group">
+                    <span className="flex items-center space-x-3 text-ledger-navy font-medium"><i className="fa-solid fa-flag-usa w-6 text-slate-400 group-hover:text-jupiter-gold text-center"></i> <span>United States</span></span>
+                </button>
+                <button onClick={() => selectCountry('IN')} className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-md hover:border-jupiter-gold hover:bg-amber-50 transition group">
+                    <span className="flex items-center space-x-3 text-ledger-navy font-medium"><i className="fa-solid fa-earth-asia w-6 text-slate-400 group-hover:text-jupiter-gold text-center"></i> <span>India</span></span>
+                </button>
+                <button onClick={() => selectCountry('GB')} className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-md hover:border-jupiter-gold hover:bg-amber-50 transition group">
+                    <span className="flex items-center space-x-3 text-ledger-navy font-medium"><i className="fa-solid fa-earth-europe w-6 text-slate-400 group-hover:text-jupiter-gold text-center"></i> <span>United Kingdom</span></span>
+                </button>
+            </div>
+        </div>
     </div>
-  );
+    )}
+
+    {/*  INTERACTIVE JAVASCRIPT  */}
+    
+        </div>
+    );
 }
