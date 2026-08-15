@@ -1,7 +1,9 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useBakery } from '@/context/BakeryContext';
 
 interface TopNavProps {
   title?: string;
@@ -9,6 +11,21 @@ interface TopNavProps {
 
 export default function TopNav({ title }: TopNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { profile } = useBakery();
+
+  useEffect(() => {
+    if (profile?.created_at && pathname !== '/upgrade') {
+      const createdDate = new Date(profile.created_at);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays > 15) {
+        router.push('/upgrade');
+      }
+    }
+  }, [profile, pathname, router]);
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard' },
