@@ -1,17 +1,23 @@
 "use client";
-import SideNav from '@/components/SideNav';
+import SideNav from "@/components/SideNav";
+import GenericModule from "@/components/GenericModule";
 
 export default function Page() {
   return (
     <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans pb-20 md:pb-0">
       <SideNav title="Recurring Bills" />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Recurring Bills</h1>
-            <p className="text-slate-500 text-sm mt-1">This module is coming soon.</p>
-          </div>
-        </div>
+        <GenericModule 
+          title="Recurring Bills" 
+          collectionName="recurring_bills" 
+          fields={[
+      { name: 'profileName', label: 'Profile Name', type: 'text' },
+      { name: 'vendorName', label: 'Vendor', type: 'text' },
+      { name: 'frequency', label: 'Frequency', type: 'select', options: ['Weekly', 'Monthly', 'Yearly'] },
+      { name: 'amount', label: 'Amount', type: 'number' },
+      { name: 'status', label: 'Status', type: 'select', options: ['Active', 'Paused'] }
+    ]} 
+        />
       </main>
     </div>
   );
