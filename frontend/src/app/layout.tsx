@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   title: "CrumbLedger | Recipe Costing & Bakery Management Software",
   description: "The ultimate bakery management software for home bakers. Accurately calculate recipe costs, track inventory, manage custom orders, and generate invoices in one place.",
   keywords: "bakery software, home bakery management, recipe costing app, cake pricing calculator, inventory tracker for bakers, invoice template for bakers, CrumbLedger, food costing",
+  manifest: "/manifest.json",
   icons: {
     icon: "/logo.png",
     apple: "/logo.png"
