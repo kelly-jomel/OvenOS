@@ -304,6 +304,14 @@ export default function EstimatesPage() {
           </tbody>
         </table>
       </div>
+    
+      {isItemModalOpen && (
+        <AddItemModal 
+          onItemAdded={handleAddNewItem} 
+          onClose={() => setIsItemModalOpen(false)} 
+        />
+      )}
+
     </main>
     </div>
     </>

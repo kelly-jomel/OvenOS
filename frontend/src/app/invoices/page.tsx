@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import SideNav from '@/components/SideNav';
+import AddItemModal from '@/components/AddItemModal';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
 import { collection, getDocs, getDoc, doc, addDoc, updateDoc, serverTimestamp , query, where, orderBy, limit } from 'firebase/firestore';
@@ -621,6 +622,14 @@ export default function InvoicesPage() {
           </table>
         </div>
       )}
+    
+      {isItemModalOpen && (
+        <AddItemModal 
+          onItemAdded={handleAddNewItem} 
+          onClose={() => setIsItemModalOpen(false)} 
+        />
+      )}
+
     </main>
     </div>
   );
