@@ -139,7 +139,7 @@ export default function VendorsPage() {
                   filteredVendors.map((vendor) => (
                     <tr key={vendor.id} className="hover:bg-slate-50">
                       <td className="px-6 py-4 whitespace-nowrap text-slate-700 font-medium">
-                        <Link href={`/purchases/vendors/${vendor.id}`} className="text-blue-600 hover:underline">
+                        <Link href={`/purchases/vendors/profile?id=${vendor.id}`} className="text-blue-600 hover:underline">
                           {vendor.companyName}
                         </Link>
                       </td>
@@ -151,7 +151,7 @@ export default function VendorsPage() {
                           <button onClick={() => openWhatsApp(vendor.phone, vendor.companyName)} className="text-green-600 hover:text-green-800 p-1" title="WhatsApp Vendor">
                             <MessageCircle size={18} />
                           </button>
-                          <Link href={`/purchases/vendors/${vendor.id}`} className="text-blue-500 hover:text-blue-700 p-1" title="View Profile">
+                          <Link href={`/purchases/vendors/profile?id=${vendor.id}`} className="text-blue-500 hover:text-blue-700 p-1" title="View Profile">
                             <Eye size={18} />
                           </Link>
                           <button onClick={() => handleDelete(vendor.id)} className="text-red-500 hover:text-red-700 p-1" title="Delete Vendor">

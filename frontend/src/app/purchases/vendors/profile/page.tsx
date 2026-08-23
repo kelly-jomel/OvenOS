@@ -7,10 +7,12 @@ import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firest
 import api from '@/lib/api';
 import { Plus, ShoppingCart, X, MessageCircle, ArrowLeft, Trash2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function VendorProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
+function VendorProfileContent() {
+  const searchParams = useSearchParams();
+  const vendorId = searchParams.get("id");
   const { profile, currencySymbol } = useBakery();
   const router = useRouter();
   
@@ -28,12 +30,13 @@ export default function VendorProfilePage({ params }: { params: Promise<{ id: st
   
   useEffect(() => {
     if (profile?.id) fetchData();
-  }, [profile?.id, resolvedParams.id]);
+  }, [profile?.id, vendorId]);
 
   const fetchData = async () => {
     try {
       // Fetch vendor
-      const docRef = doc(db, 'vendors', resolvedParams.id);
+      if (!vendorId) return;
+      const docRef = doc(db, 'vendors', vendorId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists() && docSnap.data().bakery_id === profile?.id) {
         setVendor({ id: docSnap.id, ...docSnap.data() });
@@ -320,5 +323,14 @@ export default function VendorProfilePage({ params }: { params: Promise<{ id: st
         </div>
       )}
     </div>
+  );
+}
+
+
+export default function VendorProfilePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen lg:pl-64 bg-gray-50 flex items-center justify-center">Loading...</div>}>
+      <VendorProfileContent />
+    </Suspense>
   );
 }
