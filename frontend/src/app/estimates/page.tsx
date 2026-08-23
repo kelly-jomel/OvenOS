@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
 import AddClientModal from '@/components/AddClientModal';
-import { collection, getDocs, getDoc, doc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, addDoc , query, where} from 'firebase/firestore';
 import { format } from 'date-fns';
 import { DownloadInvoiceButton } from '@/components/InvoicePDF'; // Reuse the PDF generator
 
@@ -21,6 +22,7 @@ interface LineItem {
 }
 
 export default function EstimatesPage() {
+  const { profile } = useBakery();
   const [clients, setClients] = useState<Client[]>([]);
   const [catalogItems, setCatalogItems] = useState<any[]>([]);
   const [estimates, setEstimates] = useState<any[]>([]);
@@ -36,13 +38,13 @@ export default function EstimatesPage() {
 
   const fetchData = async () => {
     try {
-      const clientsSnap = await getDocs(collection(db, "clients"));
+      const clientsSnap = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
       setClients(clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
       
-      const itemsSnap = await getDocs(collection(db, "items"));
+      const itemsSnap = await getDocs(query(collection(db, "items"), where("bakery_id", "==", profile?.id)));
       setCatalogItems(itemsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       
-      const estimatesSnap = await getDocs(collection(db, "estimates"));
+      const estimatesSnap = await getDocs(query(collection(db, "estimates"), where("bakery_id", "==", profile?.id)));
       setEstimates(estimatesSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       
       const profileSnap = await getDoc(doc(db, "settings", "business_profile"));
@@ -80,7 +82,7 @@ export default function EstimatesPage() {
     };
 
     try {
-      await addDoc(collection(db, "estimates"), estimateData);
+      await addDoc(collection(db, "estimates"), { ...estimateData, bakery_id: profile?.id });
       setShowForm(false);
       setItems([{ description: '', quantity: 1, rate: 0 }]);
       fetchData();
@@ -108,7 +110,7 @@ export default function EstimatesPage() {
           status: 'Draft'
         };
         delete invoiceData.id;
-        await addDoc(collection(db, "invoices"), invoiceData);
+        await addDoc(collection(db, "invoices"), { ...invoiceData, bakery_id: profile?.id });
         alert('Successfully converted to Invoice! Check the Invoices tab.');
       } catch (err) {
         console.error(err);

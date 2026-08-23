@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { Plus, Search, Filter, MoreVertical, Building2, Mail, Phone, X, Save, MessageCircle, FileText, Lightbulb, ExternalLink } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp, updateDoc, doc , query, where} from 'firebase/firestore';
 
 export default function LeadsPage() {
+  const { profile } = useBakery();
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +23,7 @@ export default function LeadsPage() {
 
   const fetchLeads = async () => {
     try {
-      const snap = await getDocs(collection(db, "leads"));
+      const snap = await getDocs(query(collection(db, "leads"), where("bakery_id", "==", profile?.id)));
       const leadsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setLeads(leadsData);
     } catch (error) {
@@ -54,7 +56,7 @@ export default function LeadsPage() {
       if (editingLeadId) {
         await updateDoc(doc(db, "leads", editingLeadId), formData);
       } else {
-        await addDoc(collection(db, "leads"), {
+        await addDoc(collection(db, "leads"), { bakery_id: profile?.id,
           ...formData,
           createdAt: serverTimestamp()
         });

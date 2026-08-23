@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, getDoc, doc, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, serverTimestamp , query, where} from 'firebase/firestore';
 import { format } from 'date-fns';
 import Script from 'next/script';
 import { DownloadInvoiceButton } from '@/components/InvoicePDF';
@@ -24,6 +25,7 @@ interface LineItem {
 }
 
 export default function InvoicesPage() {
+  const { profile } = useBakery();
   const [clients, setClients] = useState<Client[]>([]);
   const [catalogItems, setCatalogItems] = useState<any[]>([]);
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -56,13 +58,13 @@ export default function InvoicesPage() {
 
   const fetchData = async () => {
     try {
-      const clientsSnap = await getDocs(collection(db, "clients"));
+      const clientsSnap = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
       setClients(clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
       
-      const itemsSnap = await getDocs(collection(db, "items"));
+      const itemsSnap = await getDocs(query(collection(db, "items"), where("bakery_id", "==", profile?.id)));
       setCatalogItems(itemsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       
-      const invoicesSnap = await getDocs(collection(db, "invoices"));
+      const invoicesSnap = await getDocs(query(collection(db, "invoices"), where("bakery_id", "==", profile?.id)));
       const invoicesData = invoicesSnap.docs.map(d => ({ id: d.id, ...d.data() } as any));
       setInvoices(invoicesData.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       
@@ -127,7 +129,7 @@ export default function InvoicesPage() {
     e.preventDefault();
     setIsAddingClient(true);
     try {
-      const docRef = await addDoc(collection(db, "clients"), {
+      const docRef = await addDoc(collection(db, "clients"), { bakery_id: profile?.id,
         name: newClientName,
         email: newClientEmail,
         createdAt: serverTimestamp()
@@ -169,7 +171,7 @@ export default function InvoicesPage() {
     };
 
     try {
-      await addDoc(collection(db, "invoices"), invoiceData);
+      await addDoc(collection(db, "invoices"), { ...invoiceData, bakery_id: profile?.id });
       setShowForm(false);
       setItems([{ description: '', quantity: 1, rate: 0, tax: '' }]);
       fetchData();

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp , query, where} from 'firebase/firestore';
 import { ChevronDown, Search, Info, Upload, Mail, X } from 'lucide-react';
 
 interface Client {
@@ -30,6 +31,7 @@ interface Client {
 }
 
 export default function ClientsPage() {
+  const { profile } = useBakery();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -59,7 +61,7 @@ export default function ClientsPage() {
 
   const fetchClients = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "clients"));
+      const querySnapshot = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
       const clientsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -79,7 +81,7 @@ export default function ClientsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "clients"), {
+      await addDoc(collection(db, "clients"), { bakery_id: profile?.id,
         ...formData,
         name: formData.displayName || `${formData.firstName} ${formData.lastName}`, // Backwards compatibility
         createdAt: serverTimestamp()

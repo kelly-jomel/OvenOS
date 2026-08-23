@@ -1,11 +1,13 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import * as XLSX from 'xlsx';
 import { Upload, Search, Mail, ExternalLink, Filter, MessageCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, writeBatch, doc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 
 export default function OutreachEngine() {
+  const { profile } = useBakery();
   const [data, setData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -185,7 +187,7 @@ export default function OutreachEngine() {
         source: "Outreach Engine",
         status: "Contacted", outreachData: row
       };
-      const leadDoc = await addDoc(collection(db, "leads"), { ...leadData, createdAt: serverTimestamp() });
+      const leadDoc = await addDoc(collection(db, "leads"), { bakery_id: profile?.id, ...leadData, createdAt: serverTimestamp() });
 
       const activityData = {
         title: `Cold ${type} sent to ${leadData.company}`,
@@ -194,7 +196,7 @@ export default function OutreachEngine() {
         date: new Date().toISOString().split('T')[0],
         leadId: leadDoc.id
       };
-      await addDoc(collection(db, "activities"), { ...activityData, createdAt: serverTimestamp() });
+      await addDoc(collection(db, "activities"), { bakery_id: profile?.id, ...activityData, createdAt: serverTimestamp() });
       
       // Update the outreach lead as contacted so it disappears from the pending list
       if (row.id) {
@@ -251,9 +253,9 @@ export default function OutreachEngine() {
                 status: "Contacted",
                 outreachData: row
             };
-            const leadDoc = await addDoc(collection(db, "leads"), { ...leadData, createdAt: serverTimestamp() });
+            const leadDoc = await addDoc(collection(db, "leads"), { bakery_id: profile?.id, ...leadData, createdAt: serverTimestamp() });
 
-            await addDoc(collection(db, "activities"), {
+            await addDoc(collection(db, "activities"), { bakery_id: profile?.id,
                 title: `Cold SendGrid sent to ${leadData.company}`,
                 type: 'SendGrid',
                 status: 'Completed',

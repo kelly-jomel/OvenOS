@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp , query, where} from 'firebase/firestore';
 import { Plus, Filter, LayoutGrid, X, Save } from 'lucide-react';
 
 export default function DealsPage() {
+  const { profile } = useBakery();
   
   const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ export default function DealsPage() {
 
   const fetchDeals = async () => {
     try {
-      const snap = await getDocs(collection(db, "deals"));
+      const snap = await getDocs(query(collection(db, "deals"), where("bakery_id", "==", profile?.id)));
       setDeals(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
@@ -25,7 +27,7 @@ export default function DealsPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, "deals"), { ...formData, createdAt: serverTimestamp() });
+      await addDoc(collection(db, "deals"), { bakery_id: profile?.id, ...formData, createdAt: serverTimestamp() });
       setIsModalOpen(false);
       setFormData({ title: '', company: '', amount: '', stage: 'Qualification', closingDate: '' });
       fetchDeals();

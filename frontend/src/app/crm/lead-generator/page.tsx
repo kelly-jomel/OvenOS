@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ExternalLink, Plus, RefreshCw } from 'lucide-react';
@@ -16,6 +17,7 @@ type Lead = {
 };
 
 export default function LeadGeneratorPage() {
+  const { profile } = useBakery();
   const [category, setCategory] = useState('Local businesses');
   const [city, setCity] = useState('');
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -107,7 +109,7 @@ export default function LeadGeneratorPage() {
     if (!lead || lead._added) return;
 
     try {
-      await addDoc(collection(db, "leads"), {
+      await addDoc(collection(db, "leads"), { bakery_id: profile?.id,
         company: lead.name,
         name: "Unknown Contact",
         phone: lead.phone_number || "",

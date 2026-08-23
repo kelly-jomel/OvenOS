@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useBakery } from "@/context/BakeryContext";
 import { Plus, X, Save } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp , query, where} from 'firebase/firestore';
 
 export default function ActivitiesPage() {
+  const { profile } = useBakery();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +18,7 @@ export default function ActivitiesPage() {
 
   const fetchItems = async () => {
     try {
-      const snap = await getDocs(collection(db, "activities"));
+      const snap = await getDocs(query(collection(db, "activities"), where("bakery_id", "==", profile?.id)));
       setItems(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
@@ -25,7 +27,7 @@ export default function ActivitiesPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, "activities"), { ...formData, createdAt: serverTimestamp() });
+      await addDoc(collection(db, "activities"), { bakery_id: profile?.id, ...formData, createdAt: serverTimestamp() });
       setIsModalOpen(false);
       setFormData({ title: '', type: 'Task', status: 'Open', date: '' });
       fetchItems();
