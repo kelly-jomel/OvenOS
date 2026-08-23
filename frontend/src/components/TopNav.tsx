@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useBakery } from '@/context/BakeryContext';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 interface TopNavProps {
   title?: string;
@@ -16,6 +16,7 @@ export default function TopNav({ title }: TopNavProps) {
   const router = useRouter();
   const { profile } = useBakery();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   useEffect(() => {
     if (!profile) return;
@@ -48,7 +49,19 @@ export default function TopNav({ title }: TopNavProps) {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard' },
-    { name: 'CRM', path: '/crm/leads' },
+    { 
+      name: 'CRM', 
+      path: '/crm/leads',
+      subItems: [
+        { name: 'Leads', path: '/crm/leads' },
+        { name: 'Lead Generator', path: '/crm/lead-generator' },
+        { name: 'Contacts', path: '/crm/contacts' },
+        { name: 'Accounts', path: '/crm/accounts' },
+        { name: 'Deals', path: '/crm/deals' },
+        { name: 'Activities', path: '/crm/activities' },
+        { name: 'Outreach', path: '/crm/outreach' },
+      ]
+    },
     { name: 'Clients', path: '/clients' },
     { name: 'Invoices', path: '/invoices' },
     { name: 'Estimates', path: '/estimates' },
@@ -80,15 +93,46 @@ export default function TopNav({ title }: TopNavProps) {
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
           {navItems.map((item) => (
-            <Link 
+            <div 
               key={item.name} 
-              href={item.path}
-              className={`text-sm font-medium transition-colors ${pathname === item.path ? 'text-jupiter-gold' : 'text-gray-300 hover:text-white'}`}
+              className="relative group"
+              onMouseEnter={() => item.subItems && setActiveDropdown(item.name)}
+              onMouseLeave={() => setActiveDropdown(null)}
             >
-              {item.name}
-            </Link>
+              {item.subItems ? (
+                <button
+                  className={`flex items-center gap-1 text-sm font-medium transition-colors ${pathname.startsWith('/crm') ? 'text-jupiter-gold' : 'text-gray-300 hover:text-white'}`}
+                >
+                  {item.name}
+                  <ChevronDown size={14} className={`transition-transform ${activeDropdown === item.name ? 'rotate-180' : ''}`} />
+                </button>
+              ) : (
+                <Link 
+                  href={item.path}
+                  className={`text-sm font-medium transition-colors ${pathname === item.path ? 'text-jupiter-gold' : 'text-gray-300 hover:text-white'}`}
+                >
+                  {item.name}
+                </Link>
+              )}
+
+              {/* Desktop Dropdown */}
+              {item.subItems && activeDropdown === item.name && (
+                <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-50">
+                  {item.subItems.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.path}
+                      className={`block px-4 py-2 text-sm ${pathname === subItem.path ? 'bg-gray-100 text-ledger-navy font-semibold' : 'text-gray-700 hover:bg-gray-50 hover:text-ledger-navy'}`}
+                      onClick={() => setActiveDropdown(null)}
+                    >
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </nav>
         
@@ -114,17 +158,38 @@ export default function TopNav({ title }: TopNavProps) {
       </div>
       
       {/* Mobile Navigation Dropdown */}
-      <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} lg:hidden bg-ledger-navy border-t border-slate-800 shadow-xl absolute w-full left-0 max-h-[calc(100vh-4rem)] overflow-y-auto`}>
+      <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} lg:hidden bg-ledger-navy border-t border-slate-800 shadow-xl absolute w-full left-0 max-h-[calc(100vh-4rem)] overflow-y-auto z-50`}>
         <div className="px-4 py-4 space-y-1">
           {navItems.map((item) => (
-            <Link 
-              key={item.name} 
-              href={item.path}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`block px-3 py-3 rounded-md text-base font-medium transition-colors ${pathname === item.path ? 'bg-slate-800 text-jupiter-gold' : 'text-gray-300 hover:bg-slate-800 hover:text-white'}`}
-            >
-              {item.name}
-            </Link>
+            <div key={item.name}>
+              {item.subItems ? (
+                <>
+                  <div className="px-3 py-2 text-sm font-semibold text-gray-400 uppercase tracking-wider mt-2">
+                    {item.name}
+                  </div>
+                  <div className="pl-4 border-l border-slate-700 ml-3 space-y-1 my-1">
+                    {item.subItems.map((subItem) => (
+                      <Link 
+                        key={subItem.name} 
+                        href={subItem.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === subItem.path ? 'bg-slate-800 text-jupiter-gold' : 'text-gray-300 hover:bg-slate-800 hover:text-white'}`}
+                      >
+                        {subItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <Link 
+                  href={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-3 py-3 rounded-md text-base font-medium transition-colors ${pathname === item.path ? 'bg-slate-800 text-jupiter-gold' : 'text-gray-300 hover:bg-slate-800 hover:text-white'}`}
+                >
+                  {item.name}
+                </Link>
+              )}
+            </div>
           ))}
           <div className="pt-4 mt-2 border-t border-slate-700 flex flex-col space-y-3">
              <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-slate-800 hover:text-white rounded-md">
