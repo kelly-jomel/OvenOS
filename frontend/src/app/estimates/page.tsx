@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import TopNav from "@/components/TopNav";
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
 import AddClientModal from '@/components/AddClientModal';
@@ -130,7 +131,9 @@ export default function EstimatesPage() {
           setSelectedClientId(newClient.id);
         }}
       />
-      <div className="space-y-6">
+      <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
+        <TopNav title="Estimates" />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Estimates & Quotes</h1>
@@ -263,6 +266,7 @@ export default function EstimatesPage() {
           </tbody>
         </table>
       </div>
+    </main>
     </div>
     </>
   );

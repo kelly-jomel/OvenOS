@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import TopNav from "@/components/TopNav";
 import { useBakery } from "@/context/BakeryContext";
 import { Plus, Search, Filter, MoreVertical, Building2, Mail, Phone, X, Save, MessageCircle, FileText, Lightbulb, ExternalLink } from 'lucide-react';
 import { db } from '@/lib/firebase';
@@ -185,7 +186,9 @@ export default function LeadsPage() {
   );
 
   return (
-    <div className="space-y-6 relative">
+    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
+      <TopNav title="Leads" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative">
       {/* Header */}
       <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <div>
@@ -419,6 +422,7 @@ export default function LeadsPage() {
           </div>
         </div>
       )}
+    </main>
     </div>
   );
 }

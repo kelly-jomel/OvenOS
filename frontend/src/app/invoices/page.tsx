@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import TopNav from "@/components/TopNav";
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
 import { collection, getDocs, getDoc, doc, addDoc, updateDoc, serverTimestamp , query, where} from 'firebase/firestore';
@@ -183,7 +184,9 @@ export default function InvoicesPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
+      <TopNav title="Invoices" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       
       
@@ -563,6 +566,7 @@ export default function InvoicesPage() {
           </table>
         </div>
       )}
+    </main>
     </div>
   );
 }
