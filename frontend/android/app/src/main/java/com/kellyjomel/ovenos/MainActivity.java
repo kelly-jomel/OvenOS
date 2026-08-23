@@ -1,4 +1,4 @@
-package com.ovenos.app;
+package com.kellyjomel.ovenos;
 
 import com.getcapacitor.BridgeActivity;
 

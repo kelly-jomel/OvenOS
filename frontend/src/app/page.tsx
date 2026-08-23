@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LandingPage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,7 +52,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             {/*  Logo with Dual Typography  */}
             <div className="flex items-center space-x-2.5">
-                <img src="/logo.png" alt="CrumbLedger Logo" className="h-10 w-auto object-contain rounded-md shadow-sm bg-white p-1" />
+                <Image src="/logo.png" alt="CrumbLedger Logo" width={40} height={40} className="h-10 w-auto object-contain rounded-md shadow-sm bg-white p-1" />
                 <div className="flex items-baseline">
                     <span className="font-brand font-bold text-2xl text-white tracking-tight">Crumb</span><span className="font-data font-light text-xl text-jupiter-gold tracking-[0.15em] ml-0.5">LEDGER</span>
                 </div>
@@ -456,7 +457,7 @@ export default function LandingPage() {
     <footer className="bg-ledger-navy text-slate-400 py-12 border-t border-slate-800 font-data">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
             <div className="flex items-center space-x-2.5">
-                <img src="/logo.png" alt="CrumbLedger Logo" className="h-8 w-auto object-contain rounded-md shadow-sm bg-white p-0.5" />
+                <Image src="/logo.png" alt="CrumbLedger Logo" width={32} height={32} className="h-8 w-auto object-contain rounded-md shadow-sm bg-white p-0.5" />
                 <div className="flex items-baseline">
                     <span className="font-brand font-bold text-xl text-white tracking-tight">Crumb</span><span className="font-data font-light text-base text-jupiter-gold tracking-[0.15em] ml-0.5">LEDGER</span>
                 </div>

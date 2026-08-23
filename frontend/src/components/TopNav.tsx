@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useBakery } from '@/context/BakeryContext';
 
@@ -45,9 +46,11 @@ export default function TopNav({ title }: TopNavProps) {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Customers', path: '/parties' },
+    { name: 'CRM', path: '/crm/leads' },
+    { name: 'Clients', path: '/clients' },
+    { name: 'Invoices', path: '/invoices' },
+    { name: 'Estimates', path: '/estimates' },
     { name: 'Purchases', path: '/purchases' },
-    { name: 'Billing', path: '/billing' },
     { name: 'Products', path: '/products' },
     { name: 'Inventory', path: '/inventory' },
     { name: 'Recipes', path: '/recipes' },
@@ -59,7 +62,7 @@ export default function TopNav({ title }: TopNavProps) {
         
         {/* Logo and Brand Name */}
         <Link href="/dashboard" className="flex items-center gap-3">
-          <img src="/logo.png" alt="CrumbLedger Logo" className="h-8 w-auto object-contain bg-white rounded-md p-1" />
+          <Image src="/logo.png" alt="CrumbLedger Logo" width={32} height={32} className="h-8 w-auto object-contain bg-white rounded-md p-1" />
           <div>
             <h1 className="text-xl sm:text-2xl text-white leading-tight flex items-baseline">
               <span className="font-brand font-semibold tracking-tight text-white">Crumb</span>

@@ -179,11 +179,11 @@ export default function DashboardPage() {
         <section>
           <h2 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Quick Actions</h2>
           <div className="grid grid-cols-4 gap-3 md:gap-6">
-            <Link href="/billing" className="flex flex-col items-center gap-2">
-              <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl text-indigo-600 shadow-sm border border-indigo-100 hover:bg-indigo-100 transition-colors">
+            <Link href="/invoices" className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center text-xl text-blue-500">
                 🧾
               </div>
-              <span className="text-xs font-medium text-gray-700 text-center">Add Sale</span>
+              <span className="text-xs font-medium text-gray-700">Invoices</span>
             </Link>
             
             <Link href="/purchases" className="flex flex-col items-center gap-2">
