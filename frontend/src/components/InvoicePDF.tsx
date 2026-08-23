@@ -2,12 +2,8 @@
 
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { useState } from 'react';
 
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
-  { ssr: false, loading: () => <span>Loading PDF Engine...</span> }
-);
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica' },
@@ -132,13 +128,38 @@ export const InvoiceDocument = ({ invoice, businessProfile, client }: any) => (
 );
 
 export function DownloadInvoiceButton({ invoice, businessProfile, client }: any) {
+  const [loading, setLoading] = React.useState(false);
+
+  const handleDownload = async () => {
+    setLoading(true);
+    try {
+      const { pdf } = await import('@react-pdf/renderer');
+      const doc = <InvoiceDocument invoice={invoice} businessProfile={businessProfile} client={client} />;
+      const asPdf = pdf(doc);
+      const blob = await asPdf.toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Invoice_${invoice?.id?.substring(0,8) || 'Draft'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error generating PDF:", err);
+      alert("Failed to generate PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <PDFDownloadLink
-      document={<InvoiceDocument invoice={invoice} businessProfile={businessProfile} client={client} />}
-      fileName={`Invoice_${invoice?.id?.substring(0,8) || 'Draft'}.pdf`}
-      className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+    <button 
+      onClick={handleDownload} 
+      disabled={loading} 
+      className="text-blue-600 hover:text-blue-900 text-sm font-medium cursor-pointer bg-transparent border-none p-0"
     >
-      {({ loading }: { loading: boolean }) => (loading ? 'Generating...' : 'Download PDF')}
-    </PDFDownloadLink>
+      {loading ? 'Generating...' : 'Download PDF'}
+    </button>
   );
 }
