@@ -26,6 +26,7 @@ interface Client {
   openingBalance: string;
   paymentTerms: string;
   enablePortal: boolean;
+  isGstRegistered?: boolean;
   name?: string;
   gstin?: string; // Keep for backward compatibility with existing data
   address?: string;
@@ -56,6 +57,7 @@ export default function ClientsPage() {
     openingBalance: '',
     paymentTerms: 'Due on Receipt',
     enablePortal: false,
+    isGstRegistered: false,
     gstin: '',
     address: ''
   });
@@ -91,7 +93,7 @@ export default function ClientsPage() {
       fetchClients();
       // Reset form
       setFormData({
-        salutation: 'Mr.', firstName: '', lastName: '', companyName: '', displayName: '', email: '', workPhone: '', mobilePhone: '', language: 'English', gstTreatment: '', placeOfSupply: '', pan: '', taxPreference: 'Taxable', currency: 'INR- Indian Rupee', openingBalance: '', paymentTerms: 'Due on Receipt', enablePortal: false
+        salutation: 'Mr.', firstName: '', lastName: '', companyName: '', displayName: '', email: '', workPhone: '', mobilePhone: '', language: 'English', gstTreatment: '', placeOfSupply: '', pan: '', taxPreference: 'Taxable', currency: 'INR- Indian Rupee', openingBalance: '', paymentTerms: 'Due on Receipt', enablePortal: false, isGstRegistered: false
       });
     } catch (error) {
       console.error("Error adding client:", error);
@@ -287,6 +289,20 @@ export default function ClientsPage() {
             {/* Tab Content: Other Details */}
             {activeTab === 'Other Details' && (
               <div className="space-y-6 pt-4">
+                                <div className="grid grid-cols-[200px_1fr] items-center gap-4">
+                  <label className="text-slate-800 text-sm font-medium pt-1 flex items-center gap-1">GST Setting</label>
+                  <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer pt-1">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.isGstRegistered} onChange={e => setFormData({...formData, isGstRegistered: e.target.checked})}
+                      className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-slate-300" 
+                    />
+                    Enable GST for this customer
+                  </label>
+                </div>
+
+                {formData.isGstRegistered && (
+                  <>
                 <div className="grid grid-cols-[200px_1fr] items-center gap-4">
                   <label className="text-red-500 text-sm font-medium">GST Treatment*</label>
                   <select 
@@ -326,6 +342,8 @@ export default function ClientsPage() {
                     className="w-full max-w-md p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500" 
                   />
                 </div>
+                </>
+                )}
 
                 <div className="grid grid-cols-[200px_1fr] items-center gap-4">
                   <label className="text-red-500 text-sm font-medium">Tax Preference*</label>
@@ -426,6 +444,7 @@ export default function ClientsPage() {
                     placeholder="Enter full address"
                   />
                 </div>
+                {formData.isGstRegistered && (
                 <div className="grid grid-cols-[200px_1fr] items-start gap-4">
                   <label className="text-slate-800 text-sm font-medium pt-2">GSTIN</label>
                   <input 
@@ -435,6 +454,7 @@ export default function ClientsPage() {
                     placeholder="GST Number"
                   />
                 </div>
+                )}
               </div>
             )}
             
