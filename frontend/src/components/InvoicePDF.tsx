@@ -55,7 +55,7 @@ export const InvoiceDocument = ({ invoice, businessProfile, client }: any) => (
         </View>
         <View style={{ alignItems: 'flex-end' }}>
           <Text style={{ fontSize: 28, color: '#cbd5e1', fontWeight: 'bold' }}>TAX INVOICE</Text>
-          <Text style={{ fontSize: 10, marginTop: 10 }}>Date: {new Date(invoice?.date || Date.now()).toLocaleDateString()}</Text>
+          <Text style={{ fontSize: 10, marginTop: 10 }}>Date: {new Date(invoice?.date || new Date().toISOString()).toLocaleDateString()}</Text>
           <Text style={{ fontSize: 10 }}>Invoice #: {invoice?.id?.substring(0, 8).toUpperCase() || 'DRAFT'}</Text>
         </View>
       </View>
