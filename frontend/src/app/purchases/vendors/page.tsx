@@ -22,7 +22,7 @@ export default function VendorsPage() {
 
   const fetchVendors = async () => {
     try {
-      const q = query(collection(db, 'vendors'), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(50));
+      const q = query(collection(db, 'vendors'), where("bakery_id", "==", profile?.id));
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       data.sort((a: any, b: any) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
