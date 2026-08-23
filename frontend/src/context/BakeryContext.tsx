@@ -26,7 +26,8 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchProfileData = async () => {
     try {
-      const res = await api.get('/profile/');
+      // Aggressive 3-second timeout for instant UI loading
+      const res = await api.get('/profile/', { timeout: 3000 });
       setProfile(res.data);
       const userCountry = res.data.country || 'IN';
       setCountry(userCountry);
@@ -35,10 +36,20 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
       else if (userCountry === 'GB') setCurrencySymbol('£');
       else setCurrencySymbol('₹'); // Default IN
     } catch (error) {
-      console.error("Failed to fetch bakery profile for context", error);
+      console.warn("Profile API slow or failed. Using fallback for instant load...", error);
       // Fallback so the app doesn't freeze
       if (auth.currentUser) {
-        setProfile({ id: auth.currentUser.uid, fallback: true });
+        setProfile((prev: any) => prev || { id: auth.currentUser?.uid, fallback: true });
+        
+        // Fetch in background to update preferences when the server finally wakes up
+        api.get('/profile/').then((res) => {
+          setProfile(res.data);
+          const userCountry = res.data.country || 'IN';
+          setCountry(userCountry);
+          if (userCountry === 'US') setCurrencySymbol('$');
+          else if (userCountry === 'GB') setCurrencySymbol('£');
+          else setCurrencySymbol('₹');
+        }).catch((e) => console.error("Background profile fetch failed", e));
       }
     }
   };
