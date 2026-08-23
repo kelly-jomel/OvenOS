@@ -54,12 +54,10 @@ export default function TopNav({ title }: TopNavProps) {
       path: '/crm/leads',
       subItems: [
         { name: 'Leads', path: '/crm/leads' },
-        { name: 'Lead Generator', path: '/crm/lead-generator' },
         { name: 'Contacts', path: '/crm/contacts' },
         { name: 'Accounts', path: '/crm/accounts' },
         { name: 'Deals', path: '/crm/deals' },
         { name: 'Activities', path: '/crm/activities' },
-        { name: 'Outreach', path: '/crm/outreach' },
       ]
     },
     { name: 'Clients', path: '/clients' },
