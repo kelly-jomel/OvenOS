@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "node scripts/patch-barcode-scanner.js"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
