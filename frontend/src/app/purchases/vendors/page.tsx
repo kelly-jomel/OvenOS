@@ -57,7 +57,7 @@ export default function VendorsPage() {
       fetchVendors();
     } catch (err) {
       console.error("Error adding vendor:", err);
-      alert("Failed to save. Please try again.");
+      alert("Failed to save: " + (err instanceof Error ? err.message : String(err)));
     } finally {
       setSubmitting(false);
     }
