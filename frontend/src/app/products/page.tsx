@@ -62,7 +62,7 @@ export default function ProductsPage() {
     return () => unsubscribe();
   }, [router]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [recipesRes, inventoryRes, profileRes] = await Promise.all([
         api.get('/recipes/'),

@@ -80,10 +80,10 @@ export default function LandingPage() {
 
         {/*  Mobile Menu  */}
         <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-ledger-navy border-t border-slate-800 px-6 py-6 space-y-4 shadow-xl`}>
-            <a href="#features" className="block text-slate-300 font-medium hover:text-jupiter-gold">Features</a>
-            <a href="#costing" className="block text-slate-300 font-medium hover:text-jupiter-gold">Recipe Costing</a>
-            <a href="#pricing" className="block text-slate-300 font-medium hover:text-jupiter-gold">Pricing</a>
-            <a href="#faq" className="block text-slate-300 font-medium hover:text-jupiter-gold">FAQ</a>
+            <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-300 font-medium hover:text-jupiter-gold">Features</a>
+            <a href="#costing" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-300 font-medium hover:text-jupiter-gold">Recipe Costing</a>
+            <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-300 font-medium hover:text-jupiter-gold">Pricing</a>
+            <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-300 font-medium hover:text-jupiter-gold">FAQ</a>
             <div className="pt-4 border-t border-slate-800 flex flex-col space-y-3">
                 <Link href="/login" className="text-center text-slate-300 font-semibold py-2">Sign In</Link>
                 <Link href="/login" className="text-center bg-jupiter-gold text-ledger-navy font-bold py-3 rounded-md shadow-md">Start Free Trial</Link>

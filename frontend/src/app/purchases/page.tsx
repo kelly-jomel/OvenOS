@@ -48,7 +48,7 @@ export default function PurchasesPage() {
 
   const router = useRouter();
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [invRes, partyRes] = await Promise.all([
         api.get('/inventory/'),

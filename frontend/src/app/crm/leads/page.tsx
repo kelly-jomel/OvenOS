@@ -21,7 +21,7 @@ export default function LeadsPage() {
     fetchLeads();
   }, []);
 
-  const fetchLeads = async () => {
+  async function fetchLeads() {
     try {
       const snap = await getDocs(query(collection(db, "leads"), where("bakery_id", "==", profile?.id)));
       const leadsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));

@@ -38,7 +38,7 @@ export default function AccountingPage() {
     return () => unsubscribe();
   }, [router]);
 
-  const fetchAccounting = async () => {
+  async function fetchAccounting() {
     try {
       const response = await api.get('/accounting/dashboard');
       setData(response.data);

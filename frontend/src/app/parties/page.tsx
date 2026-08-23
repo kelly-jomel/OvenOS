@@ -52,7 +52,7 @@ export default function PartiesPage() {
     return () => unsubscribe();
   }, [router]);
 
-  const fetchParties = async () => {
+  async function fetchParties() {
     try {
       const res = await api.get('/parties/');
       setParties(res.data);

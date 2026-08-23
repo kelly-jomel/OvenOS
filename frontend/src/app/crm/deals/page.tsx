@@ -16,7 +16,7 @@ export default function DealsPage() {
 
   useEffect(() => { fetchDeals(); }, []);
 
-  const fetchDeals = async () => {
+  async function fetchDeals() {
     try {
       const snap = await getDocs(query(collection(db, "deals"), where("bakery_id", "==", profile?.id)));
       setDeals(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));

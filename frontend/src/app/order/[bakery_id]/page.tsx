@@ -27,7 +27,7 @@ export default function PublicOrderForm() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchInventory = async () => {
+    async function fetchInventory() {
       try {
         const { data } = await api.get(`/inventory/public/${bakery_id}`);
         setInventory(data);

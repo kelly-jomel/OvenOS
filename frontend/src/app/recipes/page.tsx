@@ -101,7 +101,7 @@ export default function RecipesPage() {
   const [selectedItemQty, setSelectedItemQty] = useState<string>('');
   const [selectedItemUnit, setSelectedItemUnit] = useState<string>('g'); // Default input unit
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       setLoading(true);
       const [recipesRes, inventoryRes] = await Promise.all([

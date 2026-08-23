@@ -37,7 +37,7 @@ export default function DashboardPage() {
       }
     });
 
-    const fetchDashboardData = async () => {
+    async function fetchDashboardData() {
       try {
         const res = await api.get('/dashboard/');
         setDashboardData(res.data);

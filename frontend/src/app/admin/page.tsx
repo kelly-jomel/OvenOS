@@ -38,7 +38,7 @@ export default function AdminDashboard() {
       }
     });
 
-    const fetchSubscribers = async () => {
+    async function fetchSubscribers() {
       try {
         const response = await api.get('/admin/subscribers');
         setSubscribers(response.data);

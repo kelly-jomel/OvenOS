@@ -77,7 +77,7 @@ export default function ProfilePage() {
     return () => unsubscribe();
   }, [router]);
 
-  const fetchProfile = async () => {
+  async function fetchProfile() {
     try {
       const res = await api.get('/profile/');
       setProfile(res.data);

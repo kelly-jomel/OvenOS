@@ -56,7 +56,7 @@ export default function InvoicesPage() {
   const [currency, setCurrency] = useState('INR');
   const [exchangeRate, setExchangeRate] = useState(1);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const clientsSnap = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
       setClients(clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));

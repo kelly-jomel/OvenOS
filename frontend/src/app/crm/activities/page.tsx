@@ -16,7 +16,7 @@ export default function ActivitiesPage() {
 
   useEffect(() => { fetchItems(); }, []);
 
-  const fetchItems = async () => {
+  async function fetchItems() {
     try {
       const snap = await getDocs(query(collection(db, "activities"), where("bakery_id", "==", profile?.id)));
       setItems(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));

@@ -49,7 +49,7 @@ export default function InventoryPage() {
     return () => unsubscribe();
   }, [router, refreshKey]);
 
-  const fetchInventory = async () => {
+  async function fetchInventory() {
     try {
       const response = await api.get('/inventory/');
       setItems(response.data);

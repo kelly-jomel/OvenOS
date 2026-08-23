@@ -29,7 +29,7 @@ export default function OutreachEngine() {
     fetchPendingLeads();
   }, []);
 
-  const fetchPendingLeads = async () => {
+  async function fetchPendingLeads() {
     setIsLoading(true);
     try {
       const q = query(collection(db, "outreach_leads"), where("contacted", "==", false));

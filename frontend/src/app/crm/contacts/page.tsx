@@ -16,7 +16,7 @@ export default function ContactsPage() {
 
   useEffect(() => { fetchItems(); }, []);
 
-  const fetchItems = async () => {
+  async function fetchItems() {
     try {
       const snap = await getDocs(query(collection(db, "contacts"), where("bakery_id", "==", profile?.id)));
       setItems(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));

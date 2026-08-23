@@ -48,7 +48,7 @@ export default function OrdersPage() {
     return () => unsubscribe();
   }, [router]);
 
-  const fetchOrders = async () => {
+  async function fetchOrders() {
     try {
       const response = await api.get('/orders/');
       setOrders(response.data);

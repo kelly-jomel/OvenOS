@@ -59,7 +59,7 @@ export default function ClientsPage() {
     address: ''
   });
 
-  const fetchClients = async () => {
+  async function fetchClients() {
     try {
       const querySnapshot = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
       const clientsData = querySnapshot.docs.map(doc => ({

@@ -36,7 +36,7 @@ export default function EstimatesPage() {
   const [gstType, setGstType] = useState('IGST'); // IGST (18%) or CGST+SGST (9% + 9%)
   const [items, setItems] = useState<LineItem[]>([{ description: '', quantity: 1, rate: 0 }]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const clientsSnap = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
       setClients(clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
