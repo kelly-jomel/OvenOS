@@ -38,29 +38,29 @@ export default function VendorsPage() {
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile?.id) return;
+    
     setSubmitting(true);
-    try {
-      const payload = {
-        ...formData,
-        bakery_id: profile.id,
-        created_at: serverTimestamp()
-      };
-      await Promise.race([
-        addDoc(collection(db, 'vendors'), payload),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout saving document")), 8000))
-      ]);
+    const payload = {
+      ...formData,
+      bakery_id: profile.id,
+      created_at: serverTimestamp()
+    };
+
+    // Optimistically close modal and fetch
+    addDoc(collection(db, 'vendors'), payload).catch(err => {
+      console.error("Background save error:", err);
+      alert("Error saving in background: " + (err.message || String(err)));
+    });
+
+    setTimeout(() => {
       setFormData({});
       setIsModalOpen(false);
-      fetchVendors();
-    } catch (err) {
-      console.error("Error adding vendor:", err);
-      alert("Failed to save: " + (err instanceof Error ? err.message : String(err)));
-    } finally {
       setSubmitting(false);
-    }
+      fetchVendors();
+    }, 300);
   };
 
   const handleDelete = async (id: string) => {
