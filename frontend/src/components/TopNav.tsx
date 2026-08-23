@@ -50,6 +50,37 @@ export default function TopNav({ title }: TopNavProps) {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard' },
     { 
+      name: 'Sales', 
+      path: '/clients',
+      subItems: [
+        { name: 'Customers', path: '/clients' },
+        { name: 'Estimates', path: '/estimates' },
+        { name: 'Sales Orders', path: '/sales/sales-orders' },
+        { name: 'Invoices', path: '/invoices' },
+        { name: 'Payments Received', path: '/sales/payments-received' },
+        { name: 'Credit Notes', path: '/sales/credit-notes' },
+        { name: 'e-Way Bills', path: '/sales/eway-bills' },
+      ]
+    },
+    { 
+      name: 'Purchases', 
+      path: '/purchases',
+      subItems: [
+        { name: 'Vendors', path: '/purchases/vendors' },
+        { name: 'Expenses', path: '/purchases/expenses' },
+        { name: 'Bills', path: '/purchases' },
+        { name: 'Recurring Bills', path: '/purchases/recurring-bills' },
+        { name: 'Payments Made', path: '/purchases/payments-made' },
+        { name: 'Vendor Credits', path: '/purchases/vendor-credits' },
+      ]
+    },
+    { name: 'Time Tracking', path: '/time-tracking' },
+    { name: 'Accountant', path: '/accountant' },
+    { name: 'Reports', path: '/reports' },
+    { name: 'Products', path: '/products' },
+    { name: 'Inventory', path: '/inventory' },
+    { name: 'Recipes', path: '/recipes' },
+    { 
       name: 'CRM', 
       path: '/crm/leads',
       subItems: [
@@ -60,13 +91,6 @@ export default function TopNav({ title }: TopNavProps) {
         { name: 'Activities', path: '/crm/activities' },
       ]
     },
-    { name: 'Clients', path: '/clients' },
-    { name: 'Invoices', path: '/invoices' },
-    { name: 'Estimates', path: '/estimates' },
-    { name: 'Purchases', path: '/purchases' },
-    { name: 'Products', path: '/products' },
-    { name: 'Inventory', path: '/inventory' },
-    { name: 'Recipes', path: '/recipes' },
   ];
 
   return (
@@ -101,7 +125,7 @@ export default function TopNav({ title }: TopNavProps) {
             >
               {item.subItems ? (
                 <button
-                  className={`flex items-center gap-1 text-sm font-medium transition-colors ${pathname.startsWith('/crm') ? 'text-jupiter-gold' : 'text-gray-300 hover:text-white'}`}
+                  className={`flex items-center gap-1 text-sm font-medium transition-colors ${item.subItems?.some(sub => pathname === sub.path) || pathname.startsWith(item.path) ? 'text-jupiter-gold' : 'text-gray-300 hover:text-white'}`}
                 >
                   {item.name}
                   <ChevronDown size={14} className={`transition-transform ${activeDropdown === item.name ? 'rotate-180' : ''}`} />
