@@ -35,7 +35,7 @@ def get_all_subscribers(db: Session = Depends(get_db), _: models.User = Depends(
             "trading_name": b.trading_name or "Unnamed Bakery",
             "country": b.country,
             "owner_email": primary_user.email if primary_user else "N/A",
-            "owner_name": primary_user.name if primary_user else "N/A",
+            "owner_name": primary_user.email.split('@')[0] if primary_user else "N/A",
             "subscription_plan": b.subscription_plan,
             "subscription_status": b.subscription_status,
             "subscription_start_date": b.subscription_start_date,
