@@ -5,7 +5,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import api from '@/lib/api';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import { useBakery } from '@/context/BakeryContext';
 
 type BakeryProfile = {
@@ -120,15 +120,15 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen lg:pl-64 flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      <TopNav title="Profile" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans">
+      <SideNav title="Profile" />
 
       {!profile?.trading_name && (
         <div className="bg-amber-50 border-b border-amber-200">

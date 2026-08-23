@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import BottomNav from '@/components/BottomNav';
 import { useBakery } from '@/context/BakeryContext';
 
@@ -144,7 +144,7 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen lg:pl-64 flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     );
@@ -154,8 +154,8 @@ export default function OrdersPage() {
   const calendarDays = generateCalendar();
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
-      <TopNav title="Orders" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans pb-20 md:pb-0">
+      <SideNav title="Orders" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         

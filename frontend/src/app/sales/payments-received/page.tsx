@@ -1,10 +1,10 @@
 "use client";
-import TopNav from "@/components/TopNav";
+import SideNav from '@/components/SideNav';
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
-      <TopNav title="Payments Received" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans pb-20 md:pb-0">
+      <SideNav title="Payments Received" />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <div>

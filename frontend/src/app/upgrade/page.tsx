@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import BottomNav from '@/components/BottomNav';
 import { useRouter } from 'next/navigation';
 import { useBakery } from '@/context/BakeryContext';
@@ -75,8 +75,8 @@ export default function UpgradePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-data">
-      <TopNav title="Upgrade" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 pb-20 font-data">
+      <SideNav title="Upgrade" />
       
       <main className="max-w-4xl mx-auto px-4 py-16">
         {/* Toggle */}

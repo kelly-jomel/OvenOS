@@ -5,7 +5,7 @@ import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp , query, where} from 'firebase/firestore';
 import { ChevronDown, Search, Info, Upload, Mail, X } from 'lucide-react';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 
 interface Client {
   id?: string;
@@ -119,8 +119,8 @@ export default function ClientsPage() {
   if (loading) return <div className="flex h-screen items-center justify-center text-slate-500">Loading customers...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
-      <TopNav title="Clients" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans pb-20 md:pb-0">
+      <SideNav title="Clients" />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <header className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">

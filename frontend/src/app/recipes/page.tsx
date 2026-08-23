@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import api from '@/lib/api';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import BottomNav from '@/components/BottomNav';
 import { useBakery } from '@/context/BakeryContext';
 import Link from 'next/link';
@@ -319,8 +319,8 @@ export default function RecipesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col pb-20">
-        <TopNav title="Recipes" />
+      <div className="min-h-screen lg:pl-64 bg-gray-50 flex flex-col pb-20">
+        <SideNav title="Recipes" />
         <div className="flex-1 flex justify-center items-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
         </div>
@@ -330,8 +330,8 @@ export default function RecipesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-20">
-      <TopNav title="Recipes" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 flex flex-col pb-20">
+      <SideNav title="Recipes" />
 
       <main className="flex-1 p-4 max-w-4xl mx-auto w-full">
         <div className="flex justify-between items-center mb-6">

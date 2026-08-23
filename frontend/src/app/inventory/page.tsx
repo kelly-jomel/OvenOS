@@ -5,7 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import api from '@/lib/api';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import { useBakery } from '@/context/BakeryContext';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 
@@ -137,15 +137,15 @@ export default function InventoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen lg:pl-64 flex items-center justify-center bg-gray-100">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      <TopNav title="Inventory" />
+    <div className="min-h-screen lg:pl-64 bg-gray-100 font-sans">
+      <SideNav title="Inventory" />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">

@@ -5,7 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
 import Link from 'next/link';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import BottomNav from '@/components/BottomNav';
 import { useBakery } from '@/context/BakeryContext';
 
@@ -183,15 +183,15 @@ export default function PurchasesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen lg:pl-64 flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans flex flex-col relative pb-20 md:pb-0">
-      <TopNav title="Add Purchase Bill" />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans flex flex-col relative pb-20 md:pb-0">
+      <SideNav title="Add Purchase Bill" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
         <div className="flex-1 flex flex-col gap-6">

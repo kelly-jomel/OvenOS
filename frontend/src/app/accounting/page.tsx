@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import api from '@/lib/api';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import { useBakery } from '@/context/BakeryContext';
 
 type AccountingData = {
@@ -55,15 +55,15 @@ export default function AccountingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F9F9FA]">
+      <div className="min-h-screen lg:pl-64 flex items-center justify-center bg-[#F9F9FA]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FDB813]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9FA] font-sans">
-      <TopNav title="Accounting" />
+    <div className="min-h-screen lg:pl-64 bg-[#F9F9FA] font-sans">
+      <SideNav title="Accounting" />
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-6">
         <div>

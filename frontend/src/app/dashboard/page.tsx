@@ -6,7 +6,7 @@ import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import api from '@/lib/api';
 import BottomNav from '@/components/BottomNav';
-import TopNav from '@/components/TopNav';
+import SideNav from '@/components/SideNav';
 import { useBakery } from '@/context/BakeryContext';
 import {
   AreaChart,
@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
   if (loading || !dashboardData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen lg:pl-64 flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     );
@@ -62,8 +62,8 @@ export default function DashboardPage() {
   const { summary, orders_by_customer, orders_by_month, trend_chart_data } = dashboardData;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-20 md:pb-0">
-      <TopNav />
+    <div className="min-h-screen lg:pl-64 bg-gray-50 font-sans pb-20 md:pb-0">
+      <SideNav />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         
