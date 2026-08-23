@@ -65,7 +65,10 @@ export default function GenericModule({ title, collectionName, fields }: Generic
         bakery_id: profile.id,
         created_at: serverTimestamp()
       };
-      await addDoc(collection(db, collectionName), payload);
+            await Promise.race([
+        addDoc(collection(db, collectionName), payload),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout saving document")), 8000))
+      ]);
       setFormData({});
       setIsModalOpen(false);
       fetchItems();
@@ -178,8 +181,8 @@ export default function GenericModule({ title, collectionName, fields }: Generic
                   {f.type === 'select' ? (
                     <select
                       required
-                      value={formData[f.name] || ''}
-                      onChange={e => handleInputChange(f.name, e.target.value)}
+                      value={formData[f.name] !== undefined ? formData[f.name] : ''}
+                      onChange={e => handleInputChange(f.name, f.type === 'number' && e.target.value !== '' ? Number(e.target.value) : e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
                     >
                       <option value="" disabled>Select {f.label}</option>
@@ -190,8 +193,8 @@ export default function GenericModule({ title, collectionName, fields }: Generic
                       required
                       type={f.type === 'number' ? 'number' : f.type === 'date' ? 'date' : 'text'}
                       step={f.type === 'number' ? '0.01' : undefined}
-                      value={formData[f.name] || ''}
-                      onChange={e => handleInputChange(f.name, e.target.value)}
+                      value={formData[f.name] !== undefined ? formData[f.name] : ''}
+                      onChange={e => handleInputChange(f.name, f.type === 'number' && e.target.value !== '' ? Number(e.target.value) : e.target.value)}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
                     />
                   )}
