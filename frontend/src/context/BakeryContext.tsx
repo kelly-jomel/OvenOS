@@ -36,6 +36,10 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
       else setCurrencySymbol('₹'); // Default IN
     } catch (error) {
       console.error("Failed to fetch bakery profile for context", error);
+      // Fallback so the app doesn't freeze
+      if (auth.currentUser) {
+        setProfile({ id: auth.currentUser.uid, fallback: true });
+      }
     }
   };
 
@@ -43,6 +47,11 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await fetchProfileData();
+      } else {
+        // If not logged in, redirect to login unless on public pages
+        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/signup') && !window.location.pathname.startsWith('/order')) {
+          window.location.href = '/login';
+        }
       }
     });
     return () => unsubscribe();
