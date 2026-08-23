@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, where, orderBy } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, where, orderBy, limit } from 'firebase/firestore';
 import { Plus, Search, Trash2, X } from 'lucide-react';
 
 export interface ModuleField {
@@ -34,10 +34,7 @@ export default function GenericModule({ title, collectionName, fields }: Generic
 
   const fetchItems = async () => {
     try {
-      const q = query(
-        collection(db, collectionName),
-        where("bakery_id", "==", profile?.id)
-      );
+      const q = query(collection(db, collectionName), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(50));
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       // Sort in memory by created_at descending if available

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, serverTimestamp , query, where} from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp , query, where, orderBy, limit } from 'firebase/firestore';
 import { Plus, Filter, LayoutGrid, X, Save } from 'lucide-react';
 
 export default function DealsPage() {
@@ -18,7 +18,7 @@ export default function DealsPage() {
 
   async function fetchDeals() {
     try {
-      const snap = await getDocs(query(collection(db, "deals"), where("bakery_id", "==", profile?.id)));
+      const snap = await getDocs(query(collection(db, "deals"), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(100)));
       setDeals(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };

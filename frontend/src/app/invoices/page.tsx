@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import SideNav from '@/components/SideNav';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, getDoc, doc, addDoc, updateDoc, serverTimestamp , query, where} from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, serverTimestamp , query, where, orderBy, limit } from 'firebase/firestore';
 import { format } from 'date-fns';
 import Script from 'next/script';
 import { DownloadInvoiceButton } from '@/components/InvoicePDF';
@@ -59,13 +59,13 @@ export default function InvoicesPage() {
 
   async function fetchData() {
     try {
-      const clientsSnap = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
+      const clientsSnap = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(100)));
       setClients(clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client)));
       
-      const itemsSnap = await getDocs(query(collection(db, "items"), where("bakery_id", "==", profile?.id)));
+      const itemsSnap = await getDocs(query(collection(db, "items"), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(100)));
       setCatalogItems(itemsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       
-      const invoicesSnap = await getDocs(query(collection(db, "invoices"), where("bakery_id", "==", profile?.id)));
+      const invoicesSnap = await getDocs(query(collection(db, "invoices"), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(100)));
       const invoicesData = invoicesSnap.docs.map(d => ({ id: d.id, ...d.data() } as any));
       setInvoices(invoicesData.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       

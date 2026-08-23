@@ -5,7 +5,7 @@ import SideNav from '@/components/SideNav';
 import BottomNav from '@/components/BottomNav';
 import { useBakery } from '@/context/BakeryContext';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit, getAggregateFromServer, sum } from 'firebase/firestore';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Link from 'next/link';
 import { TrendingUp, Activity, CreditCard, Wallet, FileText, UserPlus, FileBarChart, ArrowDownRight, PieChart } from 'lucide-react';
@@ -25,50 +25,57 @@ export default function Dashboard() {
   const [recentClients, setRecentClients] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+        const fetchDashboardData = async () => {
       if (!profile?.id) return;
       
       try {
-        // Fetch Invoices
-        const invoicesQuery = query(collection(db, 'invoices'), where('bakery_id', '==', profile.id));
-        const invoicesSnap = await getDocs(invoicesQuery);
-        let totalRevenue = 0;
-        let pendingReceivables = 0;
-        const revenueByDate: Record<string, number> = {};
-
-        invoicesSnap.forEach(doc => {
-          const data = doc.data();
-          const amount = data.total || data.amount || 0;
-          if (data.status === 'paid') {
-            totalRevenue += amount;
-          } else {
-            pendingReceivables += amount;
-          }
-          
-          if (data.created_at) {
-            const dateStr = data.created_at.toDate().toISOString().split('T')[0];
-            revenueByDate[dateStr] = (revenueByDate[dateStr] || 0) + amount;
-          }
-        });
-
-        // Fetch Purchases/Expenses
-        const purchasesQuery = query(collection(db, 'purchases'), where('bakery_id', '==', profile.id));
-        const purchasesSnap = await getDocs(purchasesQuery);
-        let totalExpenses = 0;
-        const expensesByDate: Record<string, number> = {};
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         
-        purchasesSnap.forEach(doc => {
+        // --- 1. Fast Server-Side Aggregations for Lifetime Totals ---
+        const baseInvoicesQuery = query(collection(db, 'invoices'), where('bakery_id', '==', profile.id));
+        const paidInvoicesQuery = query(baseInvoicesQuery, where('status', '==', 'paid'));
+        const pendingInvoicesQuery = query(baseInvoicesQuery, where('status', '==', 'pending'));
+        const basePurchasesQuery = query(collection(db, 'purchases'), where('bakery_id', '==', profile.id));
+        
+        const [paidAgg, pendingAgg, purchasesAgg] = await Promise.all([
+          getAggregateFromServer(paidInvoicesQuery, { total: sum('total') }),
+          getAggregateFromServer(pendingInvoicesQuery, { total: sum('total') }),
+          getAggregateFromServer(basePurchasesQuery, { total: sum('total') })
+        ]);
+        
+        const totalRevenue = paidAgg.data().total || 0;
+        const pendingReceivables = pendingAgg.data().total || 0;
+        const totalExpenses = purchasesAgg.data().total || 0;
+
+        // --- 2. Fetch Only Last 30 Days for the Trend Chart ---
+        const recentInvoicesQuery = query(baseInvoicesQuery, where('created_at', '>=', thirtyDaysAgo));
+        const recentPurchasesQuery = query(basePurchasesQuery, where('created_at', '>=', thirtyDaysAgo));
+        
+        const [recentInvoicesSnap, recentPurchasesSnap] = await Promise.all([
+          getDocs(recentInvoicesQuery),
+          getDocs(recentPurchasesQuery)
+        ]);
+        
+        const revenueByDate: Record<string, number> = {};
+        recentInvoicesSnap.forEach(doc => {
           const data = doc.data();
-          const amount = data.total || data.amount || 0;
-          totalExpenses += amount;
-          
-          if (data.created_at) {
+          if (data.status === 'paid' && data.created_at) {
             const dateStr = data.created_at.toDate().toISOString().split('T')[0];
-            expensesByDate[dateStr] = (expensesByDate[dateStr] || 0) + amount;
+            revenueByDate[dateStr] = (revenueByDate[dateStr] || 0) + (data.total || data.amount || 0);
           }
         });
 
-        // Fetch Recent Clients
+        const expensesByDate: Record<string, number> = {};
+        recentPurchasesSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.created_at) {
+            const dateStr = data.created_at.toDate().toISOString().split('T')[0];
+            expensesByDate[dateStr] = (expensesByDate[dateStr] || 0) + (data.total || data.amount || 0);
+          }
+        });
+
+        // --- 3. Fetch Recent Clients ---
         const clientsQuery = query(collection(db, 'clients'), where('bakery_id', '==', profile.id), orderBy('created_at', 'desc'), limit(3));
         const clientsSnap = await getDocs(clientsQuery);
         const clientsData = clientsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));

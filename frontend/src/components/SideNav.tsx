@@ -98,7 +98,7 @@ export default function SideNav({ title }: SideNavProps) {
       <header className="lg:hidden bg-ledger-navy shadow-md border-b border-slate-800 sticky top-0 z-40">
         <div className="px-4 h-16 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Logo" width={32} height={32} className="h-8 w-auto bg-white rounded-md p-1" />
+            <Image src="/logo.png" priority alt="Logo" width={32} height={32} className="h-8 w-auto bg-white rounded-md p-1" />
             <h1 className="text-lg text-white font-brand font-semibold tracking-tight">Crumb<span className="font-data font-light text-white/80">Ledger</span></h1>
           </Link>
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-300 hover:text-white">
@@ -117,7 +117,7 @@ export default function SideNav({ title }: SideNavProps) {
         {/* Brand */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-3" onClick={() => setIsMobileMenuOpen(false)}>
-            <Image src="/logo.png" alt="Logo" width={32} height={32} className="h-8 w-auto bg-white rounded-md p-1" />
+            <Image src="/logo.png" priority alt="Logo" width={32} height={32} className="h-8 w-auto bg-white rounded-md p-1" />
             <h1 className="text-xl text-white font-brand font-semibold tracking-tight">Crumb<span className="font-data font-light text-white/80">Ledger</span></h1>
           </Link>
           <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden text-gray-400 hover:text-white">

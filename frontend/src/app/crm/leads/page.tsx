@@ -4,7 +4,7 @@ import SideNav from '@/components/SideNav';
 import { useBakery } from "@/context/BakeryContext";
 import { Plus, Search, Filter, MoreVertical, Building2, Mail, Phone, X, Save, MessageCircle, FileText, Lightbulb, ExternalLink } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, updateDoc, doc , query, where} from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp, updateDoc, doc , query, where, orderBy, limit } from 'firebase/firestore';
 
 export default function LeadsPage() {
   const { profile } = useBakery();
@@ -24,7 +24,7 @@ export default function LeadsPage() {
 
   async function fetchLeads() {
     try {
-      const snap = await getDocs(query(collection(db, "leads"), where("bakery_id", "==", profile?.id)));
+      const snap = await getDocs(query(collection(db, "leads"), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(100)));
       const leadsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setLeads(leadsData);
     } catch (error) {

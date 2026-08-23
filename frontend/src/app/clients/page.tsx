@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp , query, where} from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp , query, where, orderBy, limit } from 'firebase/firestore';
 import { ChevronDown, Search, Info, Upload, Mail, X } from 'lucide-react';
 import SideNav from '@/components/SideNav';
 
@@ -62,7 +62,7 @@ export default function ClientsPage() {
 
   async function fetchClients() {
     try {
-      const querySnapshot = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id)));
+      const querySnapshot = await getDocs(query(collection(db, "clients"), where("bakery_id", "==", profile?.id), orderBy("created_at", "desc"), limit(100)));
       const clientsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
