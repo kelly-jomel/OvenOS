@@ -33,6 +33,8 @@ export default function InvoicesPage() {
   const [businessProfile, setBusinessProfile] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
   const [newClientName, setNewClientName] = useState("");
   const [newClientEmail, setNewClientEmail] = useState("");
   const [isAddingClient, setIsAddingClient] = useState(false);
@@ -145,6 +147,50 @@ export default function InvoicesPage() {
       console.error("Error adding client:", error);
     } finally {
       setIsAddingClient(false);
+    }
+  };
+
+  const handleItemSelect = (index: number, catalogItemId: string) => {
+    if (catalogItemId === 'add_new') {
+      setActiveItemIndex(index);
+      setIsItemModalOpen(true);
+      return;
+    }
+    
+    const newItems = [...items];
+    if (catalogItemId === '') {
+      newItems[index].description = '';
+      newItems[index].rate = 0;
+      setItems(newItems);
+      return;
+    }
+    
+    const selected = catalogItems.find(i => i.id === catalogItemId);
+    if (selected) {
+      newItems[index].description = selected.name + (selected.description ? ` - ${selected.description}` : '');
+      newItems[index].rate = selected.price || 0;
+      setItems(newItems);
+    }
+  };
+
+  const handleAddNewItem = async (newItem: any) => {
+    if (!profile?.id) return;
+    try {
+      const docRef = await addDoc(collection(db, "items"), { ...newItem, bakery_id: profile?.id, created_at: serverTimestamp() });
+      const addedItem = { id: docRef.id, ...newItem };
+      setCatalogItems([addedItem, ...catalogItems]);
+      setIsItemModalOpen(false);
+      
+      if (activeItemIndex !== null) {
+        const newItems = [...items];
+        newItems[activeItemIndex].description = addedItem.name + (addedItem.description ? ` - ${addedItem.description}` : '');
+        newItems[activeItemIndex].rate = addedItem.price;
+        setItems(newItems);
+        setActiveItemIndex(null);
+      }
+    } catch (error) {
+      console.error("Error adding item:", error);
+      alert("Failed to add item.");
     }
   };
 
@@ -350,6 +396,15 @@ export default function InvoicesPage() {
                           <div className="flex gap-3">
                             <div className="w-10 h-10 bg-slate-100 border border-slate-200 rounded flex items-center justify-center flex-shrink-0 text-slate-300">
                               <ImageIcon size={20} />
+                            </div>
+                            <div className="w-1/3 min-w-[120px] mb-2">
+                              <select onChange={e => handleItemSelect(idx, e.target.value)} className="w-full p-2 border rounded-md bg-slate-50 text-sm">
+                                <option value="">-- Custom Item --</option>
+                                <option value="add_new" className="text-blue-600 font-bold">+ New Catalog Item</option>
+                                {catalogItems.map(cItem => (
+                                  <option key={cItem.id} value={cItem.id}>{cItem.name} (₹{cItem.price})</option>
+                                ))}
+                              </select>
                             </div>
                             <textarea 
                               placeholder="Type or click to select an item."

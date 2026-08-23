@@ -5,7 +5,8 @@ import SideNav from '@/components/SideNav';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
 import AddClientModal from '@/components/AddClientModal';
-import { collection, getDocs, getDoc, doc, addDoc , query, where} from 'firebase/firestore';
+import AddItemModal from '@/components/AddItemModal';
+import { collection, getDocs, getDoc, doc, addDoc , query, where, serverTimestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { DownloadInvoiceButton } from '@/components/InvoicePDF'; // Reuse the PDF generator
 
@@ -31,6 +32,8 @@ export default function EstimatesPage() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
   
   // Estimate Form State
   const [selectedClientId, setSelectedClientId] = useState('');
@@ -93,12 +96,46 @@ export default function EstimatesPage() {
   };
 
   const handleItemSelect = (index: number, catalogItemId: string) => {
+    if (catalogItemId === 'add_new') {
+      setActiveItemIndex(index);
+      setIsItemModalOpen(true);
+      return;
+    }
+    
+    const newItems = [...items];
+    if (catalogItemId === '') {
+      newItems[index].description = '';
+      newItems[index].rate = 0;
+      setItems(newItems);
+      return;
+    }
+    
     const selected = catalogItems.find(i => i.id === catalogItemId);
     if (selected) {
-      const newItems = [...items];
       newItems[index].description = selected.name + (selected.description ? ` - ${selected.description}` : '');
-      newItems[index].rate = selected.price;
+      newItems[index].rate = selected.price || 0;
       setItems(newItems);
+    }
+  };
+
+  const handleAddNewItem = async (newItem: any) => {
+    if (!profile?.id) return;
+    try {
+      const docRef = await addDoc(collection(db, "items"), { ...newItem, bakery_id: profile?.id, created_at: serverTimestamp() });
+      const addedItem = { id: docRef.id, ...newItem };
+      setCatalogItems([addedItem, ...catalogItems]);
+      setIsItemModalOpen(false);
+      
+      if (activeItemIndex !== null) {
+        const newItems = [...items];
+        newItems[activeItemIndex].description = addedItem.name + (addedItem.description ? ` - ${addedItem.description}` : '');
+        newItems[activeItemIndex].rate = addedItem.price;
+        setItems(newItems);
+        setActiveItemIndex(null);
+      }
+    } catch (error) {
+      console.error("Error adding item:", error);
+      alert("Failed to add item.");
     }
   };
 
@@ -176,6 +213,7 @@ export default function EstimatesPage() {
                     <label className="block text-xs text-slate-500 mb-1">Select from Catalog (Optional)</label>
                     <select onChange={e => handleItemSelect(index, e.target.value)} className="w-full p-2 border rounded-md bg-slate-50 text-sm">
                       <option value="">-- Custom Item --</option>
+                      <option value="add_new" className="text-blue-600 font-bold">+ New Catalog Item</option>
                       {catalogItems.map(cItem => (
                         <option key={cItem.id} value={cItem.id}>{cItem.name} (₹{cItem.price})</option>
                       ))}
