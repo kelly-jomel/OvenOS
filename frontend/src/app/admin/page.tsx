@@ -45,7 +45,12 @@ export default function AdminDashboard() {
       } catch (err: any) {
         if (err.response?.status === 403) {
           setError('You do not have permission to view this page. Super Admin only.');
+        } else if (err.response?.data?.detail) {
+          setError(`Error: ${err.response.data.detail}`);
         } else {
+          setError(`Failed to load subscribers. Status: ${err.response?.status || 'Network Error'}`);
+        }
+      } else {
           setError('Failed to load subscribers.');
         }
       } finally {
