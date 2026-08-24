@@ -111,9 +111,8 @@ async def import_recipe(
                 db_item = models.InventoryItem(
                     bakery_id=bakery.id,
                     name=ing['name'],
-                    category="Ingredients",
                     unit=ing['unit'],
-                    quantity_in_stock=0.0,
+                    quantity=0.0,
                     purchase_price=0.0,
                     low_stock_threshold=5.0
                 )
