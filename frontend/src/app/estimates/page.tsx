@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import SideNav from '@/components/SideNav';
 import { useBakery } from "@/context/BakeryContext";
@@ -266,7 +267,8 @@ export default function EstimatesPage() {
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Estimate #</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Client</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Total</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
@@ -276,7 +278,12 @@ export default function EstimatesPage() {
           <tbody className="bg-white divide-y divide-slate-200">
             {estimates.map((est) => (
               <tr key={est.id} className="hover:bg-slate-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{format(new Date(est.date), 'MMM dd, yyyy')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline cursor-pointer">
+                    <Link href={`/estimates/profile?id=${est.id}`}>
+                      #{est.invoice_number || est.estimate_number || est.order_number || String(est.id).substring(0,8).toUpperCase()}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{format(new Date(est.date), 'MMM dd, yyyy')}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{est.clientName}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">₹{est.total?.toFixed(2)}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -298,7 +305,7 @@ export default function EstimatesPage() {
             ))}
             {estimates.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">No estimates generated yet.</td>
+                <td colSpan={6} className="px-6 py-10 text-center text-slate-500">No estimates generated yet.</td>
               </tr>
             )}
           </tbody>

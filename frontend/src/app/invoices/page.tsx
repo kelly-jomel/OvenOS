@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import SideNav from '@/components/SideNav';
 import AddItemModal from '@/components/AddItemModal';
@@ -570,6 +571,7 @@ export default function InvoicesPage() {
           <table className="min-w-full divide-y divide-slate-200">
             <thead className="bg-slate-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Invoice #</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Client</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Total</th>
@@ -580,6 +582,11 @@ export default function InvoicesPage() {
             <tbody className="bg-white divide-y divide-slate-200">
               {invoices.map((inv) => (
                 <tr key={inv.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline cursor-pointer">
+                    <Link href={`/invoices/profile?id=${inv.id}`}>
+                      #{inv.invoice_number || inv.estimate_number || inv.order_number || String(inv.id).substring(0,8).toUpperCase()}
+                    </Link>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{format(new Date(inv.date), 'MMM dd, yyyy')}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{inv.clientName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
@@ -615,7 +622,7 @@ export default function InvoicesPage() {
               ))}
               {invoices.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-slate-500">No invoices generated yet.</td>
+                  <td colSpan={6} className="px-6 py-10 text-center text-slate-500">No invoices generated yet.</td>
                 </tr>
               )}
             </tbody>
