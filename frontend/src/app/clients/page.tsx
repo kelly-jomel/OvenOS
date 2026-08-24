@@ -39,27 +39,13 @@ export default function ClientsPage() {
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState('Other Details');
   
-  const [formData, setFormData] = useState<Client>({
-    salutation: 'Mr.',
-    firstName: '',
-    lastName: '',
-    companyName: '',
-    displayName: '',
-    email: '',
-    workPhone: '',
-    mobilePhone: '',
-    language: 'English',
-    gstTreatment: '',
-    placeOfSupply: '',
-    pan: '',
-    taxPreference: 'Taxable',
-    currency: 'INR- Indian Rupee',
-    openingBalance: '',
-    paymentTerms: 'Due on Receipt',
-    enablePortal: false,
-    isGstRegistered: false,
-    gstin: '',
-    address: ''
+  const [formData, setFormData] = useState<any>({
+    salutation: 'Mr.', firstName: '', lastName: '', companyName: '', displayName: '', email: '', workPhone: '', mobilePhone: '', language: 'English', gstTreatment: '', placeOfSupply: '', pan: '', taxPreference: 'Taxable', currency: 'INR- Indian Rupee', openingBalance: '', paymentTerms: 'Due on Receipt', enablePortal: false, isGstRegistered: false, gstin: '', address: '',
+    // New fields
+    contactPersons: [],
+    customFields: '',
+    reportingTags: '',
+    remarks: ''
   });
 
   async function fetchClients() {
@@ -458,9 +444,64 @@ export default function ClientsPage() {
               </div>
             )}
             
-            {(activeTab !== 'Other Details' && activeTab !== 'Address') && (
-              <div className="pt-8 text-center text-slate-400 italic">
-                This tab is a placeholder for {activeTab} settings.
+            {activeTab === 'Contact Persons' && (
+              <div className="space-y-6 pt-4">
+                <div className="text-sm text-slate-500 mb-4">Add additional contacts for this customer.</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-slate-800 text-sm font-medium">First Name</label>
+                    <input type="text" className="w-full mt-1 p-2 border border-slate-300 rounded-md" placeholder="Contact First Name" />
+                  </div>
+                  <div>
+                    <label className="text-slate-800 text-sm font-medium">Last Name</label>
+                    <input type="text" className="w-full mt-1 p-2 border border-slate-300 rounded-md" placeholder="Contact Last Name" />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-slate-800 text-sm font-medium">Email Address</label>
+                    <input type="email" className="w-full mt-1 p-2 border border-slate-300 rounded-md" placeholder="Contact Email" />
+                  </div>
+                </div>
+                <button type="button" className="text-blue-600 text-sm font-medium mt-2">+ Add Contact Person</button>
+              </div>
+            )}
+            
+            {activeTab === 'Custom Fields' && (
+              <div className="space-y-6 pt-4">
+                <div className="grid grid-cols-[200px_1fr] items-start gap-4">
+                  <label className="text-slate-800 text-sm font-medium pt-2">Additional Info</label>
+                  <textarea 
+                    value={formData.customFields || ''} onChange={e => setFormData({...formData, customFields: e.target.value})}
+                    className="w-full max-w-md p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500 h-24" 
+                    placeholder="Enter custom fields or JSON data"
+                  />
+                </div>
+              </div>
+            )}
+            
+            {activeTab === 'Reporting Tags' && (
+              <div className="space-y-6 pt-4">
+                <div className="grid grid-cols-[200px_1fr] items-start gap-4">
+                  <label className="text-slate-800 text-sm font-medium pt-2">Tags</label>
+                  <input 
+                    type="text" 
+                    value={formData.reportingTags || ''} onChange={e => setFormData({...formData, reportingTags: e.target.value})}
+                    className="w-full max-w-md p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500" 
+                    placeholder="e.g. VIP, Wholesale, Region-North"
+                  />
+                </div>
+              </div>
+            )}
+            
+            {activeTab === 'Remarks' && (
+              <div className="space-y-6 pt-4">
+                <div className="grid grid-cols-[200px_1fr] items-start gap-4">
+                  <label className="text-slate-800 text-sm font-medium pt-2">Internal Notes</label>
+                  <textarea 
+                    value={formData.remarks || ''} onChange={e => setFormData({...formData, remarks: e.target.value})}
+                    className="w-full max-w-md p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500 h-24" 
+                    placeholder="Internal remarks for your team"
+                  />
+                </div>
               </div>
             )}
 
@@ -491,7 +532,9 @@ export default function ClientsPage() {
               {clients.map((client) => (
                 <tr key={client.id} className="hover:bg-slate-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 hover:underline cursor-pointer">
-                    {client.displayName || client.name || `${client.firstName} ${client.lastName}`}
+                    <Link href={`/clients/profile?id=${client.id}`}>
+                      {client.displayName || client.name || `${client.firstName} ${client.lastName}`}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{client.companyName || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{client.email || '-'}</td>
