@@ -50,9 +50,6 @@ export default function AdminDashboard() {
         } else {
           setError(`Failed to load subscribers. Status: ${err.response?.status || 'Network Error'}`);
         }
-      } else {
-          setError('Failed to load subscribers.');
-        }
       } finally {
         setLoading(false);
       }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useBakery } from "@/context/BakeryContext";
 import { db } from '@/lib/firebase';
@@ -100,7 +101,7 @@ export default function ClientsPage() {
   // Sync Display Name if empty
   useEffect(() => {
     if (!formData.displayName && (formData.firstName || formData.lastName)) {
-      setFormData(prev => ({ ...prev, displayName: `${prev.firstName} ${prev.lastName}`.trim() }));
+      setFormData((prev: any) => ({ ...prev, displayName: `${prev.firstName} ${prev.lastName}`.trim() }));
     }
   }, [formData.firstName, formData.lastName]);
 
