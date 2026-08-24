@@ -133,22 +133,12 @@ export default function RecipesPage() {
 
   const handleImportRecipe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!geminiApiKey) {
-      alert("Please provide a Gemini API Key");
-      return;
-    }
-    
-    localStorage.setItem('geminiApiKey', geminiApiKey);
     setIsImporting(true);
 
     try {
       const res = await api.post('/ai/import', {
         source_type: importSourceType,
         source_data: importSourceData
-      }, {
-        headers: {
-          'x-gemini-api-key': geminiApiKey
-        }
       });
       
       const parsed = res.data;
@@ -676,20 +666,7 @@ export default function RecipesPage() {
             
             <div className="p-6">
               <form onSubmit={handleImportRecipe}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
-                  <input
-                    required
-                    type="password"
-                    placeholder="AIzaSy..."
-                    value={geminiApiKey}
-                    onChange={(e) => setGeminiApiKey(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Google AI Studio</a>. Saved locally.
-                  </p>
-                </div>
+                
 
                 <div className="mb-4 flex gap-2 p-1 bg-gray-100 rounded-lg">
                   <button 
