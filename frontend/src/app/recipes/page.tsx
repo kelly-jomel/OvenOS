@@ -61,7 +61,7 @@ const calculateCost = (ingredient: RecipeIngredient, item: InventoryItem): numbe
     requiredQty = requiredQty * 1000;
   }
   
-  return (requiredQty / item.quantity) * item.purchase_price;
+  return item.quantity === 0 ? 0 : (requiredQty / item.quantity) * item.purchase_price;
 };
 
 export default function RecipesPage() {
@@ -601,9 +601,21 @@ export default function RecipesPage() {
                       
                       return (
                         <div key={idx} className="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                          <div>
-                            <p className="font-medium text-gray-900">{ing.item_name}</p>
-                            <p className="text-sm text-gray-500">{ing.quantity_required} {ing.unit} @ {currencySymbol}{item.purchase_price} per {item.quantity}{item.unit}</p>
+                          <div className="flex-1 mr-4">
+                            <p className="font-medium text-gray-900 mb-1">{ing.item_name || item.name}</p>
+                            <div className="flex items-center gap-2">
+                              <input 
+                                type="number" 
+                                value={ing.quantity_required || ''}
+                                onChange={(e) => {
+                                  const newIngs = [...(newRecipe.ingredients || [])];
+                                  newIngs[idx] = { ...newIngs[idx], quantity_required: parseFloat(e.target.value) || 0 };
+                                  setNewRecipe({ ...newRecipe, ingredients: newIngs });
+                                }}
+                                className="w-20 border rounded p-1 text-sm outline-none focus:ring-1 focus:ring-orange-500"
+                              />
+                              <span className="text-sm text-gray-500">{ing.unit || item.unit} @ {currencySymbol}{item.purchase_price} per {item.quantity}{item.unit}</span>
+                            </div>
                           </div>
                           <div className="flex items-center gap-4">
                             <span className="font-bold text-gray-900">{currencySymbol}{cost.toFixed(2)}</span>
