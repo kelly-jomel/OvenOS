@@ -24,11 +24,33 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
   const [country, setCountry] = useState('IN');
   const [profile, setProfile] = useState<any | null>(null);
 
+  // Load from local storage immediately if available
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('bakeryProfile');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          setProfile(parsed);
+          const userCountry = parsed.country || 'IN';
+          setCountry(userCountry);
+          if (userCountry === 'US') setCurrencySymbol('$');
+          else if (userCountry === 'GB') setCurrencySymbol('£');
+          else setCurrencySymbol('₹');
+        } catch (e) {}
+      }
+    }
+  }, []);
+
   const fetchProfileData = async () => {
     try {
-      // Aggressive 3-second timeout for instant UI loading
-      const res = await api.get('/profile/', { timeout: 3000 });
+      // Remove aggressive timeout since Render is upgraded, just fetch normally.
+      // The cached local storage profile handles the instant UI.
+      const res = await api.get('/profile/');
       setProfile(res.data);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bakeryProfile', JSON.stringify(res.data));
+      }
       const userCountry = res.data.country || 'IN';
       setCountry(userCountry);
       
@@ -36,21 +58,7 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
       else if (userCountry === 'GB') setCurrencySymbol('£');
       else setCurrencySymbol('₹'); // Default IN
     } catch (error) {
-      console.warn("Profile API slow or failed. Using fallback for instant load...", error);
-      // Fallback so the app doesn't freeze
-      if (auth.currentUser) {
-        setProfile((prev: any) => prev || { id: auth.currentUser?.uid, fallback: true });
-        
-        // Fetch in background to update preferences when the server finally wakes up
-        api.get('/profile/').then((res) => {
-          setProfile(res.data);
-          const userCountry = res.data.country || 'IN';
-          setCountry(userCountry);
-          if (userCountry === 'US') setCurrencySymbol('$');
-          else if (userCountry === 'GB') setCurrencySymbol('£');
-          else setCurrencySymbol('₹');
-        }).catch((e) => console.error("Background profile fetch failed", e));
-      }
+      console.error("Profile API failed.", error);
     }
   };
 
@@ -59,6 +67,9 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
       if (user) {
         await fetchProfileData();
       } else {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('bakeryProfile');
+        }
         // If not logged in, redirect to login unless on public pages
         if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/signup') && !window.location.pathname.startsWith('/order')) {
           window.location.href = '/login';
