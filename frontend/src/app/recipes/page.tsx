@@ -360,7 +360,7 @@ export default function RecipesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recipes.map(recipe => (
-              <div key={recipe.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col">
+              <Link href={`/recipes/profile?id=${recipe.id}`} key={recipe.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow cursor-pointer">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex gap-4">
                     {recipe.image_data ? (
@@ -375,7 +375,7 @@ export default function RecipesPage() {
                       <p className="text-gray-500 text-sm">Yield: {recipe.yield_amount || "N/A"}</p>
                     </div>
                   </div>
-                  <button onClick={() => deleteRecipe(recipe.id)} className="text-gray-400 hover:text-red-500">
+                  <button onClick={(e) => { e.preventDefault(); deleteRecipe(recipe.id); }} className="text-gray-400 hover:text-red-500 z-10">
                     ✕
                   </button>
                 </div>
@@ -391,7 +391,7 @@ export default function RecipesPage() {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

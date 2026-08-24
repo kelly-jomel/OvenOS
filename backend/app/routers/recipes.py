@@ -11,6 +11,32 @@ router = APIRouter(
     tags=["recipes"],
 )
 
+@router.get("/{recipe_id}", response_model=schemas.RecipeResponse)
+def get_recipe(recipe_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    r = db.query(models.Recipe).filter(
+        models.Recipe.id == recipe_id,
+        models.Recipe.bakery_id == current_user.bakery_id
+    ).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+        
+    ingredients = db.query(models.RecipeIngredient).filter(models.RecipeIngredient.recipe_id == r.id).all()
+    return schemas.RecipeResponse(
+        id=r.id,
+        name=r.name,
+        description=r.description,
+        yield_amount=r.yield_amount,
+        image_data=r.image_data,
+        prep_time_minutes=r.prep_time_minutes,
+        bake_time_minutes=r.bake_time_minutes,
+        custom_labor_cost=r.custom_labor_cost,
+        custom_overhead_cost=r.custom_overhead_cost,
+        use_custom_overheads=r.use_custom_overheads,
+        ingredients=[schemas.RecipeIngredientResponse.model_validate(ing) for ing in ingredients],
+        created_at=r.created_at,
+        updated_at=r.updated_at
+    )
+
 @router.post("/", response_model=schemas.RecipeResponse, status_code=status.HTTP_201_CREATED)
 def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     db_recipe = models.Recipe(
