@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from .. import models, database
+from ..auth import get_current_user
 from ..auth import verify_token
 from pydantic import BaseModel
 from typing import Optional, List
@@ -34,7 +35,7 @@ async def import_recipe(
     request: ImportRequest,
     x_gemini_api_key: str = Header(..., description="Gemini API Key provided by the user"),
     db: Session = Depends(database.get_db),
-    user: dict = Depends(verify_token)
+    current_user = Depends(get_current_user)
 ):
     if not x_gemini_api_key:
         raise HTTPException(status_code=400, detail="Gemini API Key is required")
@@ -93,7 +94,7 @@ async def import_recipe(
         result_json = json.loads(response.text)
         
         # Now, match ingredients against the database or create them with 0 stock
-        bakery = db.query(models.Bakery).filter(models.Bakery.owner_id == user["uid"]).first()
+        bakery = db.query(models.Bakery).filter(models.Bakery.id == current_user.bakery_id).first()
         if not bakery:
             raise HTTPException(status_code=400, detail="Bakery not found")
             
