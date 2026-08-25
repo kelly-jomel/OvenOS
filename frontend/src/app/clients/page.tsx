@@ -513,7 +513,7 @@ export default function ClientsPage() {
                   <h3 className="text-sm font-medium text-slate-800">Special Dates & Occasions</h3>
                   <button 
                     type="button" 
-                    onClick={() => setFormData({...formData, specialDates: [...(formData.specialDates || []), { occasion: 'Birthday', date: '' }]})}
+                    onClick={() => setFormData({...formData, specialDates: [...(formData.specialDates || []), { name: '', occasion: 'Birthday', date: '' }]})}
                     className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
                   >
                     <span className="text-lg leading-none">+</span> Add day
@@ -528,6 +528,20 @@ export default function ClientsPage() {
                   <div className="space-y-3 max-w-2xl">
                     {formData.specialDates.map((sd: any, idx: number) => (
                       <div key={idx} className="flex gap-4 items-start">
+                        <div className="flex-1">
+                          <label className="block text-xs text-slate-500 mb-1">Name</label>
+                          <input 
+                            type="text" 
+                            placeholder="e.g. Spouse, Child"
+                            value={sd.name || ''} 
+                            onChange={(e) => {
+                              const newDates = [...formData.specialDates];
+                              newDates[idx].name = e.target.value;
+                              setFormData({...formData, specialDates: newDates});
+                            }}
+                            className="w-full p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500"
+                          />
+                        </div>
                         <div className="flex-1">
                           <label className="block text-xs text-slate-500 mb-1">Occasion</label>
                           <select 
