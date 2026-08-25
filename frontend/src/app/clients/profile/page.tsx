@@ -5,7 +5,7 @@ import SideNav from '@/components/SideNav';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { ArrowLeft, Edit, Mail, Phone, MapPin, FileText, User } from 'lucide-react';
+import { ArrowLeft, Edit, Mail, Phone, MapPin, FileText, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
 function ClientProfileContent() {
@@ -118,8 +118,9 @@ function ClientProfileContent() {
             )}
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-bold text-slate-800 border-b pb-2 mb-4">Financials</h2>
+          <div className="space-y-6 md:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h2 className="text-lg font-bold text-slate-800 border-b pb-2 mb-4">Financials</h2>
             <div className="space-y-4">
               <div>
                 <div className="text-sm text-slate-500 font-medium">Currency</div>
@@ -134,6 +135,69 @@ function ClientProfileContent() {
                 <div className="text-2xl font-bold text-slate-900">{invoices.length}</div>
               </div>
             </div>
+          </div>
+          
+          {/* Special Dates Section */}
+          {(client.specialDates && client.specialDates.length > 0) && (
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <Calendar size={18} className="text-blue-500" />
+                Special Dates
+              </h3>
+              <div className="space-y-4">
+                {client.specialDates.map((sd: any, idx: number) => {
+                  
+                  // Construct Google Calendar Link
+                  // Title: e.g., "John's Birthday" or "Birthday (John Doe)"
+                  const eventName = sd.name ? `${sd.name}'s ${sd.occasion}` : `${sd.occasion} (${client.displayName || client.firstName})`;
+                  const encodedTitle = encodeURIComponent(eventName);
+                  
+                  // Try to parse the date to inject the current year if missing
+                  let year = new Date().getFullYear();
+                  let monthStr = "01";
+                  let dayStr = "01";
+                  
+                  if (sd.date.includes('/')) {
+                    const parts = sd.date.split('/');
+                    dayStr = parts[0].padStart(2, '0');
+                    monthStr = parts[1]?.padStart(2, '0') || "01";
+                    if (parts.length === 3) year = parseInt(parts[2]);
+                  } else if (sd.date.includes('-')) {
+                    const parts = sd.date.split('-');
+                    if (parts.length === 3) {
+                      year = parseInt(parts[0]);
+                      monthStr = parts[1].padStart(2, '0');
+                      dayStr = parts[2].padStart(2, '0');
+                    }
+                  }
+                  
+                  const startDate = `${year}${monthStr}${dayStr}`;
+                  const endDate = startDate; // all day event
+                  const gCalLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodedTitle}&dates=${startDate}/${endDate}`;
+                  
+                  return (
+                    <div key={idx} className="p-3 border border-slate-100 rounded-lg bg-slate-50 flex flex-col gap-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium text-slate-800 text-sm">{sd.occasion}</p>
+                          {sd.name && <p className="text-xs text-slate-500">For: {sd.name}</p>}
+                        </div>
+                        <span className="text-sm font-bold text-blue-600">{sd.date}</span>
+                      </div>
+                      <a 
+                        href={gCalLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-center block w-full py-1.5 mt-1 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 rounded shadow-sm transition-colors"
+                      >
+                        + Add to Google Calendar
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           </div>
         </div>
 
