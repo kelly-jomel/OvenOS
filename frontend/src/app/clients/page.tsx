@@ -46,7 +46,8 @@ export default function ClientsPage() {
     contactPersons: [],
     customFields: '',
     reportingTags: '',
-    remarks: ''
+    remarks: '',
+    specialDates: []
   });
 
   async function fetchClients() {
@@ -256,7 +257,7 @@ export default function ClientsPage() {
             {/* Tabs */}
             <div className="border-b border-slate-200 mt-8">
               <nav className="flex space-x-8">
-                {['Other Details', 'Address', 'Contact Persons', 'Custom Fields', 'Reporting Tags', 'Remarks'].map((tab) => (
+                {['Other Details', 'Address', 'Contact Persons', 'Custom Fields', 'Reporting Tags', 'Remarks', 'Special Dates'].map((tab) => (
                   <button
                     key={tab}
                     type="button"
@@ -505,6 +506,77 @@ export default function ClientsPage() {
                 </div>
               </div>
             )}
+
+            {activeTab === 'Special Dates' && (
+              <div className="space-y-6 pt-4">
+                <div className="flex justify-between items-center max-w-2xl mb-2">
+                  <h3 className="text-sm font-medium text-slate-800">Special Dates & Occasions</h3>
+                  <button 
+                    type="button" 
+                    onClick={() => setFormData({...formData, specialDates: [...(formData.specialDates || []), { occasion: 'Birthday', date: '' }]})}
+                    className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                  >
+                    <span className="text-lg leading-none">+</span> Add day
+                  </button>
+                </div>
+                
+                {(!formData.specialDates || formData.specialDates.length === 0) ? (
+                  <div className="text-sm text-slate-500 italic max-w-2xl text-center py-6 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                    No special dates added. Click "Add day" to add birthdays or anniversaries.
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-w-2xl">
+                    {formData.specialDates.map((sd: any, idx: number) => (
+                      <div key={idx} className="flex gap-4 items-start">
+                        <div className="flex-1">
+                          <label className="block text-xs text-slate-500 mb-1">Occasion</label>
+                          <select 
+                            value={sd.occasion} 
+                            onChange={(e) => {
+                              const newDates = [...formData.specialDates];
+                              newDates[idx].occasion = e.target.value;
+                              setFormData({...formData, specialDates: newDates});
+                            }}
+                            className="w-full p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500 bg-white"
+                          >
+                            <option value="Birthday">Birthday</option>
+                            <option value="Wedding Anniversary">Wedding Anniversary</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-xs text-slate-500 mb-1">Date (DD/MM or YYYY-MM-DD)</label>
+                          <input 
+                            type="text" 
+                            placeholder="e.g. 15/08 or 1990-08-15"
+                            value={sd.date} 
+                            onChange={(e) => {
+                              const newDates = [...formData.specialDates];
+                              newDates[idx].date = e.target.value;
+                              setFormData({...formData, specialDates: newDates});
+                            }}
+                            className="w-full p-2 border border-slate-300 rounded-md text-sm outline-none focus:border-blue-500"
+                          />
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            const newDates = [...formData.specialDates];
+                            newDates.splice(idx, 1);
+                            setFormData({...formData, specialDates: newDates});
+                          }}
+                          className="mt-6 p-2 text-slate-400 hover:text-red-500 transition-colors"
+                          title="Remove"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
 
           </div>
 
