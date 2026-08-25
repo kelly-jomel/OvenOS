@@ -72,19 +72,43 @@ export default function ClientsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "clients"), { bakery_id: profile?.id,
+      const payload: any = { 
+        bakery_id: profile?.id || "unknown",
         ...formData,
         name: formData.displayName || `${formData.firstName} ${formData.lastName}`, // Backwards compatibility
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        created_at: serverTimestamp()
+      };
+      
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === undefined) delete payload[key];
       });
+      
+      if (payload.specialDates && Array.isArray(payload.specialDates)) {
+        payload.specialDates = payload.specialDates.map((sd: any) => {
+          const cleanSd: any = {};
+          Object.keys(sd).forEach(k => {
+            if (sd[k] !== undefined) cleanSd[k] = sd[k];
+          });
+          return cleanSd;
+        });
+      }
+
+      await addDoc(collection(db, "clients"), payload);
       setShowForm(false);
       fetchClients();
       // Reset form
       setFormData({
-        salutation: 'Mr.', firstName: '', lastName: '', companyName: '', displayName: '', email: '', workPhone: '', mobilePhone: '', language: 'English', gstTreatment: '', placeOfSupply: '', pan: '', taxPreference: 'Taxable', currency: 'INR- Indian Rupee', openingBalance: '', paymentTerms: 'Due on Receipt', enablePortal: false, isGstRegistered: false
+        salutation: 'Mr.', firstName: '', lastName: '', companyName: '', displayName: '', email: '', workPhone: '', mobilePhone: '', language: 'English', gstTreatment: '', placeOfSupply: '', pan: '', taxPreference: 'Taxable', currency: 'INR- Indian Rupee', openingBalance: '', paymentTerms: 'Due on Receipt', enablePortal: false, isGstRegistered: false,
+        contactPersons: [],
+        customFields: '',
+        reportingTags: '',
+        remarks: '',
+        specialDates: []
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding client:", error);
+      alert("Failed to save customer: " + (error.message || "Unknown error"));
     }
   };
 
