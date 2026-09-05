@@ -71,8 +71,19 @@ export const BakeryProvider = ({ children }: { children: React.ReactNode }) => {
           localStorage.removeItem('bakeryProfile');
         }
         // If not logged in, redirect to login unless on public pages
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/signup') && !window.location.pathname.startsWith('/order')) {
-          window.location.href = '/login';
+        if (typeof window !== 'undefined') {
+          const currentPath = window.location.pathname;
+          const isPublic =
+            currentPath === '/' ||
+            currentPath.startsWith('/login') ||
+            currentPath.startsWith('/signup') ||
+            currentPath.startsWith('/order') ||
+            currentPath.startsWith('/privacy') ||
+            currentPath.startsWith('/terms');
+
+          if (!isPublic) {
+            window.location.href = '/login';
+          }
         }
       }
     });

@@ -58,7 +58,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Logo with Dual Typography -->
             <div class="flex items-center space-x-2.5">
-                <img src="/logo.png" alt="CrumbLedger Logo" class="h-12 w-auto object-contain rounded-md shadow-sm bg-white p-1" />
+                <img src="./logo.png" alt="CrumbLedger Logo" class="h-12 w-auto object-contain rounded-md shadow-sm bg-white p-1" />
                 <div class="flex items-baseline">
                     <span class="font-poppins font-bold text-2xl text-white tracking-tight">Crumb</span><span class="font-inter font-light text-xl text-jupiter tracking-[0.15em] ml-0.5">LEDGER</span>
                 </div>
@@ -463,7 +463,7 @@
     <footer class="bg-navy text-slate-400 py-12 border-t border-slate-800 font-inter">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
             <div class="flex items-center space-x-2.5">
-                <img src="/logo.png" alt="CrumbLedger Logo" class="h-8 w-auto object-contain rounded-md shadow-sm bg-white p-0.5" />
+                <img src="./logo.png" alt="CrumbLedger Logo" class="h-8 w-auto object-contain rounded-md shadow-sm bg-white p-0.5" />
                 <div class="flex items-baseline">
                     <span class="font-poppins font-bold text-xl text-white tracking-tight">Crumb</span><span class="font-inter font-light text-base text-jupiter tracking-[0.15em] ml-0.5">LEDGER</span>
                 </div>
@@ -479,7 +479,10 @@
 
     <!-- COUNTRY SELECTION MODAL -->
     <div id="country-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-navy/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 mx-4 transform scale-95 transition-transform duration-300">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 mx-4 transform scale-95 transition-transform duration-300 relative">
+            <button onclick="selectCountry('US')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl focus:outline-none">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-amber-100 text-jupiter rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
                     <i class="fa-solid fa-globe"></i>
