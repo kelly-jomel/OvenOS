@@ -1,31 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F9F9FA;
-  --foreground: #333333;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-jupiter-gold: #FDB813;
-  --color-ledger-navy: #1C2833;
-  --color-paper-white: #F9F9FA;
-  --color-ink-grey: #333333;
-  --color-yield-green: #2ECC71;
-  --font-brand: var(--font-poppins);
-  --font-data: var(--font-inter);
-}
-
-@media (prefers-color-scheme: dark) {
-  /* Skipping pure black/dark mode for Vastu principles for now */
-  :root {
-    --background: #F9F9FA;
-    --foreground: #333333;
-  }
+  --background: #fdfbf7;
+  --foreground: #0f172a;
+  --primary: #d97706;
+  --primary-hover: #b45309;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #f1ede4;
+  --muted: #f4ede0;
+  --muted-foreground: #64748b;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(217, 119, 6, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(217, 119, 6, 0.45);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
 }

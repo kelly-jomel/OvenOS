@@ -1,57 +1,31 @@
-import React from 'react';
-import Link from 'next/link';
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
-export default function TermsOfService() {
+export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-xl shadow-sm border border-gray-200">
-        <Link href="/" className="text-orange-600 hover:underline mb-8 inline-block">&larr; Back to Home</Link>
-        
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Terms of Service</h1>
-        <p className="text-sm text-gray-500 mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
-        
-        <div className="space-y-6 text-gray-700 leading-relaxed">
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h2>
-            <p>By accessing or using the CrumbLedger platform, you agree to be bound by these Terms of Service. If you disagree with any part of the terms, then you may not access the service.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Description of Service</h2>
-            <p>CrumbLedger provides a cloud-based Bakery ERP and Point of Sale (POS) system, including inventory management, order tracking, and accounting tools.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">3. User Accounts</h2>
-            <p>You are responsible for safeguarding the password that you use to access the service and for any activities or actions under your password. CrumbLedger cannot and will not be liable for any loss or damage arising from your failure to comply with this security obligation.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Data and Privacy</h2>
-            <p>Your use of CrumbLedger is also governed by our Privacy Policy. By using CrumbLedger, you consent to the practices described in the Privacy Policy.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Subscription and Billing</h2>
-            <p>Some parts of the Service are billed on a subscription basis. You will be billed in advance on a recurring and periodic basis according to your subscription plan.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Termination</h2>
-            <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Limitation of Liability</h2>
-            <p>In no event shall CrumbLedger, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Changes</h2>
-            <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will try to provide at least 30 days notice prior to any new terms taking effect.</p>
-          </section>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between">
+      <Navbar />
+      <main className="max-w-4xl mx-auto px-4 py-16">
+        <h1 className="text-3xl font-extrabold text-white mb-6">Terms of Service</h1>
+        <div className="prose prose-invert text-xs sm:text-sm text-slate-300 space-y-4 leading-relaxed">
+          <p>
+            Welcome to CrumbLedger. By creating an account or accessing the CrumbLedger web application, you agree to these Terms.
+          </p>
+          <h2 className="text-lg font-bold text-white mt-6">1. Subscription & Free Trial</h2>
+          <p>
+            CrumbLedger offers a 14-day free trial without requiring credit card information. Subscriptions are billed either monthly or annually as chosen during checkout. You may cancel your subscription at any time without penalty.
+          </p>
+          <h2 className="text-lg font-bold text-white mt-6">2. Acceptable Use</h2>
+          <p>
+            You agree to use CrumbLedger for legitimate commercial or home bakery management and not for any unlawful activity.
+          </p>
+          <h2 className="text-lg font-bold text-white mt-6">3. Limitation of Liability</h2>
+          <p>
+            CrumbLedger provides calculation tools and automated estimates. You maintain ultimate responsibility for setting final prices and maintaining food safety standards in your jurisdiction.
+          </p>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }
